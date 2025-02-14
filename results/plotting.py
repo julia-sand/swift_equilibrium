@@ -7,12 +7,12 @@ import string
 
 #file name. This is the file that will 
 #be plotted if available. 
-file_name = "T3-0_Lambda2-0_eps1-0_g0-01.csv"
-file_out = "swift_equilibrium/test11.png"
+file_name = "T3-0_Lambda1-0_eps1-0_g0-01.csv"
+file_out = "swift_equilibrium/compact_log1.png"
 
 #list what methods to try to plot. all those where the results exist 
 #will be plotted, otherwise skipped.
-models = ["hard","control", "harmonic", "log"] 
+models = ["hard", "log"] 
 methods = ["indirect","direct"]
 
 
@@ -103,7 +103,7 @@ for model_type in models:
 
             # Plot on the fourth subplot (bottom-right)
             plot_func(kappa_plot,df.t, df["kappa"],r'Stiffness, $\kappa_t$')
-            plot_func(lambda_plot,df.t.to_numpy()[5:-5], np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())[5:-5]
+            plot_func(lambda_plot,df.t.to_numpy(), np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                                 ,r'Control, $\lambda_t$')  
         except: 
             pass

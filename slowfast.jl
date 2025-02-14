@@ -9,10 +9,12 @@ two gaussian states
 
 include("params.jl")
 
+gscale = g^4
+
+
 #vector of parameters
 p = [epsilon,gscale]
 
-gscale = g^4
 
 #this is the system for 
 #transition between states with different variance/fixed mean System(3)
@@ -68,7 +70,8 @@ u0 = [1.0,
 function b(y)
     return (Lambda^2)*y/(2*g) #harmonic
 end
-bvp2 = TwoPointBVProblem(varevolution_invariant!, (varbc_start!, varbc_end!), u0, tspan, p;
+
+bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                     bcresid_prototype = (zeros(4),zeros(4)))
 sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
 

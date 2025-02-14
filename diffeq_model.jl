@@ -76,14 +76,10 @@ u0 = [1.0,
       0.0,
       0.0]
 
-
-#plot(sol2)
-
 if model_type=="log"
     function b(y)
         
         return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
-        # IfElse.ifelse(abs(y)<=1e-3 ,0, (g/y)*(sqrt(1+(Lambda*y/g)^2)-1))
     end
 
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
@@ -91,7 +87,7 @@ if model_type=="log"
     sol2 = solve(bvp2, LobattoIIIa5(),#nested_nlsolve=true), 
                         dt = 0.1, 
                         progress=true)
-        
+
     ##SAVE CSV HERE
     file_out = string("swift_equilibrium/results/log/indirect/",file_name)
     CSV.write(file_out,DataFrame(sol2))
@@ -100,7 +96,7 @@ elseif model_type=="harmonic"
     function b(y)
         return (Lambda^2)*y/(2*g) #harmonic
     end
-    
+
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))
     sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
