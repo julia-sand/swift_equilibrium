@@ -73,3 +73,10 @@ const sigmaT = parsed_args["sigmaT"]
 const pos_mean = 1
 const mom_mean = 1
 
+Ttemp = replace(string(T),"."=>"-")
+Lambdatemp = replace(string(Lambda),"."=>"-")
+epstemp = replace(string(epsilon),"."=>"-")
+gtemp = replace(string(g),"."=>"-")
+
+
+file_name = string("T$(Ttemp)_Lambda$(Lambdatemp)_eps$(epstemp)_g$(gtemp).csv")
