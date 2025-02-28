@@ -1,7 +1,7 @@
 using DifferentialEquations;
 using CSV;
 using DataFrames;
-using IfElse;
+#using IfElse;
 
 #= we start by examining the situation of equilibirum transitions between
 two gaussian states
@@ -14,21 +14,7 @@ include("params.jl")
 p = [epsilon]
 
 ###penalty function
-#=function b(y)
-    if model_type=="log"
-        return IfElse.ifelse(y==0,100000, (g/y)*(sqrt(1+(Lambda*y/g)^2)-1))
-    elseif model_type=="harmonic"
-        return (Lambda^2)*y/(2*g) #harmonic
-    #elseif model_type=="control"
-    #    return (1/(2*x))*(y/g+1) #harmonic
-    elseif model_type=="hard"
-        return 0
-    else
-        print("No valid model specified. Use either log, harmonic or hard")
-        return
-    end
-end
-=#
+
 #this is the system for 
 #transition between states with different variance/fixed mean System(3)
 #with first order optimality system (26). 
@@ -37,7 +23,7 @@ function varevolution!(du, u, p, t)
     du[1] = 2*epsilon*x2  #position var
     du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
     du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
-    du[4] = b(y4)  #control
+    du[4] = b(y4) #control
     du[5] = epsilon*y2*x4
     du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
     du[7] = 1-epsilon*y2+2*y3
@@ -89,7 +75,7 @@ if model_type=="log"
                         progress=true)
 
     ##SAVE CSV HERE
-    file_out = string("swift_equilibrium/results/log/indirect/",file_name)
+    file_out = string("swift_equilibrium/results/log/equil/indirect/",file_name)
     CSV.write(file_out,DataFrame(sol2))
 
 elseif model_type=="harmonic"
@@ -102,9 +88,30 @@ elseif model_type=="harmonic"
     sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
     
     ##SAVE CSV HERE
-    file_out = string("swift_equilibrium/results/harmonic/indirect/",file_name)
+    file_out = string("swift_equilibrium/results/harmonic/equil/indirect/",file_name)
     CSV.write(file_out,DataFrame(sol2))
 
+elseif model_type=="control"
+    
+    function varevolution!(du, u, p, t)
+        x1,x2,x3,x4,y1,y2,y3,y4 = u
+        du[1] = 2*epsilon*x2  #position var
+        du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
+        du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
+        du[4] = (1/(2*x1))*((y4/g)+1)  #control
+        du[5] = g*(x4^2)+epsilon*x4*y2
+        du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
+        du[7] = 1-epsilon*y2+2*y3
+        du[8] = epsilon*y2*x1+2*epsilon*y3*x2
+    end
+
+    bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
+                        bcresid_prototype = (zeros(4),zeros(4)))
+    sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+    
+    ##SAVE CSV HERE
+    file_out = string("swift_equilibrium/results/control/equil/indirect/",file_name)
+    CSV.write(file_out,DataFrame(sol2))
         
 else
     print("No valid model specified. Only log or harmonic available for now.")

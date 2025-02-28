@@ -2,10 +2,7 @@ using DifferentialEquations;
 using CSV;
 using DataFrames;
 
-#= we start by examining the situation of equilibirum transitions between
-two gaussian states
-
-=#
+#= This script implements the invariant manifold equations. =#
 
 include("params.jl")
 
@@ -22,14 +19,14 @@ p = [epsilon,gscale]
 function varevolution!(du, u, p, t)
     epsilon,gscale = p
     f1,f2,f3,f4,x1,x2,x3,x4 = u
-    du[1] = gscale*epsilon*f2 #position var
-    du[2] = gscale*2*f3 #cross corellation
-    du[3] = -gscale*f4/x1  #momentum variance 
-    du[4] = gscale*epsilon*f1*(x1^2)  #control
+    du[1] = gscale*epsilon*f2 
+    du[2] = gscale*2*f3 
+    du[3] = -gscale*f4/(x1+1e-10)  
+    du[4] = gscale*epsilon*f1*(x1^2)  
     du[5] = 2*epsilon*x2
-    du[6] = epsilon*(x3-x1*x4)-x2
-    du[7] = -2*(epsilon*x2*x4+x3-1)
-    du[8] = f1-(2*epsilon*x2*(4*epsilon*x3-5*x2)+x1*(9*epsilon*x3-3*x2-6*epsilon)-3*epsilon*(x1^2)*x4-8*(epsilon^2)*((x2^3)/x1))/(epsilon*(x1^2))
+    du[6] = -x2-epsilon*(x4*x1-x3)
+    du[7] = 2*(1-x3-epsilon*x4*x2) 
+    du[8] = f1-(2*epsilon*x2*(4*epsilon*x3-5*x2)+x1*(9*epsilon*x3-3*x2-6*epsilon)-3*epsilon*(x1^2)*x4-8*(epsilon^2)*((x2^3)/(x1+1e-10)))/(epsilon*((x1+1e-10)^2))
 end
 
 
@@ -48,7 +45,6 @@ function varbc_end!(residual2,u2,p)
     residual2[2] = u2[5] - sigmaT #position var
     residual2[3] = u2[6] - 0 #cross corr
     residual2[4] = u2[7] - 1 #mom var
-    #residual2[4] = u2[8] + sigmaT/2 
 end
 
 
@@ -73,9 +69,10 @@ end
 
 bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                     bcresid_prototype = (zeros(4),zeros(4)))
-sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.05)
 
+print("integration step complete . check files.")
 ##SAVE CSV HERE
-file_out = string("swift_equilibrium/results/harmonic/slowfast/",file_name)
+file_out = string("swift_equilibrium/results/harmonic/equil/slowfast/",file_name)
 CSV.write(file_out,DataFrame(sol2))
 

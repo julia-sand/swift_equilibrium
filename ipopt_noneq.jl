@@ -26,6 +26,7 @@ set_optimizer_attribute(model, "max_iter", L)
 
 #time
 @infinite_parameter(model, t in [0, T], num_supports = num_supports_t)#, derivative_method=FiniteDifference(Forward(), true))
+
 #initialisations
 function x1_init(t)
     return t + 1 
@@ -60,7 +61,7 @@ end
 #function for the log penalty
 function logfun(y)
     
-    return InfiniteOpt.ifelse(abs(y) <= Lambda, log(1-((y/Lambda)^2)), 100000)
+    return InfiniteOpt.ifelse(abs(y) <= Lambda-1e-4, log(1-((y/Lambda)^2)), 1000000)
 end
 
 #define the objective, see Eq. (20)
@@ -103,11 +104,11 @@ if model_type=="hard"
 end
 
 #enforce the dynamics, see system (3)
-@constraint(model, deriv(x1,t) == 2*epsilon*x3)
+@constraint(model, deriv(x1,t) == 2*epsilon*x2)
 @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
 @constraint(model, deriv(x3,t) == 2*(1-x3-epsilon*kappa*x2))
 #Constraint on kappa, Eq. (50)
-@constraint(model, 0.2 <= kappa <= 1.2)
+#@constraint(model, 0.2 <= kappa <= 1.2)
 
 
 # SOLVE THE MODEL
@@ -119,15 +120,15 @@ optimize!(model)
 
 ####save a csv file  
 if model_type=="log"
-        file_name = "swift_equilibrium/results/log/ep_noneq_ipopt_v2.csv"
-    elseif model_type=="harmonic"
-        file_name = "swift_equilibrium/results/harmonic/ep_noneq_ipopt_v2.csv"
-    elseif model_type=="hard"
-        file_name = "swift_equilibrium/results/hard/ep_noneq_ipopt_v2.csv"
-    elseif model_type=="control"
-        file_name = "swift_equilibrium/results/control/ep_noneq_ipopt_v2.csv"
-    else
-        print("No model found for this penalty type. Use either log, control, harmonic or hard.")
+        file_out = string("swift_equilibrium/results/log/noneq/direct/" , file_name)
+elseif model_type=="harmonic"
+    file_out = string("swift_equilibrium/results/harmonic/noneq/direct/" , file_name)
+elseif model_type=="hard"
+    file_out = string("swift_equilibrium/results/hard/noneq/direct/" , file_name)
+elseif model_type=="control"
+    file_out = string("swift_equilibrium/results/control/noneq/direct/" , file_name)
+else
+    print("No model found for this penalty type. Use either log, control, harmonic or hard.")
 end
 
 # Define the header as an array of strings
@@ -136,12 +137,12 @@ header = DataFrame(row,["t", "x1", "x2", "x3", "kappa"])
 coords = hcat(collect.(supports(x1))...)'
 
 # Write the header to a new CSV file
-CSV.write(file_name, header;header =false)
+CSV.write(file_out, header;header =false)
 
 df = DataFrame([coords[:,1],value(x1),value(x2),value(x3),value(kappa)],
                     ["t", "x1", "x2", "x3", "kappa"])
 
-CSV.write(file_name, df, append =true)
+CSV.write(file_out, df, append =true)
     
 
 

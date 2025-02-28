@@ -27,9 +27,10 @@ function parse_commandline()
             arg_type = Int
             default = 3000
         "--penalty"
-            help = "Type of penalty used in the model. Choose from log, harmonic or hard"
+            help = "Type of penalty used in the model. Choose from log, harmonic, control or hard"
             arg_type = String
             default = "log"
+            required = true
         "--g"
             help = "penalty weighting parameter. Used for log and harmonic penalties"
             arg_type = Float64
@@ -37,7 +38,7 @@ function parse_commandline()
         "--Lambda"
             help = "bound for the stiffness, used in the hard and log penalty models"
             arg_type = Float64
-            default = 1
+            default = sqrt(2)
         "--sigma0"
             help = "Assigned initial position variance"
             arg_type = Float64
@@ -46,11 +47,7 @@ function parse_commandline()
             help = "Assigned final position variance"
             arg_type = Float64
             default = 2
-        #"--equilibrium"
-        #    help = "Whether to model a transition between equilibrium states or out of equilibrium"
-        #    arg_type = Bool
-        #    default = false    
-    end
+        end
 
     return parse_args(s)
 end
@@ -74,7 +71,7 @@ const pos_mean = 1
 const mom_mean = 1
 
 Ttemp = replace(string(T),"."=>"-")
-Lambdatemp = replace(string(Lambda),"."=>"-")
+Lambdatemp = ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
 epstemp = replace(string(epsilon),"."=>"-")
 gtemp = replace(string(g),"."=>"-")
 

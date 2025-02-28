@@ -128,13 +128,13 @@ optimize!(model)
 
 ####save a csv file  
 if model_type=="log"
-        file_out = string("swift_equilibrium/results/log/direct/" , file_name)
+        file_out = string("swift_equilibrium/results/log/equil/direct/" , file_name)
     elseif model_type=="harmonic"
-        file_out = string("swift_equilibrium/results/harmonic/direct/" , file_name)
+        file_out = string("swift_equilibrium/results/harmonic/equil/direct/" , file_name)
     elseif model_type=="hard"
-        file_out = string("swift_equilibrium/results/hard/direct/" , file_name)
+        file_out = string("swift_equilibrium/results/hard/equil/direct/" , file_name)
     elseif model_type=="control"
-        file_out = string("swift_equilibrium/results/control/direct/" , file_name)
+        file_out = string("swift_equilibrium/results/control/equil/direct/" , file_name)
     else
         print("No model found for this penalty type. Use either log, control, harmonic or hard.")
 end
