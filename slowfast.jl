@@ -1,5 +1,6 @@
 using DifferentialEquations;
 using CSV;
+using ODEInterface;
 using DataFrames;
 
 #= This script implements the invariant manifold equations. =#
@@ -33,7 +34,7 @@ end
 #the boundary conditions at the start
 #for system (3); see (5) and (6)
 function varbc_start!(residual1, u1, p)
-    residual1[1] = u1[1] - (1/sigma0) #stiffness
+    residual1[1] = u1[8] - (1/sigma0) #stiffness
     residual1[2] = u1[5] - sigma0 #position var
     residual1[3] = u1[6] - 0 #cross corr
     residual1[4] = u1[7] - 1 #mom var
@@ -41,7 +42,7 @@ end
 
 #boundary conditions at the end
 function varbc_end!(residual2,u2,p)
-    residual2[1] = u2[1] - (1/sigmaT)
+    residual2[1] = u2[8] - (1/sigmaT)
     residual2[2] = u2[5] - sigmaT #position var
     residual2[3] = u2[6] - 0 #cross corr
     residual2[4] = u2[7] - 1 #mom var
@@ -69,10 +70,17 @@ end
 
 bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                     bcresid_prototype = (zeros(4),zeros(4)))
-sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.05)
+sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)
 
-print("integration step complete . check files.")
-##SAVE CSV HERE
 file_out = string("swift_equilibrium/results/harmonic/equil/slowfast/",file_name)
+
+#save as dataframe
+df_temp = DataFrame(sol2)
+
+rename!(df_temp, [:t, :f1, :f2, :f3, :f4, :x1, :x2, :x3, :kappa]) #rename 
+
+##SAVE CSV HERE
 CSV.write(file_out,DataFrame(sol2))
+
+print("integration complete. Results in $file_out")
 

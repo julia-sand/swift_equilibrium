@@ -1,4 +1,5 @@
 using ArgParse
+using IfElse;
 
 #=
 This file sets up boundary conditions and parameters for the models
@@ -21,7 +22,7 @@ function parse_commandline()
         "--tsteps"
             help = "number of time coordinates in discretisation"
             arg_type = Int
-            default = 11
+            default = 301
         "--maxiters"
             help = "maximum iteration of the optimizer IPOpt."
             arg_type = Int
@@ -47,7 +48,11 @@ function parse_commandline()
             help = "Assigned final position variance"
             arg_type = Float64
             default = 2
-        end
+        "--alpha"
+            help = "penalty weighting parameter. Used for control penalties"
+            arg_type = Float64
+            default = 0.01        
+    end
 
     return parse_args(s)
 end
@@ -67,11 +72,11 @@ const sigmaT = parsed_args["sigmaT"]
 #const equilibrium = parse_args["equilibrium"]
 
 #add constant params
-const pos_mean = 1
-const mom_mean = 1
+#const pos_mean = 1
+#const mom_mean = 1
 
 Ttemp = replace(string(T),"."=>"-")
-Lambdatemp = ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
+Lambdatemp = IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
 epstemp = replace(string(epsilon),"."=>"-")
 gtemp = replace(string(g),"."=>"-")
 

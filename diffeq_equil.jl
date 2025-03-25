@@ -1,7 +1,6 @@
 using DifferentialEquations;
 using CSV;
 using DataFrames;
-#using IfElse;
 
 #= we start by examining the situation of equilibirum transitions between
 two gaussian states
@@ -26,8 +25,8 @@ function varevolution!(du, u, p, t)
     du[4] = b(y4) #control
     du[5] = epsilon*y2*x4
     du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
-    du[7] = 1-epsilon*y2+2*y3
-    du[8] = epsilon*y2*x1+2*epsilon*y3*x2
+    du[7] = 1 - epsilon*y2 + 2*y3
+    du[8] = epsilon*y2*x1 + 2*epsilon*y3*x2
 end
 
 
@@ -76,7 +75,10 @@ if model_type=="log"
 
     ##SAVE CSV HERE
     file_out = string("swift_equilibrium/results/log/equil/indirect/",file_name)
-    CSV.write(file_out,DataFrame(sol2))
+    df_temp = DataFrame(sol2)
+    rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
+    CSV.write(file_out,df_temp)
+
 
 elseif model_type=="harmonic"
     function b(y)
@@ -89,29 +91,60 @@ elseif model_type=="harmonic"
     
     ##SAVE CSV HERE
     file_out = string("swift_equilibrium/results/harmonic/equil/indirect/",file_name)
-    CSV.write(file_out,DataFrame(sol2))
+    df_temp = DataFrame(sol2)
+    rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
+    CSV.write(file_out,df_temp)
 
 elseif model_type=="control"
     
+    alpha = g
+    
     function varevolution!(du, u, p, t)
-        x1,x2,x3,x4,y1,y2,y3,y4 = u
+        x1,x2,x3,y1,y2,y3 = u
+        x4 = (alpha*epsilon - x1*y2 - 2*x2*y3)/(2*alpha*epsilon*x1)
         du[1] = 2*epsilon*x2  #position var
         du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
         du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
-        du[4] = (1/(2*x1))*((y4/g)+1)  #control
-        du[5] = g*(x4^2)+epsilon*x4*y2
-        du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
-        du[7] = 1-epsilon*y2+2*y3
-        du[8] = epsilon*y2*x1+2*epsilon*y3*x2
+        du[4] = epsilon*y2*x4
+        du[5] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
+        du[6] = 1 - epsilon*y2 + 2*y3
     end
 
+    #the boundary conditions at the start
+    #for system (3); see (5) and (6)
+    function varbc_start!(residual1, u1, p)
+        residual1[1] = u1[1] - sigma0 #position var
+        residual1[2] = u1[2] - 0 #cross corr
+        residual1[3] = u1[3] - 1 #mom var
+    end
+
+    #boundary conditions at the end
+    function varbc_end!(residual2,u2,p)
+        residual2[1] = u2[1] - sigmaT #position var
+        residual2[2] = u2[2] - 0 #cross corr
+        residual2[3] = u2[3] - 1 #mom var
+    end   
+
+    u0 = [1.0,0.0,1.0,0.0,0.0,0.0]
+
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
-                        bcresid_prototype = (zeros(4),zeros(4)))
-    sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+                        bcresid_prototype = (zeros(3),zeros(3)))
+    sol = solve(bvp2, LobattoIIIa5(), dt = 0.05)
     
+
+    function x4(t)
+        return (alpha*epsilon-sol(t)[1]*sol(t)[5]-2*sol(t)[2]*sol(t)[6])/(2*alpha*epsilon*sol(t)[1])
+    end
+
+
     ##SAVE CSV HERE
     file_out = string("swift_equilibrium/results/control/equil/indirect/",file_name)
-    CSV.write(file_out,DataFrame(sol2))
+    df_temp = DataFrame(sol)
+
+    rename!(df_temp, [:t, :x1, :x2, :x3, :y1, :y2, :y3]) #rename 
+    
+    df_temp[!, :kappa] = x4.(df_temp.t)
+    CSV.write(file_out,df_temp)
         
 else
     print("No valid model specified. Only log or harmonic available for now.")

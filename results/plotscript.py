@@ -4,13 +4,33 @@ import matplotlib.gridspec as gridspec
 import pandas as pd
 import string
 
-#set up fontsizes
-fontsize = 20
-fontsizeticks = 16
-fontsizetitles = 20
+"""
+This file contains the utility and plotting functions to 
+present the results from integration
+
+""" 
+
+
+def plot_func(ax,x,y,ylabel,legendlabel):
+    """Simple plot and formatting to plot one line of data. Used for plotting
+    Hamiltonian and running cost
+    """
+
+    #set up fontsizes
+    fontsizeticks = 18
+    fontsizetitles = 22
+    
+    ax.plot(x, y, lw = 3, label = legendlabel)
+    ax.set_ylabel(ylabel,fontsize=fontsizetitles)
+    ax.set_xlabel('t',fontsize=fontsizetitles)
+    ax.tick_params(labelsize=fontsizeticks)
+
+
 
 def make_paramlabel(file_name):
-
+    """Creates the parameter label to add to the base of the plots. 
+    Parameters are taken from the file name of the run. 
+    """
     #read params from filename? 
     params = file_name.rsplit(".",1)[0].split('_') #removes .csv from end
     tval = params[0].replace('-', '.')
@@ -31,8 +51,71 @@ def make_paramlabel(file_name):
 
     return param_label
 
-def make_plot(models,methods,file_name,param_label,equil=True):
+def get_data(model_type,method,equil):
     
+    """
+    function which gets the filepath of model and method 
+    
+    Returns a dataframe if the data is available. 
+    """
+    
+    #get the right folder 
+    if model_type=="hard":
+        folder_path ="swift_equilibrium/results/hard/"
+    elif model_type =="log":
+        folder_path ="swift_equilibrium/results/log/"
+    elif model_type =="harmonic":
+        folder_path ="swift_equilibrium/results/harmonic/"
+    elif model_type =="control":
+        folder_path ="swift_equilibrium/results/control/"
+    
+    #add equilibrium
+    if equil:
+        folder_path = folder_path + "equil/"
+    else: 
+        folder_path = folder_path + "noneq/"
+
+    if method =="direct":
+        df = pd.DataFrame(pd.read_csv(folder_path + "direct/" + file_name))
+    elif method =="indirect": 
+        df = pd.DataFrame(pd.read_csv(folder_path + "indirect/" + file_name))
+        #change headers
+        #df = df.rename(columns={"timestamp": "t",
+        #                        "value1": "x1",
+        #                        "value2": "x2",
+        #                        "value3": "x3",
+        #                        "value4": "kappa",
+        #                        "value5": "y1",
+        #                        "value6": "y2",
+        #                        "value7": "y3",
+        #                        "value8": "y4"})
+    elif method =="slowfast": 
+        df = pd.DataFrame(pd.read_csv(folder_path + "slowfast/"+file_name))
+        #change headers
+        #df = df.rename(columns={"timestamp": "t",
+        #                        "value1": "f1",
+        #                        "value2": "f2",
+        #                        "value3": "f3",
+        #                        "value4": "f4",
+        #                        "value5": "x1",
+        #                        "value6": "x2",
+        #                        "value7": "x3",
+        #                        "value8": "kappa"})
+
+    return df
+
+
+
+def make_plot(models,methods,file_name,param_label,equil=True):
+    """
+    Plots the data of specified parameters (via the filename) and returns matplotlib figure.
+
+    """
+    
+    #set up fontsizes
+    fontsizeticks = 16
+    fontsizetitles = 18
+
     # figure setup
     fig = plt.figure(figsize=(15, 8))#, constrained_layout=True)
     gs_cumulants = gridspec.GridSpec(2, 6, 
@@ -66,49 +149,7 @@ def make_plot(models,methods,file_name,param_label,equil=True):
             legendlabel=f"{model_type}, {method}"
 
             try:   
-                #get the right folder 
-                if model_type=="hard":
-                    folder_path ="swift_equilibrium/results/hard/"
-                elif model_type =="log":
-                    folder_path ="swift_equilibrium/results/log/"
-                elif model_type =="harmonic":
-                    folder_path ="swift_equilibrium/results/harmonic/"
-                elif model_type =="control":
-                    folder_path ="swift_equilibrium/results/control/"
-                
-                #add equilibrium
-                if equil:
-                    folder_path = folder_path + "equil/"
-                else: 
-                    folder_path = folder_path + "noneq/"
-
-                if method =="direct":
-                    df = pd.DataFrame(pd.read_csv(folder_path + "direct/" + file_name))
-                elif method =="indirect": 
-                    df = pd.DataFrame(pd.read_csv(folder_path + "indirect/" + file_name))
-                    #change headers
-                    df = df.rename(columns={"timestamp": "t",
-                                            "value1": "x1",
-                                            "value2": "x2",
-                                            "value3": "x3",
-                                            "value4": "kappa",
-                                            "value5": "y1",
-                                            "value6": "y2",
-                                            "value7": "y3",
-                                            "value8": "y4"})
-                elif method =="slowfast": 
-                    df = pd.DataFrame(pd.read_csv(folder_path + "slowfast/"+file_name))
-                    #change headers
-                    df = df.rename(columns={"timestamp": "t",
-                                            "value1": "f1",
-                                            "value2": "f2",
-                                            "value3": "f3",
-                                            "value4": "f4",
-                                            "value5": "x1",
-                                            "value6": "x2",
-                                            "value7": "x3",
-                                            "value8": "kappa"})
-
+                df = get_data(model_type,method,equil)
 
                 # Plot on the first subplot (top-left)
                 #"Position variance"
@@ -128,9 +169,6 @@ def make_plot(models,methods,file_name,param_label,equil=True):
             except: 
                 pass
 
-    
-    
-    
     #add panel labels
     mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=fontsizetitles)
     pos_var_plot.text(x= 0.05, y = 0.85, s="(b)",transform=pos_var_plot.transAxes,fontsize=fontsizetitles)
@@ -141,6 +179,6 @@ def make_plot(models,methods,file_name,param_label,equil=True):
     #add legend
     kappa_plot.legend(fontsize=fontsizeticks,loc="lower center",frameon=False)
 
-    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=18, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
 
     return fig
