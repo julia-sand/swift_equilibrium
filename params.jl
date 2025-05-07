@@ -57,28 +57,26 @@ function parse_commandline()
     return parse_args(s)
 end
 
-parsed_args = parse_commandline()
-
-##get parsed parameters
-const T = parsed_args["tf"]
-const num_supports_t = parsed_args["tsteps"]
-const epsilon = parsed_args["epsilon"]
-const L = parsed_args["maxiters"]
-const model_type = parsed_args["penalty"]
-const Lambda = parsed_args["Lambda"]
-const g = parsed_args["g"]
-const sigma0 = parsed_args["sigma0"]
-const sigmaT = parsed_args["sigmaT"]
-#const equilibrium = parse_args["equilibrium"]
-
-#add constant params
-#const pos_mean = 1
-#const mom_mean = 1
-
-Ttemp = replace(string(T),"."=>"-")
-Lambdatemp = IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
-epstemp = replace(string(epsilon),"."=>"-")
-gtemp = replace(string(g),"."=>"-")
 
 
-file_name = string("T$(Ttemp)_Lambda$(Lambdatemp)_eps$(epstemp)_g$(gtemp).csv")
+
+function get_file_name(parsed_args)
+
+    ##get parsed parameters
+    T = parsed_args["tf"]
+    epsilon = parsed_args["epsilon"]
+    Lambda = parsed_args["Lambda"]
+    g = parsed_args["g"]
+    
+
+
+    Ttemp = replace(string(T),"."=>"-")
+    Lambdatemp = IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
+    epstemp = replace(string(epsilon),"."=>"-")
+    gtemp = replace(string(g),"."=>"-")
+
+
+    file_name = string("T$(Ttemp)_Lambda$(Lambdatemp)_eps$(epstemp)_g$(gtemp).csv")
+
+    return file_name
+end
