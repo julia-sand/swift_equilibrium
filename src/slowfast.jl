@@ -7,25 +7,22 @@ using DataFrames;
 
 include("params.jl")
 
-
 function slowfast()
     parsed_args = parse_commandline()
     file_name = get_file_name(parsed_args)
     model_type = parse_args["penalty"]
 
-    Lambda =parse_args["Lambda"]
-    T =parse_args["tf"]
+    Lambda = sqrt(2) #parse_args["Lambda"]
+    T = parse_args["tf"]
     sigma0 = parsed_args["sigma0"]
     sigmaT = parsed_args["sigmaT"]
 
     epsilon = parsed_args["epsilon"]
     g = parsed_args["g"]
 
-    gscale = g^4
 
     #vector of parameters
-    p = [epsilon,gscale]
-
+    p = [epsilon,g^4]
 
     #this is the system for 
     #transition between states with different variance/fixed mean System(3)
@@ -66,13 +63,13 @@ function slowfast()
 
     #initial guess
     u0 = [1.0,
-        0.0,
-        1.0,
-        1.0,
-        1.0,
-        0.0,
-        1.0,
-        1.0]
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            0.0,
+            1.0,
+            1.0]
 
 
     #plot(sol2)

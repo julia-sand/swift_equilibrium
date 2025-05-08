@@ -105,7 +105,11 @@ function solve_direct()
     
     data_rows = [coords[:,1],value(x1),value(x2),value(x3),value(kappa)]
     
-    save_results(model_type,file_name,data_rows)
+    save_results(model_type,
+                        "equil",
+                        "direct",
+                        file_name,
+                        data_rows)
    
 end
 
