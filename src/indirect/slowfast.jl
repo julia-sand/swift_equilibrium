@@ -10,7 +10,7 @@ include("../params.jl")
 function slowfast()
     parsed_args = parse_commandline()
     file_name = get_file_name(parsed_args)
-    model_type = parse_args["penalty"]
+    model_type = parsed_args["penalty"]
 
     Lambda = sqrt(2) #parse_args["Lambda"]
     T = parse_args["tf"]
@@ -27,7 +27,7 @@ function slowfast()
     #this is the system for 
     #transition between states with different variance/fixed mean System(3)
     #with first order optimality system (26). 
-    function varevolution!(du, u, p, t)
+    function varevolution1!(du, u, p, t)
         epsilon,gscale = p
         f1,f2,f3,f4,x1,x2,x3,x4 = u
         du[1] = gscale*epsilon*f2 

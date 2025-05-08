@@ -13,7 +13,6 @@ function solve_indirect()
 
     parsed_args = parse_commandline()
     file_name = get_file_name(parsed_args)
-    model_type = parse_args["penalty"]
 
 
     Lambda =parse_args["Lambda"]

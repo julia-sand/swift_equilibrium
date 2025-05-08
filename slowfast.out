@@ -1,0 +1,5 @@
+required option --penalty was not provided
+usage: slowfast.jl [--tf TF] [--epsilon EPSILON] [--tsteps TSTEPS]
+                   [--maxiters MAXITERS] --penalty PENALTY [--g G]
+                   [--Lambda LAMBDA] [--sigma0 SIGMA0]
+                   [--sigmaT SIGMAT] [--alpha ALPHA]

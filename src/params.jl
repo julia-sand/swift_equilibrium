@@ -31,7 +31,7 @@ function parse_commandline()
             help = "Type of penalty used in the model. Choose from log, harmonic, control or hard"
             arg_type = String
             default = "log"
-            required = true
+            required = false
         "--g"
             help = "penalty weighting parameter. Used for log and harmonic penalties"
             arg_type = Float64
