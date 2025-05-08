@@ -5,7 +5,7 @@ using DataFrames;
 
 #= This script implements the invariant manifold equations. =#
 
-include("params.jl")
+include("../params.jl")
 
 function slowfast()
     parsed_args = parse_commandline()
@@ -82,7 +82,7 @@ function slowfast()
                         bcresid_prototype = (zeros(4),zeros(4)))
     sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)
 
-    file_out = string("swift_equilibrium/results/harmonic/equil/slowfast/",file_name)
+    file_out = string("results/harmonic/equil/slowfast/",file_name)
 
     #save as dataframe
     df_temp = DataFrame(sol2)

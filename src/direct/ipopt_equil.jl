@@ -9,9 +9,9 @@ Example 4.1:
 =#
 
 #get parsed parameters
-include("params.jl")
-include("initialisation_funs.jl")
-include("writefile.jl")
+include("../params.jl")
+include("../initialisation_funs.jl")
+include("../writefile.jl")
 ############################
 
 #=

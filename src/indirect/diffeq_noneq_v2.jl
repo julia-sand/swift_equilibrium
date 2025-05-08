@@ -7,7 +7,7 @@ two gaussian states
 
 =#
 
-include("params.jl")
+include("../params.jl")
 
 function solve_indirect()
 

@@ -22,4 +22,5 @@ function save_results(model_type,
                         ["t", "x1", "x2", "x3", "kappa"])
 
     CSV.write(file_out, df, append =true)
+    
 end
