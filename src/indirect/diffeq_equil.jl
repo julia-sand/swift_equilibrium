@@ -14,10 +14,10 @@ function solve_indirect_equil()
 
     parsed_args = parse_commandline()
     file_name = get_file_name(parsed_args)
-    model_type = parse_args["penalty"]
+    model_type = parsed_args["penalty"]
 
-    Lambda =parse_args["Lambda"]
-    T =parse_args["tf"]
+    Lambda =parsed_args["Lambda"]
+    T =parsed_args["tf"]
     sigma0 = parsed_args["sigma0"]
     sigmaT = parsed_args["sigmaT"]
 

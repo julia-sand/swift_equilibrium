@@ -1,25 +1,30 @@
 using DifferentialEquations;
 using CSV;
-using ODEInterface;
 using DataFrames;
 
 #= This script implements the invariant manifold equations. =#
 
-include("../params.jl")
+function get_file_name(T,epsilon,g)
+    
+    Ttemp = replace(string(T),"."=>"-")
+    Lambdatemp = "1-4" #IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
+    epstemp = replace(string(epsilon),"."=>"-")
+    gtemp = replace(string(g),"."=>"-")
 
-function slowfast()
-    parsed_args = parse_commandline()
-    file_name = get_file_name(parsed_args)
-    model_type = parsed_args["penalty"]
+    file_name = string("T$(Ttemp)_Lambda$(Lambdatemp)_eps$(epstemp)_g$(gtemp).csv")
 
-    Lambda = sqrt(2) #parse_args["Lambda"]
-    T = parse_args["tf"]
-    sigma0 = parsed_args["sigma0"]
-    sigmaT = parsed_args["sigmaT"]
+    return file_name
+end
 
-    epsilon = parsed_args["epsilon"]
-    g = parsed_args["g"]
+function slowfast(ARGS)
+    #parsed_args = parse_commandline()
+    
+    T,epsilon,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2]),parse(Float64,ARGS[3])
+    file_name = get_file_name(T,epsilon,g)
+    model_type = "harmonic"
 
+    sigma0 = 1
+    sigmaT = 2
 
     #vector of parameters
     p = [epsilon,g^4]
@@ -27,17 +32,17 @@ function slowfast()
     #this is the system for 
     #transition between states with different variance/fixed mean System(3)
     #with first order optimality system (26). 
-    function varevolution1!(du, u, p, t)
+    function varevolution!(du, u, p, t)
         epsilon,gscale = p
         f1,f2,f3,f4,x1,x2,x3,x4 = u
         du[1] = gscale*epsilon*f2 
         du[2] = gscale*2*f3 
-        du[3] = -gscale*f4/(x1+1e-10)  
+        du[3] = -gscale*f4/x1  
         du[4] = gscale*epsilon*f1*(x1^2)  
         du[5] = 2*epsilon*x2
         du[6] = -x2-epsilon*(x4*x1-x3)
         du[7] = 2*(1-x3-epsilon*x4*x2) 
-        du[8] = f1-(2*epsilon*x2*(4*epsilon*x3-5*x2)+x1*(9*epsilon*x3-3*x2-6*epsilon)-3*epsilon*(x1^2)*x4-8*(epsilon^2)*((x2^3)/(x1+1e-10)))/(epsilon*((x1+1e-10)^2))
+        du[8] = f1-(2*x2*(4*epsilon*x3-5*x2)+x1*(9*x3-(3*x2/epsilon)-6)-3*(x1^2)*x4-8*epsilon*(x2^3)/x1)/(x1^2)
     end
 
 
@@ -71,16 +76,9 @@ function slowfast()
             1.0,
             1.0]
 
-
-    #plot(sol2)
-
-    function b(y)
-        return (Lambda^2)*y/(2*g) #harmonic
-    end
-
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))
-    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)
+    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)#solve(bvp2, RadauIIa7(), dt = 0.01)
 
     file_out = string("results/harmonic/equil/slowfast/",file_name)
 
@@ -90,12 +88,11 @@ function slowfast()
     rename!(df_temp, [:t, :f1, :f2, :f3, :f4, :x1, :x2, :x3, :kappa]) #rename 
 
     ##SAVE CSV HERE
-    CSV.write(file_out,DataFrame(sol2))
+    CSV.write(file_out,df_temp)
 
     print("integration complete. Results in $file_out")
 
 end
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    slowfast()
-end
+
+slowfast(ARGS)

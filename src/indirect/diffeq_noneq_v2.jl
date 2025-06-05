@@ -15,8 +15,8 @@ function solve_indirect()
     file_name = get_file_name(parsed_args)
 
 
-    Lambda =parse_args["Lambda"]
-    T =parse_args["tf"]
+    Lambda =parsed_args["Lambda"]
+    T =parsed_args["tf"]
     sigma0 = parsed_args["sigma0"]
     sigmaT = parsed_args["sigmaT"]
 
@@ -102,7 +102,18 @@ function solve_indirect()
         
         ##SAVE CSV HERE
         file_out = string("swift_equilibrium/results/harmonic/noneq/indirect/",file_name)
-        CSV.write(file_out,DataFrame(sol2))
+        dfout = DataFrame(sol2)
+        rename!(dfout,[:t,
+                        :x1,
+                        :x2,
+                        :x3,
+                        :kappa,
+                        :y1,
+                        :y2,
+                        :y3,
+                        :y4])
+
+        CSV.write(file_out,dfout)
 
             
     else

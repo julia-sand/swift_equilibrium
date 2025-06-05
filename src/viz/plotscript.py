@@ -55,7 +55,7 @@ class PlotParams():
 
         return param_label
 
-    def get_data(self,model_type,method,equil):
+    def get_data(self,model_type,method,equil,file_name):
         
         """
         function which gets the filepath of model and method 
@@ -64,14 +64,15 @@ class PlotParams():
         """
         
         #get the right folder 
-        if model_type=="hard":
-            folder_path ="swift_equilibrium/results/hard/"
-        elif model_type =="log":
-            folder_path ="swift_equilibrium/results/log/"
-        elif model_type =="harmonic":
-            folder_path ="swift_equilibrium/results/harmonic/"
-        elif model_type =="control":
-            folder_path ="swift_equilibrium/results/control/"
+        #if model_type=="hard":
+        #    
+        #elif model_type =="log":
+        #    folder_path ="results/log/"
+        #elif model_type =="harmonic":
+        #    folder_path ="results/harmonic/"
+        #elif model_type =="control":
+        #    folder_path ="results/control/"
+        folder_path =f"results/{model_type}/"
         
         #add equilibrium
         if equil:
@@ -79,20 +80,11 @@ class PlotParams():
         else: 
             folder_path = folder_path + "noneq/"
 
-        if method =="direct":
-            df = pd.DataFrame(pd.read_csv(folder_path + "direct/" + file_name))
-        elif method =="indirect": 
-            df = pd.DataFrame(pd.read_csv(folder_path + "indirect/" + file_name))
-            
-        elif method =="slowfast": 
-            df = pd.DataFrame(pd.read_csv(folder_path + "slowfast/"+file_name))
-           
-
-        return df
+        return pd.DataFrame(pd.read_csv(folder_path + f"{method}/" + file_name))
 
 
 
-    def make_plot(self,models,methods,file_name,param_label,equil=True):
+    def make_plot(self,models,methods,file_name,param_label,equil):
         """
         Plots the data of specified parameters (via the filename) and returns matplotlib figure.
 
@@ -131,7 +123,7 @@ class PlotParams():
                 legendlabel=f"{model_type}, {method}"
 
                 try:   
-                    df = get_data(model_type,method,equil)
+                    df = self.get_data(model_type,method,equil,file_name)
 
                     # Plot on the first subplot (top-left)
                     #"Position variance"
@@ -148,15 +140,15 @@ class PlotParams():
                                             ,r'Control, $\lambda_t$',legendlabel)  
                 
                 
-                except: 
+                except (IOError, OSError):  #skip to next available data if file not found
                     pass
 
         #add panel labels
-        mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=fontsizetitles)
-        pos_var_plot.text(x= 0.05, y = 0.85, s="(b)",transform=pos_var_plot.transAxes,fontsize=fontsizetitles)
-        xcorr_plot.text(x= 0.05, y = 0.85, s="(c)",transform=xcorr_plot.transAxes,fontsize=fontsizetitles)
-        kappa_plot.text(x= 0.05*(2/3), y = 0.85, s="(d)",transform=kappa_plot.transAxes,fontsize=fontsizetitles)
-        lambda_plot.text(x= 0.05*(2/3), y = 0.85 , s="(e)",transform=lambda_plot.transAxes,fontsize=fontsizetitles)
+        mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=self.fontsizetitles)
+        pos_var_plot.text(x= 0.05, y = 0.85, s="(b)",transform=pos_var_plot.transAxes,fontsize=self.fontsizetitles)
+        xcorr_plot.text(x= 0.05, y = 0.85, s="(c)",transform=xcorr_plot.transAxes,fontsize=self.fontsizetitles)
+        kappa_plot.text(x= 0.05*(2/3), y = 0.85, s="(d)",transform=kappa_plot.transAxes,fontsize=self.fontsizetitles)
+        lambda_plot.text(x= 0.05*(2/3), y = 0.85 , s="(e)",transform=lambda_plot.transAxes,fontsize=self.fontsizetitles)
 
         #add legend
         kappa_plot.legend(fontsize=self.fontsizeticks,loc="lower center",frameon=False)
