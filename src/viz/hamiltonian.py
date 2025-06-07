@@ -9,7 +9,7 @@ def ham_plot(file_name,file):
 
     param_label = plotter.make_paramlabel(file_name)
 
-    models = ["hard", "control", "harmonic", "log"] 
+    models = ["harmonic","log"]#["control", "harmonic", "log"] 
 
     # Plotting the cumulants
     fig = plt.figure(figsize=(15, 8)) #, constrained_layout=True)
@@ -18,31 +18,7 @@ def ham_plot(file_name,file):
     for model_type in models:
         try:
             #get the right folder 
-            df = plotter.get_data(model_type,"indirect",equil=True)
-
-            def b(y4):
-                if model_type=="harmonic":
-                    return (y4*(Lambda**2))/(2*g)
-                elif model_type=="log":
-                    return (g/(y4+1e-10))*(np.sqrt((1+(Lambda*y4/g)**2))-1)
-                elif model_type=="control":
-                    return 0 #todo
-                else:
-                    return 0
-            
-            def V(kappa,y4,posvar):
-                lambda_vec = b(y4)#np.gradient(kappa,times_vec)
-
-                if model_type=="harmonic":
-                    return (lambda_vec/Lambda)**2
-                elif model_type=="hard":
-                    return 0
-                elif model_type=="log":
-                    return np.where(np.abs(lambda_vec)<Lambda, -np.log(1-(lambda_vec/Lambda)**2),1e10)
-                elif model_type=="control":
-                    return kappa*(kappa*posvar-1) 
-                else:
-                    return 
+            df = plotter.get_data(model_type,"indirect",equil=True,file_name=file_name)
 
             times_vec = df.t.to_numpy()
             dt = times_vec[1]
@@ -54,13 +30,13 @@ def ham_plot(file_name,file):
                         times_vec,ham,
                         "pre-Hamiltonian",
                         f"{model_type}")
-        except:
+        except FileNotFoundError:
             pass
 
 
     # Adjust layout to prevent overlap
-    ax1.legend(fontsize = fontsize)
-    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    ax1.legend(fontsize = plotter.fontsizetitles)
+    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=plotter.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.savefig(file_out,bbox_inches="tight")
 
     plt.close()
@@ -69,8 +45,8 @@ def ham_plot(file_name,file):
 if __name__=="__main__":
 
     #input file
-    file_name = "T3-0_Lambda2-0_eps1-0_g0-01.csv"
+    file_name = "T3-0_Lambda1-4_eps1-0_g0-1.csv"
     #output file
-    file_out = "swift_equilibrium/hamiltonian1.png"
+    file_out = "plots/hamiltonian1.png"
     
-    ham_plot(file_name,file)
+    ham_plot(file_name,file_out)

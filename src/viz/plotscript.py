@@ -1,8 +1,9 @@
+import string
+
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import pandas as pd
-import string
 
 """
 This file contains the utility and plotting functions to 
@@ -31,29 +32,42 @@ class PlotParams():
         ax.set_xlabel('t',fontsize=self.fontsizetitles)
         ax.tick_params(labelsize=self.fontsizeticks)
 
+    def get_idx(self,string):
+        for i in enumerate(string):
+            if str.isdigit(i[1]):
+                return i[0] 
+    
+    def get_param_value(self,param):
+        tempval = param.replace('-', '.')
+        return float(tempval[self.get_idx(tempval):])
+
+    def get_params(self,file_name):
+        
+        #read params from filename? 
+        params = file_name.rsplit(".",1)[0].split('_') #removes .csv from end
+        return params 
+ 
     def make_paramlabel(self,file_name):
         """Creates the parameter label to add to the base of the plots. 
         Parameters are taken from the file name of the run. 
         """
         #read params from filename? 
-        params = file_name.rsplit(".",1)[0].split('_') #removes .csv from end
-        tval = params[0].replace('-', '.')
-        lambdaval = params[1].replace('-', '.')
-        epsval = params[2].replace('-', '.')
-        gval = params[-1].replace('-', '.')
+        params = self.get_params(file_name)
 
-        def get_idx(string):
-            for i in enumerate(string):
-                if str.isdigit(i[1]):
-                    return i[0] 
-            
-        T = float(tval[get_idx(tval):])
-        Lambda = float(lambdaval[get_idx(lambdaval):])
-        epsilon = float(epsval[get_idx(epsval):])
-        g = float(gval[get_idx(gval):])
-        param_label = rf"$T={T}; \Lambda={Lambda}; \varepsilon={epsilon}; g={g}$"
+        param_label = rf"$T={self.get_param_value(params[0])}; \Lambda={self.get_param_value(params[1])}; \varepsilon={self.get_param_value(params[2])}; g={self.get_param_value(params[3])}$"
 
-        return param_label
+        return param_label        
+    
+    def get_g(self,file_name):
+        params = self.get_params(file_name)
+
+        return self.get_param_value(params[1])
+
+    def get_Lambda(self,file_name):
+        params = self.get_params(file_name)
+
+        return self.get_param_value(params[3])
+
 
     def get_data(self,model_type,method,equil,file_name):
         
@@ -156,3 +170,30 @@ class PlotParams():
         plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
 
         return fig
+    
+    def b(self,y4,model_type,Lambda,g):
+        if model_type=="harmonic":
+            return (y4*(Lambda**2))/(2*g)
+        elif model_type=="log":
+            return (g/(y4+1e-10))*(np.sqrt((1+(Lambda*y4/g)**2))-1)
+        else:
+            return 0
+            
+
+    def get_Vfun(self,df,Lambda,g,model_type):
+        try:
+            y4 = df.y4.to_numpy()
+            lambda_vec = self.b(y4,model_type,Lambda,g)
+        except AttributeError:
+            lambda_vec = np.gradient(df.kappa.to_numpy(),df.t.to_numpy())
+
+        if model_type=="harmonic":
+            return (lambda_vec/Lambda)**2
+        elif model_type=="hard":
+            return 0
+        elif model_type=="log":
+            return np.where(np.abs(lambda_vec)<Lambda, -np.log(1-(lambda_vec/Lambda)**2),1e10)
+        elif model_type=="control":
+            return df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
+        else:
+            return 

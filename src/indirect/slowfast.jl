@@ -26,8 +26,9 @@ function slowfast(ARGS)
     sigma0 = 1
     sigmaT = 2
 
+    gscale = 1/(g^(1/4))
     #vector of parameters
-    p = [epsilon,g^4]
+    p = [epsilon,gscale]
 
     #this is the system for 
     #transition between states with different variance/fixed mean System(3)
