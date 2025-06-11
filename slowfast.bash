@@ -7,7 +7,6 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=5G
 
-
 module load julia
+julia --project=. -- src/TEMP.jl 2 "../../../../scratch/project_2011332/kldescent_test/results/20250610-180558"
 
-julia --project=. -- src/indirect/slowfast.jl 3 1 0.01

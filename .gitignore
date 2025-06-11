@@ -5,4 +5,5 @@ plots
 test.*
 *.out
 slowfast*.bash
-
+temp.*
+src/TEMP*

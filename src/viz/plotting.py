@@ -17,12 +17,13 @@ if __name__=="__main__":
 
     #data input file name. This is the file that will 
     #be plotted if available. 
-    file_names = ["T3-0_Lambda1-4_eps1-0_g0-001.csv"]
+    file_names = ["T3-0_Lambda1-4_eps1-0_g0-001.csv",
+                    "T3-0_Lambda2-0_eps1-0_g0-01.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    models = ["harmonic","control","log","hard"] 
+    models = ["harmonic","log","hard"] 
     methods = ["slowfast","indirect","direct"]
     equil = True  
     for file_name in enumerate(file_names):
