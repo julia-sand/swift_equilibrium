@@ -4,28 +4,25 @@ using DataFrames;
 
 #= This script implements the invariant manifold equations. =#
 
-function get_file_name(T,epsilon,g)
-    
-    Ttemp = replace(string(T),"."=>"-")
-    Lambdatemp = "1-4" #IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
-    epstemp = replace(string(epsilon),"."=>"-")
-    gtemp = replace(string(g),"."=>"-")
-
-    file_name = string("T$(Ttemp)_Lambda$(Lambdatemp)_eps$(epstemp)_g$(gtemp).csv")
-
-    return file_name
-end
+include("../getfilename.jl")
 
 function slowfast(ARGS)
     #parsed_args = parse_commandline()
     
-    T,epsilon,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2]),parse(Float64,ARGS[3])
-    file_name = get_file_name(T,epsilon,g)
-    model_type = "harmonic"
+    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    epsilon = 1
+    Lambda = sqrt(2)
 
+    file_name = get_file_name(T,epsilon,g)
+
+    model_type = "harmonic"
+    
     sigma0 = 1
     sigmaT = 2
-
+    
+    #vector of parameters
+    p = [epsilon]
+    
     gscale = 1/(g^(1/4))
     #vector of parameters
     p = [epsilon,gscale]
@@ -79,7 +76,7 @@ function slowfast(ARGS)
 
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))
-    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)#solve(bvp2, RadauIIa7(), dt = 0.01)
+    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.001)
 
     file_out = string("results/harmonic/equil/slowfast/",file_name)
 

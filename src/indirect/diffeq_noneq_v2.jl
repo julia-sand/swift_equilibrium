@@ -4,34 +4,42 @@ using DataFrames;
 
 #= we start by examining the situation of equilibirum transitions between
 two gaussian states
-
 =#
 
-include("../params.jl")
+include("../getfilename.jl")
 
-function solve_indirect()
+function solve_indirect(ARGS)
 
-    parsed_args = parse_commandline()
-    file_name = get_file_name(parsed_args)
+    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    epsilon = 1
+    Lambda = sqrt(2)
+    alpha = g
 
+    file_name = get_file_name(T,epsilon,g,Lambda)
 
-    Lambda =parsed_args["Lambda"]
-    T =parsed_args["tf"]
-    sigma0 = parsed_args["sigma0"]
-    sigmaT = parsed_args["sigmaT"]
+    model_type = ARGS[3]
+    
+    sigma0 = 1
+    sigmaT = 2
 
-    epsilon = parsed_args["epsilon"]
-    g = parsed_args["g"]
+    function b(y)#initialise function b
+
+        if model_type=="log"
+            return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
+        elseif model_type=="harmonic"    
+            return (Lambda^2)*y/(2*g) #harmonic
+        else 
+            return 0
+        end
+        
+    end
 
     #vector of parameters
     p = [epsilon]
-
-
-    #this is the system for 
-    #transition between states with different variance/fixed mean System(3)
+    
     #with first order optimality system (26). 
     function varevolution!(du, u, p, t)
-        x1,x2,x3,x4,y1,y2,y3,y4,K = u
+        x1,x2,x3,x4,y1,y2,y3,y4 = u
         du[1] = 2*epsilon*x2  #position var
         du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
         du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
@@ -40,7 +48,6 @@ function solve_indirect()
         du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
         du[7] = 1-epsilon*y2+2*y3
         du[8] = epsilon*y2*x1+2*epsilon*y3*x2
-        du[9] = 0
     end
 
 
@@ -74,48 +81,23 @@ function solve_indirect()
         0.0,
         0.0,
         0.0]
+    
+    function format_sol(sol,model_type)
+            df_temp = DataFrame(sol)
+            ##SAVE CSV HERE
+            file_out = string("results/$model_type/noneq/indirect/",file_name)
+            rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
+            CSV.write(file_out,df_temp)
+    end
 
-
-    if model_type=="log"
-        function b(y)
-            
-            return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
-        end
-
-        bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
-                            bcresid_prototype = (zeros(4),zeros(4)))
-        sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
-        
-        ##SAVE CSV HERE
-        file_out = string("swift_equilibrium/results/log/noneq/indirect/",file_name)
-        CSV.write(file_out,DataFrame(sol2))
-
-    elseif model_type=="harmonic"
-        
-        function b(y)
-            return (Lambda^2)*y/(2*g) #harmonic
-        end
+    if model_type=="log" || model_type=="harmonic"
 
         bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                             bcresid_prototype = (zeros(4),zeros(4)))
-        sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+        sol = solve(bvp2, LobattoIIIa5(), dt = 0.001)
         
-        ##SAVE CSV HERE
-        file_out = string("swift_equilibrium/results/harmonic/noneq/indirect/",file_name)
-        dfout = DataFrame(sol2)
-        rename!(dfout,[:t,
-                        :x1,
-                        :x2,
-                        :x3,
-                        :kappa,
-                        :y1,
-                        :y2,
-                        :y3,
-                        :y4])
-
-        CSV.write(file_out,dfout)
-
-            
+        format_sol(sol,model_type)
+    
     else
         print("No valid model specified. Use either log or harmonic.")
         return
@@ -124,7 +106,4 @@ function solve_indirect()
 end
 
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    solve_direct()
-end
-
+solve_indirect(ARGS)

@@ -1,6 +1,7 @@
 #get all the packages
 using InfiniteOpt, Ipopt;
-
+using DataFrames;
+using CSV;
 #=We minimize entropy production between EQUILIBRIUM states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
@@ -9,38 +10,35 @@ Example 4.1:
 =#
 
 #get parsed parameters
-include("../params.jl")
+include("../getfilename.jl")
 include("../initialisation_funs.jl")
-include("../writefile.jl")
 ############################
 
 #=
 Setup the infinite opt model 
 =#
-function solve_direct_equil()
+function solve_direct_equil(ARGS)
     
-    parsed_args = parse_commandline()
-    file_name = get_file_name(parsed_args)
-    model_type = parsed_args["penalty"]
+    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    epsilon = 1
+    Lambda = sqrt(2)
 
+    file_name = get_file_name(T,epsilon,g)
 
-    Lambda =parsed_args["Lambda"]
-    T =parsed_args["tf"]
-    sigma0 = parsed_args["sigma0"]
-    sigmaT = parsed_args["sigmaT"]
-
-    epsilon = parsed_args["epsilon"]
-    g = parsed_args["g"]
-
-
+    model_type = ARGS[3]
+    
+    sigma0 = 1
+    sigmaT = 2
+    
+    #vector of parameters
+    p = [epsilon]
+    
     model = InfiniteModel(Ipopt.Optimizer);
-
-    set_optimizer_attribute(model, "max_iter", L)
 
     #time
     @infinite_parameter(model, 
                             t in [0, T], 
-                            num_supports = num_supports_t, 
+                            num_supports = 3001, 
                             derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
@@ -116,17 +114,19 @@ function solve_direct_equil()
 
     ########################
 
-
     # Define the header as an array of strings
     coords = hcat(collect.(supports(x1))...)'
     
     data_rows = [coords[:,1],value(x1),value(x2),value(x3),value(kappa)]
+        
+    df = DataFrame(data_rows,
+                        ["t", "x1", "x2", "x3", "kappa"])
+
+    folder = "results/$model_type/equil/direct/"
+    CSV.write(string(folder,file_name), df)
     
-    save_results(model_type,file_name,data_rows)
 
 end
 
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    solve_direct_equil()
-end
+solve_direct_equil(ARGS)

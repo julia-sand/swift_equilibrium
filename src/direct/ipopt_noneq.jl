@@ -11,37 +11,31 @@ Example 4.1:
 =#
 
 #get parsed parameters
-include("../params.jl")
-include("../writefile.jl")
+include("../getfilename.jl")
 include("../initialisation_funs.jl")
-include("model_properties.jl")
 
 ############################
 
 #=
 Setup the infinite opt model 
 =#
-function solve_direct()
+function solve_direct(ARGS)
 
-    parsed_args = parse_commandline()
-    file_name = get_file_name(parsed_args)
-    model_type = parsed_args["penalty"]
+    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    epsilon = 1
+    Lambda = sqrt(2)
 
+    file_name = get_file_name(T,epsilon,g)
 
-    Lambda =parsed_args["Lambda"]
-    T =parsed_args["tf"]
-    sigma0 = parsed_args["sigma0"]
-    sigmaT = parsed_args["sigmaT"]
-
-    epsilon = parsed_args["epsilon"]
-    g = parsed_args["g"]
-
+    model_type = ARGS[3]
+    
+    sigma0 = 1
+    sigmaT = 2
+    
     model = InfiniteModel(Ipopt.Optimizer);
 
-    set_optimizer_attribute(model, "max_iter", parsed_args["maxiters"])
-
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = parsed_args["num_supports_t"])#, derivative_method=FiniteDifference(Forward(), true))
+    @infinite_parameter(model, t in [0, T], num_supports = 3001)#, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
     @variable(model, x1>=0, Infinite(t), start = x1_init)
@@ -105,17 +99,17 @@ function solve_direct()
     
     data_rows = [coords[:,1],value(x1),value(x2),value(x3),value(kappa)]
     
-    save_results(model_type,
-                        "equil",
-                        "direct",
-                        file_name,
-                        data_rows)
-   
-end
+    
+    df = DataFrame(data_rows,
+                        ["t", "x1", "x2", "x3", "kappa"])
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    solve_direct()
-end
+    folder = "results/$model_type/noneq/direct/"
+    CSV.write(string(folder,file_name), df)
+    
+end   
+    
+
+solve_direct(ARGS)
 
 
 

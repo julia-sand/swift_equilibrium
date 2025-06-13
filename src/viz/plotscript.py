@@ -1,4 +1,5 @@
 import string
+import os
 
 import numpy as np
 import pandas as pd
@@ -22,15 +23,18 @@ class PlotParams():
         self.lw = 3
         
 
-    def plot_func(self,ax,x,y,ylabel,legendlabel):
+    def plot_func(self,ax,x,y,legendlabel,linestyle="solid"):
         """Simple plot and formatting to plot one line of data. Used for plotting
         Hamiltonian and running cost
         """
 
-        ax.plot(x, y, lw = self.lw, label = legendlabel)
+        ax.plot(x, y, lw = self.lw, label = legendlabel,linestyle=linestyle)
+    
+    def format_ax(self,ax,ylabel,Tf):
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
         ax.set_xlabel('t',fontsize=self.fontsizetitles)
         ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlim((-0.01,Tf+0.01))
 
     def get_idx(self,string):
         for i in enumerate(string):
@@ -64,9 +68,9 @@ class PlotParams():
         return self.get_param_value(params[1])
 
     def get_Lambda(self,file_name):
-        params = self.get_params(file_name)
+        #params = self.get_params(file_name)
 
-        return self.get_param_value(params[3])
+        return np.sqrt(2) #self.get_param_value(params[3])
 
 
     def get_data(self,model_type,method,equil,file_name):
@@ -76,32 +80,51 @@ class PlotParams():
         
         Returns a dataframe if the data is available. 
         """
-        
-        #get the right folder 
-        #if model_type=="hard":
-        #    
-        #elif model_type =="log":
-        #    folder_path ="results/log/"
-        #elif model_type =="harmonic":
-        #    folder_path ="results/harmonic/"
-        #elif model_type =="control":
-        #    folder_path ="results/control/"
-        folder_path =f"results/{model_type}/"
+        #currloc = 
+        folder_path =os.path.dirname( __file__ )+f"/../../results/{model_type}/"
         
         #add equilibrium
         if equil:
             folder_path = folder_path + "equil/"
         else: 
             folder_path = folder_path + "noneq/"
+        #print(folder_path+ f"{method}/" + file_name)
 
         return pd.DataFrame(pd.read_csv(folder_path + f"{method}/" + file_name))
 
+
+    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method):
+        
+        if model_type=="hard": #overwrite legend label
+            legendlabel = f"compact, {method}" 
+        else:
+            legendlabel = f"{model_type}, {method}" 
+        if method =="direct":
+            ax.plot(x, y, label = legendlabel,lw=self.lw)
+        else: 
+            ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100)
+        ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
+        ax.set_xlabel('t',fontsize=self.fontsizetitles)
+        ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlim((-0.1,3.1))
+
+    def format_subplot(self,params_dict):
+        self.plot_func_cumulants(params_dict["subplot"],
+                                    params_dict["tseries"], 
+                                    params_dict["xseries"],
+                                    params_dict["ylabel"],
+                                    params_dict["model_type"],
+                                    params_dict["method"])
+        params_dict["subplot"].text(x=params_dict["xloc"], 
+                                    y=params_dict["xseries"], 
+                                    s=params_dict["letter_label"],
+                                    transform=params_dict["subplot"].transAxes,
+                                    fontsize=self.fontsizetitles)
 
 
     def make_plot(self,models,methods,file_name,param_label,equil):
         """
         Plots the data of specified parameters (via the filename) and returns matplotlib figure.
-
         """
         
         # figure setup
@@ -118,47 +141,45 @@ class PlotParams():
         lambda_plot = plt.subplot(gs_cumulants[1, 3:])
         mom_var_plot = plt.subplot(gs_cumulants[0, 0:2])
         
-        def plot_func(ax,x,y,ylabel,legendlabel):
-            
-            if model_type=="hard": #overwrite legend label
-                legendlabel = f"compact, {method}" 
-            if method =="direct":
-                ax.plot(x, y, label = legendlabel,lw=self.lw)
-            else: 
-                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100)
-            ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
-            ax.set_xlabel('t',fontsize=self.fontsizetitles)
-            ax.tick_params(labelsize=self.fontsizeticks)
-            ax.set_xlim((-0.1,3.1))
-
 
         for model_type in models:
             for method in methods:
-                legendlabel=f"{model_type}, {method}"
+                #legendlabel=f"{model_type}, {method}"
 
                 try:   
                     df = self.get_data(model_type,method,equil,file_name)
 
-                    # Plot on the first subplot (top-left)
-                    #"Position variance"
-                    plot_func(pos_var_plot,df.t, df.x1,'Position Variance',legendlabel)#,f"{method}:{model_type}")
-                    plot_func(xcorr_plot,df.t, df.x2,'Cross Correlation',legendlabel)
-                    plot_func(mom_var_plot,df.t, df.x3,'Mom. Variance',legendlabel)
-                    mom_var_plot.set_ylim((np.min(df.x3.to_numpy()-0.03),1.04))
-
-                    # Plot on the fourth subplot (bottom-right)
-                    plot_func(kappa_plot,df.t, df["kappa"],r'Stiffness, $\kappa_t$',legendlabel)
-
-                    if model_type!="control":
-                        plot_func(lambda_plot,df.t.to_numpy(), np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
-                                            ,r'Control, $\lambda_t$',legendlabel)  
-                
-                
-                except (IOError, OSError):  #skip to next available data if file not found
+                except FileNotFoundError:
                     pass
+                
+                # Plot on the first subplot (top-left)
+                #"Position variance"
+                self.plot_func_cumulants(pos_var_plot,df.t, df.x1,'Position Variance',model_type,method)#,f"{method}:{model_type}")
+                self.plot_func_cumulants(xcorr_plot,df.t, df.x2,'Cross Correlation',model_type,method)
+                #self.plot_func_cumulants(mom_var_plot,df.t, df.x3,'Mom. Variance',legendlabel)
 
-        #add panel labels
-        mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=self.fontsizetitles)
+                mom_var_dict = dict(subplot=mom_var_plot,
+                                    tseries= df.t.to_numpy(),
+                                    xseries= df.x3.to_numpy(),
+                                    letter_label="(a)",
+                                    xloc = 0.05,
+                                    yloc= 0.85,
+                                    ylabel='Mom. Variance',
+                                    model_type=model_type,
+                                    method=method) 
+
+                self.format_subplot(mom_var_dict)
+                mom_var_plot.set_ylim((np.min(df.x3.to_numpy()-0.03),1.04))
+
+
+                # Plot on the fourth subplot (bottom-right)
+                self.plot_func_cumulants(kappa_plot,df.t, df["kappa"],r'Stiffness, $\kappa_t$',model_type,method)
+
+                if model_type!="control":
+                    plot_func(lambda_plot,df.t.to_numpy(), np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+                                        ,r'Control, $\lambda_t$',legendlabel)  
+            
+        #mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=self.fontsizetitles)
         pos_var_plot.text(x= 0.05, y = 0.85, s="(b)",transform=pos_var_plot.transAxes,fontsize=self.fontsizetitles)
         xcorr_plot.text(x= 0.05, y = 0.85, s="(c)",transform=xcorr_plot.transAxes,fontsize=self.fontsizetitles)
         kappa_plot.text(x= 0.05*(2/3), y = 0.85, s="(d)",transform=kappa_plot.transAxes,fontsize=self.fontsizetitles)
@@ -197,3 +218,10 @@ class PlotParams():
             return df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
         else:
             return 
+    
+    def compute_entropy_production(self,df,Lambda,g,model_type):
+        return df.x3.to_numpy()+g*self.get_Vfun(df,Lambda,g,model_type)
+      
+    def compute_work(self,df,Lambda,g,model_type):
+        
+        return df.x4.to_numpy()[-1]*df.x1.to_numpy()[-1] + self.compute_entropy_production(self,df,Lambda,g,model_type)

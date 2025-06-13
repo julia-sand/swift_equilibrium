@@ -1,0 +1,2 @@
+julia --project=. -- src/indirect/diffeq_equil.jl 3 $IDXTEN 3 "log"
+julia --project=. -- src/indirect/diffeq_equil.jl 3 $IDXTEN 3 "control"

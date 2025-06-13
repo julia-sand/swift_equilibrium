@@ -2,7 +2,7 @@ using DataFrames, CSV
 
 function get_file_out(model_type,equil_flag,direct_flag)
       
-   return "swift_equilibrium/results/$model_type/$equil_flag/$direct_flag/"
+   return 
 
 
 function save_results(model_type,

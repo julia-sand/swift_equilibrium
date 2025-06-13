@@ -7,26 +7,37 @@ two gaussian states
 
 =#
 
-include("../params.jl")
+include("../getfilename.jl")
 
 
-function solve_indirect_equil()
+function solve_indirect_equil(ARGS)
 
-    parsed_args = parse_commandline()
-    file_name = get_file_name(parsed_args)
-    model_type = parsed_args["penalty"]
+    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    Lambda = sqrt(2)#parse(Float64,ARGS[3]) #sqrt(2)
+    epsilon = 1
+    alpha = g
 
-    Lambda =parsed_args["Lambda"]
-    T =parsed_args["tf"]
-    sigma0 = parsed_args["sigma0"]
-    sigmaT = parsed_args["sigmaT"]
+    file_name = get_file_name(T,epsilon,g,Lambda)
 
-    epsilon = parsed_args["epsilon"]
-    g = parsed_args["g"]
-
+    model_type = ARGS[3]
+    
+    sigma0 = 1
+    sigmaT = 2
+    
     #vector of parameters
     p = [epsilon]
+    
+    function b(y)#initialise function b
 
+        if model_type=="log"
+            return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
+        elseif model_type=="harmonic"    
+            return (Lambda^2)*y/(2*g) #harmonic
+        else 
+            return 0
+        end
+        
+    end
     ###penalty function
 
     #this is the system for 
@@ -68,53 +79,25 @@ function solve_indirect_equil()
 
     #initial guess
     u0 = [1.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0]
 
-    if model_type=="log"
-        function b(y)
-            
-            return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
-        end
-
-        bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
-                            bcresid_prototype = (zeros(4),zeros(4)))
-        sol2 = solve(bvp2, LobattoIIIa5(),#nested_nlsolve=true), 
-                            dt = 0.1, 
-                            progress=true)
+    function format_sol(sol,model_type)
 
         ##SAVE CSV HERE
-        file_out = string("swift_equilibrium/results/log/equil/indirect/",file_name)
-        df_temp = DataFrame(sol2)
+        file_out = string("results/$model_type/equil/indirect/",file_name)
         rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
         CSV.write(file_out,df_temp)
+    end   
 
-
-    elseif model_type=="harmonic"
-        function b(y)
-            return (Lambda^2)*y/(2*g) #harmonic
-        end
-
-        bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
-                            bcresid_prototype = (zeros(4),zeros(4)))
-        sol2 = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+    if model_type=="control"
         
-        ##SAVE CSV HERE
-        file_out = string("swift_equilibrium/results/harmonic/equil/indirect/",file_name)
-        df_temp = DataFrame(sol2)
-        rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
-        CSV.write(file_out,df_temp)
-
-    elseif model_type=="control"
-        
-        alpha = g
-        
-        function varevolution!(du, u, p, t)
+        function varevolution_control!(du, u, p, t)
             x1,x2,x3,y1,y2,y3 = u
             x4 = (alpha*epsilon - x1*y2 - 2*x2*y3)/(2*alpha*epsilon*x1)
             du[1] = 2*epsilon*x2  #position var
@@ -127,14 +110,14 @@ function solve_indirect_equil()
 
         #the boundary conditions at the start
         #for system (3); see (5) and (6)
-        function varbc_start!(residual1, u1, p)
+        function varbc_start_control!(residual1, u1, p)
             residual1[1] = u1[1] - sigma0 #position var
             residual1[2] = u1[2] - 0 #cross corr
             residual1[3] = u1[3] - 1 #mom var
         end
 
         #boundary conditions at the end
-        function varbc_end!(residual2,u2,p)
+        function varbc_end_control!(residual2,u2,p)
             residual2[1] = u2[1] - sigmaT #position var
             residual2[2] = u2[2] - 0 #cross corr
             residual2[3] = u2[3] - 1 #mom var
@@ -142,33 +125,41 @@ function solve_indirect_equil()
 
         u0 = [1.0,0.0,1.0,0.0,0.0,0.0]
 
-        bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
+        bvp2 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
                             bcresid_prototype = (zeros(3),zeros(3)))
-        sol = solve(bvp2, LobattoIIIa5(), dt = 0.05)
+        sol = solve(bvp2, LobattoIIIa5(), dt = 0.001)
         
 
         function x4(t)
             return (alpha*epsilon-sol(t)[1]*sol(t)[5]-2*sol(t)[2]*sol(t)[6])/(2*alpha*epsilon*sol(t)[1])
         end
 
-
         ##SAVE CSV HERE
-        file_out = string("swift_equilibrium/results/control/equil/indirect/",file_name)
+        file_out = string("results/control/equil/indirect/",file_name)
         df_temp = DataFrame(sol)
 
         rename!(df_temp, [:t, :x1, :x2, :x3, :y1, :y2, :y3]) #rename 
-        
         df_temp[!, :kappa] = x4.(df_temp.t)
+
         CSV.write(file_out,df_temp)
-            
+    
+    elseif (model_type=="log") || (model_type=="harmonic")
+
+        bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
+        bcresid_prototype = (zeros(4),zeros(4)))
+        sol = solve(bvp2, LobattoIIIa5(),#nested_nlsolve=true), 
+                                dt = 0.001, 
+                                progress=true)
+
+        format_sol(sol,model_type) 
+
     else
         print("No valid model specified. Only log or harmonic available for now.")
         return
     end
 
+
 end
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    solve_direct()
-end
+solve_indirect_equil(ARGS)
 
