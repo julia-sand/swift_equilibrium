@@ -6,12 +6,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+import pdb 
+
 """
 This file contains the utility and plotting functions to 
 present the results from integration
 
 """ 
-
 
 class PlotParams():
     def __init__(self):
@@ -68,9 +69,14 @@ class PlotParams():
         return self.get_param_value(params[1])
 
     def get_Lambda(self,file_name):
-        #params = self.get_params(file_name)
+        params = self.get_params(file_name)
 
-        return np.sqrt(2) #self.get_param_value(params[3])
+        return self.get_param_value(params[3])
+
+    def get_T(self,file_name):
+        params = self.get_params(file_name)
+
+        return self.get_param_value(params[0])
 
 
     def get_data(self,model_type,method,equil,file_name):
@@ -92,13 +98,21 @@ class PlotParams():
 
         return pd.DataFrame(pd.read_csv(folder_path + f"{method}/" + file_name))
 
+    def get_legend_label(self,model_type,method,param_label):
 
-    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method):
-        
         if model_type=="hard": #overwrite legend label
             legendlabel = f"compact, {method}" 
         else:
             legendlabel = f"{model_type}, {method}" 
+
+        if param_label is not None:
+            legendlabel = legendlabel+f"; {param_label}"
+        
+        return legendlabel
+
+    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method,param_label):
+        
+        legendlabel = self.get_legend_label(model_type,method,param_label)
         if method =="direct":
             ax.plot(x, y, label = legendlabel,lw=self.lw)
         else: 
@@ -114,81 +128,95 @@ class PlotParams():
                                     params_dict["xseries"],
                                     params_dict["ylabel"],
                                     params_dict["model_type"],
-                                    params_dict["method"])
+                                    params_dict["method"],
+                                    params_dict["paramlabel"])
         params_dict["subplot"].text(x=params_dict["xloc"], 
-                                    y=params_dict["xseries"], 
+                                    y=params_dict["yloc"], 
                                     s=params_dict["letter_label"],
                                     transform=params_dict["subplot"].transAxes,
                                     fontsize=self.fontsizetitles)
 
-
-    def make_plot(self,models,methods,file_name,param_label,equil):
-        """
-        Plots the data of specified parameters (via the filename) and returns matplotlib figure.
-        """
-        
-        # figure setup
+    def make_fig(self):
         fig = plt.figure(figsize=(15, 8))#, constrained_layout=True)
-        gs_cumulants = gridspec.GridSpec(2, 6, 
+        return fig
+
+    def make_gridspec(self,fig):
+
+        # figure setup
+        #gs_cumulants = gridspec.GridSpec(2, 6, 
+        gs_cumulants = fig.add_gridspec(2, 6, 
                             width_ratios=[1, 1, 1, 1,1,1], 
                             height_ratios=[1, 1],
                             hspace=0.4,
-                            wspace=1.2)
-
-        pos_var_plot = plt.subplot(gs_cumulants[0, 2:4])
-        xcorr_plot = plt.subplot(gs_cumulants[0, 4:])
-        kappa_plot = plt.subplot(gs_cumulants[1,:3])
-        lambda_plot = plt.subplot(gs_cumulants[1, 3:])
-        mom_var_plot = plt.subplot(gs_cumulants[0, 0:2])
+                            wspace=1.2)        
         
-
-        for model_type in models:
-            for method in methods:
-                #legendlabel=f"{model_type}, {method}"
-
-                try:   
-                    df = self.get_data(model_type,method,equil,file_name)
-
-                except FileNotFoundError:
-                    pass
-                
-                # Plot on the first subplot (top-left)
-                #"Position variance"
-                self.plot_func_cumulants(pos_var_plot,df.t, df.x1,'Position Variance',model_type,method)#,f"{method}:{model_type}")
-                self.plot_func_cumulants(xcorr_plot,df.t, df.x2,'Cross Correlation',model_type,method)
-                #self.plot_func_cumulants(mom_var_plot,df.t, df.x3,'Mom. Variance',legendlabel)
-
-                mom_var_dict = dict(subplot=mom_var_plot,
-                                    tseries= df.t.to_numpy(),
-                                    xseries= df.x3.to_numpy(),
-                                    letter_label="(a)",
-                                    xloc = 0.05,
-                                    yloc= 0.85,
-                                    ylabel='Mom. Variance',
-                                    model_type=model_type,
-                                    method=method) 
-
-                self.format_subplot(mom_var_dict)
-                mom_var_plot.set_ylim((np.min(df.x3.to_numpy()-0.03),1.04))
+        return gs_cumulants
 
 
-                # Plot on the fourth subplot (bottom-right)
-                self.plot_func_cumulants(kappa_plot,df.t, df["kappa"],r'Stiffness, $\kappa_t$',model_type,method)
+    def plot_all_cumulants(self,fig,gs_cumulants,models,methods,file_names,equil):
+        """
+        Plots the data of specified parameters (via the filename) and returns matplotlib figure.
+        """
+    
+        for file_name in file_names:
+            param_label = self.make_paramlabel(file_name)
+            #pdb.set_trace()
+            for model_type in models:
+                for method in methods:
+                    #legendlabel=f"{model_type}, {method}"
 
-                if model_type!="control":
-                    plot_func(lambda_plot,df.t.to_numpy(), np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
-                                        ,r'Control, $\lambda_t$',legendlabel)  
+                    try:   
+                        df = self.get_data(model_type,method,equil,file_name)
+
+                        
+                        plot_params_all = dict(xloc = 0.05,
+                                                yloc= 0.85,
+                                                tseries= df.t.to_numpy(),
+                                                model_type=model_type,
+                                                method=method,
+                                                paramlabel= param_label)
+
+                        pos_var_dict = plot_params_all.copy()
+                        pos_var_dict.update(dict(subplot=plt.subplot(gs_cumulants[0, 2:4]),
+                                                                xseries= df.x1.to_numpy(),
+                                                                letter_label="(b)",
+                                                                ylabel='Position Variance'))
+                        mom_var_dict = plot_params_all.copy()
+                        mom_var_dict.update(dict(subplot=plt.subplot(gs_cumulants[0, 0:2]),
+                                                                xseries= df.x3.to_numpy(),
+                                                                letter_label="(a)",
+                                                                ylabel='Mom. Variance'))
+                        x_corr_dict = plot_params_all.copy()
+                        x_corr_dict.update(dict(subplot=plt.subplot(gs_cumulants[0, 4:]),
+                                                                xseries= df.x2.to_numpy(),
+                                                                letter_label="(c)",
+                                                                ylabel='Cross Correlation'))
+                        kappa_dict = plot_params_all.copy()
+                        kappa_dict.update(dict(subplot=plt.subplot(gs_cumulants[1,:3]),
+                                                                xseries= df["kappa"].to_numpy(),
+                                                                letter_label="(d)",
+                                                                ylabel=r'Stiffness, $\kappa_t$',
+                                                                xloc=0.05*(2/3)))
+                        lambda_dict = plot_params_all.copy()
+                        lambda_dict.update(dict(subplot=plt.subplot(gs_cumulants[1, 3:]),
+                                                                xseries= np.gradient(df["kappa"].to_numpy(),df.t.to_numpy()),
+                                                                letter_label="(e)",
+                                                                ylabel=r'Control, $\lambda_t$',
+                                                                xloc=0.05*(2/3)))
+
+                        self.format_subplot(pos_var_dict)
+                        self.format_subplot(mom_var_dict)
+                        self.format_subplot(x_corr_dict)
+                        self.format_subplot(kappa_dict)
+                        self.format_subplot(lambda_dict)
+
+                    except FileNotFoundError:
+                        pass     
             
-        #mom_var_plot.text(x= 0.05, y = 0.85, s="(a)",transform=mom_var_plot.transAxes,fontsize=self.fontsizetitles)
-        pos_var_plot.text(x= 0.05, y = 0.85, s="(b)",transform=pos_var_plot.transAxes,fontsize=self.fontsizetitles)
-        xcorr_plot.text(x= 0.05, y = 0.85, s="(c)",transform=xcorr_plot.transAxes,fontsize=self.fontsizetitles)
-        kappa_plot.text(x= 0.05*(2/3), y = 0.85, s="(d)",transform=kappa_plot.transAxes,fontsize=self.fontsizetitles)
-        lambda_plot.text(x= 0.05*(2/3), y = 0.85 , s="(e)",transform=lambda_plot.transAxes,fontsize=self.fontsizetitles)
-
         #add legend
-        kappa_plot.legend(fontsize=self.fontsizeticks,loc="lower center",frameon=False)
+        plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks,loc="lower center",frameon=False)
 
-        plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+        #plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
 
         return fig
     
@@ -224,4 +252,9 @@ class PlotParams():
       
     def compute_work(self,df,Lambda,g,model_type):
         
-        return df.x4.to_numpy()[-1]*df.x1.to_numpy()[-1] + self.compute_entropy_production(self,df,Lambda,g,model_type)
+        return df.kappa.to_numpy()[-1]*df.x1.to_numpy()[-1] + self.compute_entropy_production(self,df,Lambda,g,model_type)
+
+    
+    def get_work_from_ep(self,df,ep):
+        
+        return df.kappa.to_numpy()[-1]*df.x1.to_numpy()[-1] + ep

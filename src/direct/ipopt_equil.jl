@@ -21,9 +21,9 @@ function solve_direct_equil(ARGS)
     
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = sqrt(2)
+    Lambda = parse(Float64,ARGS[4])
 
-    file_name = get_file_name(T,epsilon,g)
+    file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
     

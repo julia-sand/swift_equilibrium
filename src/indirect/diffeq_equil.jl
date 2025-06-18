@@ -13,7 +13,7 @@ include("../getfilename.jl")
 function solve_indirect_equil(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
-    Lambda = sqrt(2)#parse(Float64,ARGS[3]) #sqrt(2)
+    Lambda = parse(Float64,ARGS[4]) #sqrt(2)
     epsilon = 1
     alpha = g
 

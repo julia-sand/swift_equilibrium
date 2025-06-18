@@ -24,7 +24,7 @@ def running_cost_plot(file_name,file_out,models,methods,equil):
                 df = plotter.get_data(model_type,method,equil,file_name=file_name)
                 
                 g = plotter.get_g(file_name)
-                Lambda = math.sqrt(2)
+                Lambda = plotter.get_Lambda(file_name)#math.sqrt(2)
                 epsilon = 1
 
                 #compute costs
@@ -55,7 +55,8 @@ if __name__=="__main__":
         
     #input file
     file_names = ["T3-0_Lambda1-4_eps1_g0-01.csv",
-                   "T3-0_Lambda3-0_eps1_g0-1.csv"]
+                   "T3-0_Lambda3-0_eps1_g0-1.csv",
+                   "T3-0_Lambda3-0_eps1_g0-01.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 

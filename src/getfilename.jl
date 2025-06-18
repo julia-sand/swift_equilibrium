@@ -4,7 +4,7 @@ This file sets up boundary conditions and parameters for the models
 Arguments can be passed from the command line and are parsed here
 =#
 
-function get_file_name(T,epsilon,g,Lambda)
+function get_file_name(T,epsilon,g,Lambda=sqrt(2))
     
     Ttemp = replace(string(T),"."=>"-")
     Lambdatemp = IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))

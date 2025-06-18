@@ -12,6 +12,4 @@
 IDXTEN=$(bc <<<"scale=3;1/(10^$SLURM_ARRAY_TASK_ID)")
 
 module load julia
-julia --project=. -- src/direct/ipopt_noneq.jl 3 $IDXTEN "harmonic"
-julia --project=. -- src/direct/ipopt_noneq.jl 3 $IDXTEN "control"
-julia --project=. -- src/direct/ipopt_noneq.jl 3 $IDXTEN "hard"
+julia --project=. -- src/direct/ipopt_noneq.jl 3 0.01 "hard" $SLURM_ARRAY_TASK_ID

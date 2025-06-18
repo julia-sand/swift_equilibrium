@@ -25,7 +25,7 @@ function integrate_half_gaussian(ARGS)
     x_var_start = 0 
     mom_var_start = 1/beta 
 
-    Vqq_end(sig_end) = beta*((1/sigmaT^2) - (1/sig_end))
+    Vqq_end(sig_end) = ((1/sigmaT^2) - (1/sig_end))
     Vqp_end = 0
     Vpp_end = 0 #1/m
 
@@ -35,7 +35,7 @@ function integrate_half_gaussian(ARGS)
     pos_mu_end = 1
     mom_mu_end = 0
 
-    vq_end(mu_end,sig_end) = beta*((mu_end/sig_end) - pos_mu_end/(sigmaT^2))
+    vq_end(mu_end,sig_end) = ((mu_end/sig_end) - pos_mu_end/(sigmaT^2))
     #
     vp_end = 0
         

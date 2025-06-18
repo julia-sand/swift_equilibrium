@@ -23,9 +23,9 @@ function solve_direct(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = sqrt(2)
+    Lambda = parse(Float64,ARGS[4]) #sqrt(2)
 
-    file_name = get_file_name(T,epsilon,g)
+    file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
     
@@ -49,6 +49,8 @@ function solve_direct(ARGS)
     #the optimal control
     @variable(model, kappa, Infinite(t), start = kappa_init)
 
+    @variable(model,kappa_final)
+    #@variable(model,x1_final)
 
     #function for the log penalty
     function logfun(y)
@@ -65,7 +67,8 @@ function solve_direct(ARGS)
                 (kappa(T)*x1(T))/2 + integral(x3+g*(deriv(kappa,t)/Lambda)^2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
-                (kappa(T)*x1(T))/2 + integral(x3, t))
+                (kappa_final*sigmaT)/2 + integral(x3, t))
+                #(kappa(T)*x1(T))/2 + integral(x3, t))
     elseif model_type=="control"
         @objective(model, Min, 
                 (kappa(T)*x1(T))/2 + integral(x3 + g*deriv(kappa,t)*(deriv(kappa,t)*x1-1), t))
@@ -82,6 +85,7 @@ function solve_direct(ARGS)
     @constraint(model, x1(T) == sigmaT)
     @constraint(model, x2(T) == 0)
     @constraint(model, x3(T) == 1)
+    @constraint(model, kappa(T) == kappa_final)
 
     if model_type=="hard"
         #penalty on the controls: in a compact set
