@@ -12,7 +12,7 @@ function integrate_half_gaussian(ARGS)
     outputloc = ARGS[2]
 
     tau = 1
-    beta = 2
+    beta = 25
     m = 1
 
     p = [beta,tau,m]

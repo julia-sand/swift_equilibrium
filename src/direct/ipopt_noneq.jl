@@ -23,7 +23,7 @@ function solve_direct(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = parse(Float64,ARGS[4]) #sqrt(2)
+    Lambda = sqrt(2) #parse(Float64,ARGS[4]) #sqrt(2)
 
     file_name = get_file_name(T,epsilon,g,Lambda)
 
@@ -49,8 +49,7 @@ function solve_direct(ARGS)
     #the optimal control
     @variable(model, kappa, Infinite(t), start = kappa_init)
 
-    @variable(model,kappa_final)
-    #@variable(model,x1_final)
+    @variable(model, kappa_final)
 
     #function for the log penalty
     function logfun(y)
@@ -61,17 +60,16 @@ function solve_direct(ARGS)
     #define the objective, see Eq. (20)
     if model_type=="log"
         @objective(model, Min, 
-                (kappa(T)*x1(T))/2 + integral(x3-g*logfun(deriv(kappa,t)), t))
+                    (kappa_final*sigmaT)/2 + integral(x3-g*logfun(deriv(kappa,t)), t))
     elseif model_type=="harmonic"
         @objective(model, Min, 
-                (kappa(T)*x1(T))/2 + integral(x3+g*(deriv(kappa,t)/Lambda)^2, t))
+                    (kappa_final*sigmaT)/2 + integral(x3+g*(deriv(kappa,t)/Lambda)^2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
-                (kappa_final*sigmaT)/2 + integral(x3, t))
-                #(kappa(T)*x1(T))/2 + integral(x3, t))
+                    (kappa_final*sigmaT)/2 + integral(x3, t))
     elseif model_type=="control"
         @objective(model, Min, 
-                (kappa(T)*x1(T))/2 + integral(x3 + g*deriv(kappa,t)*(deriv(kappa,t)*x1-1), t))
+                integral(x3 + g*kappa*(kappa*x1-1), t))
     else
         print("No valid model penalty type specified. Use log, control, harmonic or hard")
     end
@@ -85,12 +83,24 @@ function solve_direct(ARGS)
     @constraint(model, x1(T) == sigmaT)
     @constraint(model, x2(T) == 0)
     @constraint(model, x3(T) == 1)
-    @constraint(model, kappa(T) == kappa_final)
+    
+    if model_type !="control"
+        @constraint(model, kappa(T) == kappa_final)
+    end
+
+    if model_type == "control"
+        @constraint(model, kappa(0) == 1/sigma0)
+        @constraint(model, kappa(T) == 1/sigmaT)
+    end
 
     if model_type=="hard"
         #penalty on the controls: in a compact set
         @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
     end
+    
+    #additional constraint on kappa
+    @constraint(model, -Lambda/2 <= kappa <= Lambda/2)
+
 
     # SOLVE THE MODEL
     optimize!(model)

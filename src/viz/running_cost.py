@@ -34,7 +34,7 @@ def running_cost_plot(file_name,file_out,models,methods,equil):
                                                                         model_type)
                 plotter.plot_func(ax1,
                             times_vec,times_vec[1]*np.cumsum(cost_fun),
-                            f"{method}:{model_type}")
+                            "")#f"{method}:{model_type}")
                 plotter.plot_func(ax1,
                             times_vec,times_vec[1]*np.cumsum(cost_fun)+0.5*(df.kappa.to_numpy()[-1]*df.x1.to_numpy()[-1]-df.kappa.to_numpy()[0]*df.x1.to_numpy()[0]),
                             f"{method}:{model_type}",linestyle="dashed")
@@ -54,9 +54,19 @@ def running_cost_plot(file_name,file_out,models,methods,equil):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T3-0_Lambda1-4_eps1_g0-01.csv",
-                   "T3-0_Lambda3-0_eps1_g0-1.csv",
-                   "T3-0_Lambda3-0_eps1_g0-01.csv"]
+    file_names = ["T2-0_Lambda3-0_eps1_g0-1.csv",
+                   "T3-0_Lambda3-0_eps1_g0-01.csv",
+                   "T4-0_Lambda3-0_eps1_g0-01.csv",
+                   "T5-0_Lambda3-0_eps1_g0-01.csv",
+                   "T6-0_Lambda3-0_eps1_g0-01.csv",
+                   "T7-0_Lambda3-0_eps1_g0-01.csv",
+                   "T8-0_Lambda3-0_eps1_g0-01.csv",
+                   "T8-0_Lambda3-0_eps1_g0-01.csv",
+                   "T10-0_Lambda3-0_eps1_g0-01.csv",
+                   "T20-0_Lambda3-0_eps1_g0-01.csv",
+                   "T30-0_Lambda3-0_eps1_g0-01.csv",
+                   "T40-0_Lambda3-0_eps1_g0-01.csv",
+                   "T50-0_Lambda3-0_eps1_g0-01.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 

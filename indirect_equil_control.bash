@@ -12,4 +12,4 @@
 IDXTEN=$(bc <<<"scale=3;1/(10^$SLURM_ARRAY_TASK_ID)")
 
 module load julia
-julia --project=. -- src/indirect/diffeq_equil.jl 3 $IDXTEN "control"
+julia --project=. -- src/indirect/diffeq_equil.jl 3 $IDXTEN "control" 1.4 

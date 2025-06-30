@@ -12,7 +12,7 @@ function solve_indirect(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = sqrt(2)
+    Lambda = parse(Float64,ARGS[4])#sqrt(2)
     alpha = g
 
     file_name = get_file_name(T,epsilon,g,Lambda)
@@ -22,12 +22,12 @@ function solve_indirect(ARGS)
     sigma0 = 1
     sigmaT = 2
 
-    function b(y)#initialise function b
+    function b(y) #initialise function b
 
         if model_type=="log"
             return (g/(y+1e-10))*(sqrt(1+(Lambda*y/g)^2)-1)
         elseif model_type=="harmonic"    
-            return (Lambda^2)*y/(2*g) #harmonic
+            return y/g #harmonic
         else 
             return 0
         end
@@ -74,30 +74,77 @@ function solve_indirect(ARGS)
 
     #initial guess
     u0 = [1.0,
-        0.0,
-        1.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0]
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0]
     
     function format_sol(sol,model_type)
-            df_temp = DataFrame(sol)
-            ##SAVE CSV HERE
-            file_out = string("results/$model_type/noneq/indirect/",file_name)
-            rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
-            CSV.write(file_out,df_temp)
+        df_temp = DataFrame(sol)
+        ##SAVE CSV HERE
+        file_out = string("results/$model_type/noneq/indirect/",file_name)
+        rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
+        CSV.write(file_out,df_temp)
     end
 
     if model_type=="log" || model_type=="harmonic"
 
         bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                             bcresid_prototype = (zeros(4),zeros(4)))
-        sol = solve(bvp2, LobattoIIIa5(), dt = 0.001)
+        sol = solve(bvp2, LobattoIIIa5(), dt = 0.1)
         
         format_sol(sol,model_type)
+
+    elseif model_type=="control"
     
+        function varevolution_control!(du, u, p, t)
+            x1,x2,x3,y1,y2,y3 = u
+            x4 = (alpha*epsilon - x1*y2 - 2*x2*y3)/(2*alpha*epsilon*x1)
+            du[1] = 2*epsilon*x2  #position var
+            du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
+            du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
+            du[4] = epsilon*y2*x4
+            du[5] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
+            du[6] = 1 - epsilon*y2 + 2*y3
+        end
+
+        #the boundary conditions at the start
+        #for system (3); see (5) and (6)
+        function varbc_start_control!(residual1, u1, p)
+            residual1[1] = u1[1] - sigma0 #position var
+            residual1[2] = u1[2] - 0 #cross corr
+            residual1[3] = u1[3] - 1 #mom var
+        end
+
+        #boundary conditions at the end
+        function varbc_end_control!(residual2,u2,p)
+            residual2[1] = u2[1] - sigmaT #position var
+            residual2[2] = u2[2] - 0 #cross corr
+            residual2[3] = u2[3] - 1 #mom var
+        end   
+
+        u0 = [1.0,0.0,1.0,0.0,0.0,0.0]
+
+        bvp1 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
+                            bcresid_prototype = (zeros(3),zeros(3)))
+        sol = solve(bvp2, LobattoIIIa5(), dt = 0.001)
+        
+
+        function x4(t)
+            return (alpha*epsilon-sol(t)[1]*sol(t)[5]-2*sol(t)[2]*sol(t)[6])/(2*alpha*epsilon*sol(t)[1])
+        end
+
+        ##SAVE CSV HERE
+        file_out = string("results/control/noneq/indirect/",file_name)
+        df_temp = DataFrame(sol)
+
+        rename!(df_temp, [:t, :x1, :x2, :x3, :y1, :y2, :y3]) #rename 
+        df_temp[!, :kappa] = x4.(df_temp.t)
+
+        CSV.write(file_out,df_temp)    
     else
         print("No valid model specified. Use either log or harmonic.")
         return

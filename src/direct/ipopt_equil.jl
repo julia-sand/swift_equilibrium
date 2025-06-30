@@ -71,9 +71,6 @@ function solve_direct_equil(ARGS)
     elseif model_type=="hard"
         @objective(model, Min, 
                 integral(x3, t))
-    elseif model_type=="control"
-        @objective(model, Min, 
-                integral(x3 + g*kappa*(kappa*x1-1), t))
     else
         print("No valid model penalty type specified. Use log, control, harmonic or hard")
     end
