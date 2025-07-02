@@ -23,7 +23,7 @@ function solve_direct(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = sqrt(2) #parse(Float64,ARGS[4]) #sqrt(2)
+    Lambda = parse(Float64,ARGS[4]) #sqrt(2)
 
     file_name = get_file_name(T,epsilon,g,Lambda)
 
@@ -63,7 +63,7 @@ function solve_direct(ARGS)
                     (kappa_final*sigmaT)/2 + integral(x3-g*logfun(deriv(kappa,t)), t))
     elseif model_type=="harmonic"
         @objective(model, Min, 
-                    (kappa_final*sigmaT)/2 + integral(x3+g*(deriv(kappa,t)/Lambda)^2, t))
+                    (kappa_final*sigmaT)/2 + integral(x3+g*(deriv(kappa,t))^2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
                     (kappa_final*sigmaT)/2 + integral(x3, t))

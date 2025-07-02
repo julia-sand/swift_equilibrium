@@ -344,8 +344,15 @@ class PlotParams():
         return term1 + \
                 self.compute_heat(df,Lambda,g,model_type) 
 
+
+    def gibbs_shannon_entropy(self,mom,pos):
+        """
+        See Eq. (12)
+        """
+
+        return 0#np.log()
     
-    def compute_entropy_production(self,df,Lambda,g,model_type):
+    def compute_entropy_production_equil(self,df,Lambda,g,model_type):
         """
         See Eq. (12)
         """

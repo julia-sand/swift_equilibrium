@@ -12,8 +12,8 @@ function solve_indirect(ARGS)
 
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
-    Lambda = parse(Float64,ARGS[4])#sqrt(2)
-    alpha = g
+    Lambda = sqrt(2)
+    alpha = 0.1
 
     file_name = get_file_name(T,epsilon,g,Lambda)
 
@@ -128,9 +128,9 @@ function solve_indirect(ARGS)
 
         u0 = [1.0,0.0,1.0,0.0,0.0,0.0]
 
-        bvp1 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
+        bvp3 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
                             bcresid_prototype = (zeros(3),zeros(3)))
-        sol = solve(bvp2, LobattoIIIa5(), dt = 0.001)
+        sol = solve(bvp3, LobattoIIIa5(), dt = 0.1)
         
 
         function x4(t)
