@@ -8,16 +8,13 @@ from plotscript import *
 
 import pdb
 
-def append_costs(plotter,file_name,model_type,method,equil,work_vec,heat_vec,ep_vec):
-    Lambda = plotter.get_Lambda(file_name)
-    g = plotter.get_g(file_name)
-    df = plotter.get_data(model_type,method,equil,file_name)
-    
-    ep_vec = np.append(ep_vec,plotter.compute_entropy_production(df,Lambda,g,model_type))
-    work_vec = np.append(work_vec,plotter.compute_work(df,Lambda,g,model_type))
-    heat_vec = np.append(heat_vec,plotter.compute_heat(df,Lambda,g,model_type))
-    
-    return work_vec,heat_vec,ep_vec
+def set_g(file_name,model_type,equil,plotter):
+    if (model_type=="control" and equil==False):
+        g = 0 #plotter.get_g(file_name) #if equil else 0
+    else:
+        g = plotter.get_g(file_name)
+
+    return g
 
 def append_Tf(plotter,file_name,T_vec):
 
@@ -28,22 +25,29 @@ def compute_data(plotter,file_names,model_type,method,equil,file_out):
     work_vec = np.empty(0)
     ep_vec = np.empty(0) 
     heat_vec = np.empty(0) 
-    
+    cost_vec = np.empty(0) 
+
     #pdb.set_trace()
     
     for file_name in file_names:
         try:
-            work_vec,heat_vec,ep_vec = append_costs(plotter,file_name,model_type,method,equil,work_vec,heat_vec,ep_vec)
+            df = plotter.get_data(model_type,method,equil,file_name)
+
+            work_vec = np.append(work_vec, plotter.compute_work(df))
+            heat_vec = np.append(heat_vec, plotter.compute_heat(df))
+            ep_vec = np.append(ep_vec, plotter.compute_entropy_production(df))
+            cost_vec = np.append(cost_vec, plotter.compute_cost(df,set_g(file_name,model_type,equil,plotter),plotter.get_Lambda(file_name),model_type))
+
             T_vec = append_Tf(plotter,file_name,T_vec)
 
         except (FileNotFoundError,ValueError):
             pass
     
-    return T_vec,work_vec,heat_vec,ep_vec
+    return T_vec,work_vec,heat_vec,ep_vec,cost_vec
     
 
 def make_plot(file_names,model_type,method,file_out):
-
+    #pdb.set_trace()
     plotter = PlotParams()
     # Plotting the cumulants
     fig = plotter.make_fig()
@@ -52,32 +56,35 @@ def make_plot(file_names,model_type,method,file_out):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     
-    T_vec_equil,work_vec_equil,heat_vec_equil,ep_vec_equil = compute_data(plotter,file_names,model_type,method,equil=True,file_out=file_out)
-    T_vec_noneq,work_vec_noneq,heat_vec_noneq,ep_vec_noneq = compute_data(plotter,file_names,model_type,method,equil=False,file_out=file_out)
-    plt.subplot(gs[:,:3]).plot(T_vec_equil,work_vec_equil,"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
-    plt.subplot(gs[:,:3]).plot(T_vec_equil,heat_vec_equil,"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
-    plt.subplot(gs[:,:3]).plot(T_vec_equil,ep_vec_equil,"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
-    plt.subplot(gs[:,3:]).plot(T_vec_noneq,work_vec_noneq,"-v",markersize=10,linewidth=plotter.lw,color=plotter.c1)
-    plt.subplot(gs[:,3:]).plot(T_vec_noneq,heat_vec_noneq,"-x",markersize=10,linewidth=plotter.lw,color=plotter.c2,zorder=100)
-    plt.subplot(gs[:,3:]).plot(T_vec_noneq,ep_vec_noneq,"-o",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
+    equil=True 
+    for ax in [gs[:,:3],gs[:,3:]]:
 
-    plt.subplot(gs[:,:3]).plot(T_vec_noneq,np.zeros(len(T_vec_noneq)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-    plt.subplot(gs[:,3:]).plot(T_vec_noneq,np.zeros(len(T_vec_noneq)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out)
+        plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
+        plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
+        plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
+        plt.subplot(ax).plot(results[0],results[4],"--v",label=r"$\mathcal{C}_{t_f}$",markersize=5,linewidth=1,color="black",zorder=300)
+        #plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+
+        plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        #plt.subplot(gs[:,3:]).plot(T_vec_noneq,np.zeros(len(T_vec_noneq)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]))
+        plt.subplot(ax).set_xlim(left=np.min(results[0])-0.1,right=np.max(results[0])+0.1)
+        #plt.subplot(ax).set_ylim((-0.8,0.25))
+
+        equil=False#repeat for the noneq results
 
 
     plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title("Minimum Work Transition",fontsize=plotter.fontsizetitles)
 
-    plotter.format_ax(plt.subplot(gs[:,:3]),"Cost",np.maximum(np.max(T_vec_equil),np.max(T_vec_equil)))
-    plotter.format_ax(plt.subplot(gs[:,3:]),"Cost",np.maximum(np.max(T_vec_equil),np.max(T_vec_equil)))
-    plt.subplot(gs[:,:3]).set_xlim(left=np.minimum(np.min(T_vec_equil),np.min(T_vec_equil))-0.1,right=np.maximum(np.max(T_vec_equil),np.max(T_vec_equil))+0.1)
-    plt.subplot(gs[:,3:]).set_xlim(left=np.minimum(np.min(T_vec_equil),np.min(T_vec_equil))-0.1,right=np.maximum(np.max(T_vec_equil),np.max(T_vec_equil))+0.1)
-    plt.subplot(gs[:,:3]).set_ylim((-0.8,0.25))
-    plt.subplot(gs[:,3:]).set_ylim((-0.8,0.25))
     plt.subplot(gs[:,3:]).text(x=0.02,y=0.95,s="(b)",fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(gs[:,3:]).transAxes)
     plt.subplot(gs[:,:3]).text(x=0.02,y=0.95,s="(a)",fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(gs[:,:3]).transAxes)
     
-    fig.legend(fontsize = plotter.fontsizetitles,
+    h,l = plt.subplot(gs[:,3:]).get_legend_handles_labels()
+
+    fig.legend(h,l,
+                                fontsize = plotter.fontsizetitles,
                                 frameon=False,
                                 handlelength=1,
                                 loc="center right")
@@ -89,24 +96,25 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T2-0_Lambda1-4_eps1_g0-01.csv",
-                  "T3-0_Lambda1-4_eps1_g0-01.csv",
-                  "T4-0_Lambda1-4_eps1_g0-01.csv",
-                  "T5-0_Lambda1-4_eps1_g0-01.csv",
-                  "T6-0_Lambda1-4_eps1_g0-01.csv",
-                  "T7-0_Lambda1-4_eps1_g0-01.csv",
-                  "T8-0_Lambda1-4_eps1_g0-01.csv",
-                  "T9-0_Lambda1-4_eps1_g0-01.csv",
-                  "T10-0_Lambda1-4_eps1_g0-01.csv",
-                  "T20-0_Lambda1-4_eps1_g0-01.csv",
-                  "T30-0_Lambda1-4_eps1_g0-01.csv",
-                  "T40-0_Lambda1-4_eps1_g0-01.csv",
-                  "T50-0_Lambda1-4_eps1_g0-01.csv"]
+    file_names = ["T3-0_Lambda1-4_eps1_g0-001.csv",
+                  "T4-0_Lambda1-4_eps1_g0-001.csv",
+                  "T5-0_Lambda1-4_eps1_g0-001.csv",
+                  "T6-0_Lambda1-4_eps1_g0-001.csv",
+                  "T7-0_Lambda1-4_eps1_g0-001.csv",
+                  "T8-0_Lambda1-4_eps1_g0-001.csv",
+                  "T9-0_Lambda1-4_eps1_g0-001.csv",
+                  "T10-0_Lambda1-4_eps1_g0-001.csv",
+                  "T20-0_Lambda1-4_eps1_g0-001.csv",
+                  "T30-0_Lambda1-4_eps1_g0-001.csv",
+                  "T40-0_Lambda1-4_eps1_g0-001.csv",
+                  "T50-0_Lambda1-4_eps1_g0-001.csv",
+                  "T60-0_Lambda1-4_eps1_g0-001.csv",
+                  "T70-0_Lambda1-4_eps1_g0-001.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    model_type = "harmonic"#["harmonic","control","log","hard"] 
+    model_type = "control"#["harmonic","control","log","hard"] 
     method = "indirect"
     make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.png")
     make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")

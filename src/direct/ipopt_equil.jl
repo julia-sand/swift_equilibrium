@@ -67,7 +67,7 @@ function solve_direct_equil(ARGS)
                 integral(x3-g*logfun(deriv(kappa,t)), t))
     elseif model_type=="harmonic"
         @objective(model, Min, 
-                integral(x3+g*(deriv(kappa,t)/Lambda)^2, t))
+                integral(x3+g*(deriv(kappa,t)^2)/2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
                 integral(x3, t))
@@ -102,7 +102,8 @@ function solve_direct_equil(ARGS)
     @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
     @constraint(model, deriv(x3,t) == 2*(1-x3-epsilon*kappa*x2))
     #Constraint on kappa, Eq. (50)
-    #@constraint(model, 0.2 <= kappa <=1.2)
+    
+    @constraint(model, -3 <= kappa <= 3)
 
     #@constraint(model, deriv(kappa,t) == lambda)
 

@@ -24,7 +24,7 @@ function solve_direct(ARGS)
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
     Lambda = parse(Float64,ARGS[4]) #sqrt(2)
-
+    alpha=0.1
     file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
@@ -33,18 +33,21 @@ function solve_direct(ARGS)
     sigmaT = 2
     
     model = InfiniteModel(Ipopt.Optimizer);
+    set_optimizer_attributes(model,"max_iter" => 10000)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 3001)#, derivative_method=FiniteDifference(Forward(), true))
+    @infinite_parameter(model, t in [0, T], num_supports = 3001, 
+                        derivative_method=FiniteDifference(Forward(), true))
+            #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, x1>=0, Infinite(t), start = x1_init)
+    @variable(model, 0<=x1, Infinite(t), start = x1_init)
 
     #cross corellation
     @variable(model, x2, Infinite(t), start = x2_init)
 
     #momentum variance 
-    @variable(model, x3>=0, Infinite(t), start = x3_init)
+    @variable(model, 0<=x3, Infinite(t), start = x3_init)
 
     #the optimal control
     @variable(model, kappa, Infinite(t), start = kappa_init)
@@ -60,16 +63,16 @@ function solve_direct(ARGS)
     #define the objective, see Eq. (20)
     if model_type=="log"
         @objective(model, Min, 
-                    (kappa_final*sigmaT)/2 + integral(x3-g*logfun(deriv(kappa,t)), t))
+                    kappa_final + integral(x3-g*logfun(deriv(kappa,t)), t))
     elseif model_type=="harmonic"
         @objective(model, Min, 
-                    (kappa_final*sigmaT)/2 + integral(x3+g*(deriv(kappa,t))^2, t))
+                    kappa_final + integral(x3+(g/2)*(deriv(kappa,t))^2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
-                    (kappa_final*sigmaT)/2 + integral(x3, t))
+                    kappa_final + integral(x3, t))
     elseif model_type=="control"
         @objective(model, Min, 
-                integral(x3 + g*kappa*(kappa*x1-1), t))
+                integral(x3 + alpha*kappa*(kappa*x1-1), t))
     else
         print("No valid model penalty type specified. Use log, control, harmonic or hard")
     end
@@ -83,24 +86,22 @@ function solve_direct(ARGS)
     @constraint(model, x1(T) == sigmaT)
     @constraint(model, x2(T) == 0)
     @constraint(model, x3(T) == 1)
+    @constraint(model, kappa(0) == 1/sigma0)
     
-    if model_type !="control"
-        @constraint(model, kappa(T) == kappa_final)
-    end
-
-    if model_type == "control"
-        @constraint(model, kappa(0) == 1/sigma0)
-        @constraint(model, kappa(T) == 1/sigmaT)
-    end
+    @constraint(model, kappa(T) == kappa_final)
 
     if model_type=="hard"
         #penalty on the controls: in a compact set
         @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
     end
     
-    #additional constraint on kappa
-    @constraint(model, -Lambda/2 <= kappa <= Lambda/2)
+    @constraint(model, -3 <= kappa <= 3)
 
+    
+    #enforce the dynamics, see system (3)
+    @constraint(model, deriv(x1,t) == 2*epsilon*x2)
+    @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
+    @constraint(model, deriv(x3,t) == 2*(1-x3-epsilon*kappa*x2))
 
     # SOLVE THE MODEL
     optimize!(model)

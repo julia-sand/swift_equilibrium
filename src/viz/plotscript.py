@@ -300,49 +300,50 @@ class PlotParams():
   
     def b(self,y4,model_type,Lambda,g):
         if model_type=="harmonic":
-            return (y4*(Lambda**2))/(2*g)
+            return y4/g #(y4*(Lambda**2))/(2*g)
         elif model_type=="log":
             return (g/(y4+1e-10))*(np.sqrt((1+(Lambda*y4/g)**2))-1)
         else:
-            return 0
+            return y4/g #default as harmonic
             
 
     def get_Vfun(self,df,Lambda,g,model_type):
         try:
             y4 = df.y4.to_numpy()
             lambda_vec = self.b(y4,model_type,Lambda,g)
-        except AttributeError:
+        except AttributeError: #when y4 cannot be found (eg direct method or stiffness as a control)
             lambda_vec = np.gradient(df.kappa.to_numpy(),df.t.to_numpy())
 
         if model_type=="harmonic":
-            return lambda_vec**2 #(lambda_vec/Lambda)**2
+            return (1/2)*(lambda_vec**2) #(lambda_vec/Lambda)**2
         elif model_type=="hard":
             return 0
         elif model_type=="log":
             return np.where(np.abs(lambda_vec)<Lambda, -np.log(1-(lambda_vec/Lambda)**2),1e10)
         elif model_type=="control":
-            return df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
+            return (1/2)*(lambda_vec**2) #default to control penalty
         else:
             return 
-    
-    def get_heat_release_vec(self,df,Lambda,g,model_type):
-        return df.x3.to_numpy()+g*self.get_Vfun(df,Lambda,g,model_type)
 
-    def compute_heat(self,df,Lambda,g,model_type):
+    def control_penalty_S(self,df):
+        return df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
+
+    def compute_heat(self,df):
         """
-        See Eq. (11)
+        See Eq. (11).
+        Q_T
         """
         
-        return np.trapz(self.get_heat_release_vec(df,Lambda,g,model_type),df.t.to_numpy()) - df.t.to_numpy()[-1]  
+        return np.trapz(df.x3.to_numpy(),df.t.to_numpy()) - df.t.to_numpy()[-1]  
     
-    def compute_work(self,df,Lambda,g,model_type):
+    def compute_work(self,df):
         """
         See Eq. (10)
+        W_T
         """
 
         term1 = 0.5*(df.kappa.to_numpy()[-1]*df.x1.to_numpy()[-1] - df.kappa.to_numpy()[0]*df.x1.to_numpy()[0])
-        return term1 + \
-                self.compute_heat(df,Lambda,g,model_type) 
+        return term1 + self.compute_heat(df) 
 
 
     def gibbs_shannon_entropy(self,mom,pos):
@@ -352,10 +353,22 @@ class PlotParams():
 
         return 0#np.log()
     
-    def compute_entropy_production_equil(self,df,Lambda,g,model_type):
+    def compute_entropy_production(self,df):
         """
         See Eq. (12)
         """
 
         term1 = 0.5*np.log(df.x1.to_numpy()[-1]/df.x1.to_numpy()[0])
-        return term1 + self.compute_heat(df,Lambda,g,model_type) 
+        return term1 + self.compute_heat(df) 
+
+
+    def compute_cost(self,df,g,Lambda,model_type):
+        """
+        This is C_T
+        """
+
+        alpha = 0.1 if model_type=="control" else 0  
+        V = np.trapz(self.get_Vfun(df,Lambda,g,model_type),df.t.to_numpy()) 
+        S = np.trapz(self.control_penalty_S(df),df.t.to_numpy())
+        
+        return self.compute_work(df) + g*V + alpha*S
