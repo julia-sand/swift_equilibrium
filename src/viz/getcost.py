@@ -19,8 +19,10 @@ if __name__=="__main__":
                 print(f"model: {model_type}; method: {method}")
                 try:
                     df = plotter.get_data(model_type,method,equil,file_name)
-                    cost = plotter.compute_entropy_production(df)#,plotter.get_g(file_name),plotter.get_Lambda(file_name),model_type)
-                    print(f"{cost}")
+                    ep = plotter.compute_entropy_production(df)#,plotter.get_g(file_name),plotter.get_Lambda(file_name),model_type)
+                    cost = plotter.compute_work(df)#,plotter.get_g(file_name),plotter.get_Lambda(file_name),model_type)
+                    print(f"EP: {ep}")
+                    print(f"W: {cost}")
                 except FileNotFoundError:
                     print("Requested data not available.")
                     pass
