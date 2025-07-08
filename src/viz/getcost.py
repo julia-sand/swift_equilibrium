@@ -10,7 +10,7 @@ if __name__=="__main__":
     file_names =  ["T3-0_Lambda1-4_eps1_g0-1.csv","T3-0_Lambda1-4_eps1_g0-01.csv"]
     models = ["harmonic"] #"harmonic",
     methods = ["indirect","direct","slowfast"]
-    equil=False
+    equil="noneq"
     for file_name in file_names:
         param_label = plotter.make_paramlabel(file_name)
         print(rf"{param_label} \n")

@@ -3,11 +3,11 @@ using InfiniteOpt, Ipopt;
 using CSV;
 using DataFrames;
 
-#=We minimize entropy production eq.(10) between non-equilibrium states
+#=We minimize entropy production /heat release between non-equilibrium states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
--stiffness (kappa) is a control. penalties are added directly onto kappa. 
+-stiffness (kappa) is a state. dynamics are controlled by lambda. 
 =#
 
 #get parsed parameters
@@ -41,16 +41,16 @@ function solve_direct(ARGS)
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = x1_init)
+    @variable(model, 0<=x1, Infinite(t), start = 0)
 
     #cross corellation
-    @variable(model, x2, Infinite(t), start = x2_init)
+    @variable(model, x2, Infinite(t), start = 0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = x3_init)
+    @variable(model, 0<=x3, Infinite(t), start = 0)
 
     #the optimal control
-    @variable(model, kappa, Infinite(t), start = kappa_init)
+    @variable(model, kappa, Infinite(t), start = 0)
 
     #@variable(model, kappa_final)
 

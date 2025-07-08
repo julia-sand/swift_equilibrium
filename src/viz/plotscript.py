@@ -96,10 +96,12 @@ class PlotParams():
         folder_path =os.path.dirname( __file__ )+f"/../../results/{model_type}/"
         
         #add equilibrium
-        if equil:
+        if equil=="equil":
             folder_path = folder_path + "equil/"
-        else: 
+        elif equil=="noneq": 
             folder_path = folder_path + "noneq/"
+        else:
+            folder_path = folder_path + "stiffness_control/"
         #print(folder_path+ f"{method}/" + file_name)
 
         return pd.DataFrame(pd.read_csv(folder_path + f"{method}/" + file_name))
@@ -147,9 +149,9 @@ class PlotParams():
         #legendlabel = self.get_legend_label(model_type,method,param_label)
         if method =="direct":
             ax.plot(x[2:-2], y[2:-2], label = "direct",lw=self.lw,color=self.c1)
-        elif (method =="indirect" and equil==False): 
+        elif (method =="indirect" and equil=="noneq"): 
             ax.plot(x, y, label = "indirect",lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
-        elif (method =="indirect" and equil==True): 
+        elif (method =="indirect" and equil == "equil"): 
             ax.plot(x, y, label = "equilibration",lw=self.lw,linestyle="dotted",zorder=100,color=self.c3)
             #ax.plot(x, y,lw=self.lw,zorder=50,color="gray",alpha=0.5)
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)

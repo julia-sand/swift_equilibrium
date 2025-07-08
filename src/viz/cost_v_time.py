@@ -1,15 +1,13 @@
 import numpy as np
-import math
-
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from plotscript import *
 
-import pdb
+#import pdb
 
 def set_g(file_name,model_type,equil,plotter):
-    if (model_type == ["control"] and equil==False):
+    if (model_type == ["control"] and equil=="noneq"):
         g = 0 #plotter.get_g(file_name) #if equil else 0
     elif (model_type=="hard"):
         g = 0
@@ -58,7 +56,7 @@ def make_plot(file_names,model_type,method,file_out):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     
-    equil=True 
+    equil="equil" 
     for ax in [gs[:,:3],gs[:,3:]]:
 
         results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out)
@@ -74,7 +72,7 @@ def make_plot(file_names,model_type,method,file_out):
         #plt.subplot(ax).set_xlim(left=np.min(results[0])-0.1,right=np.max(results[0])+0.1)
         #plt.subplot(ax).set_ylim((-0.8,0.25))
 
-        equil=False#repeat for the noneq results
+        equil="noneq"#repeat for the noneq results
 
 
     plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)

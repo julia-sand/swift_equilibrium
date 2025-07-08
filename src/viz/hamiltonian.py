@@ -53,4 +53,4 @@ if __name__=="__main__":
                     "T3-0_Lambda1-4_eps1_g0-001.csv"]
 
     for file_name in enumerate(file_names):
-        ham_plot(file_name[1],f"hamiltonian_equil{file_name[0]}.png",equil=True)
+        ham_plot(file_name[1],f"hamiltonian_equil{file_name[0]}.png",equil="equil")

@@ -97,6 +97,8 @@ function solve_direct(ARGS)
         @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
     end
     
+    
+    #additional constraint on the stiffness.
     @constraint(model, -3 <= kappa <= 3)
 
     

@@ -13,12 +13,12 @@ def plot_result(models,methods,file_names,file_out):
                                     ["control"],
                                     ["direct","indirect"],
                                     ["T40-0_Lambda1-4_eps1_g0-001.csv"],
-                                    equil=False)
+                                    equil="noneq")
     plotter.plot_all_cumulants(fig_out,gs_cumulants,
                                     ["control"],
                                     ["indirect"],
                                     ["T40-0_Lambda1-4_eps1_g0-001.csv"],
-                                    equil=True)
+                                    equil="equil")
     fig_out.savefig(file_out, bbox_inches="tight")
 
     plt.close()
@@ -35,4 +35,3 @@ if __name__=="__main__":
     methods = ["direct","indirect"]#["slowfast","direct","indirect"]
     plot_result(models,methods,file_names,f"plots/T70_plot_{models[0]}.pdf")
     plot_result(models,methods,file_names,f"plots/T70_plot_{models[0]}.png")
-    #plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.pdf", True)
