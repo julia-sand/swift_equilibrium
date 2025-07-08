@@ -24,9 +24,9 @@ if __name__=="__main__":
 
     #data input file name. This is the file that will 
     #be plotted if available. 
-    file_names =  ["T4-0_Lambda1-4_eps1_g0-1.csv"]
-    models = ["harmonic"] #"harmonic",
+    file_names =  ["T4-0_Lambda3-0_eps1_g0-1.csv"]
+    models = ["hard"] #"harmonic",
     methods = ["indirect","direct","slowfast"]#["slowfast","direct","indirect"]
     #plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.png", True)
-    #plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.png", True)
+    plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.png", True)
     plot_result(models,methods,file_names,f"plots/noneq_plot_{models[0]}.png", False)

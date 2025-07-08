@@ -9,8 +9,10 @@ from plotscript import *
 import pdb
 
 def set_g(file_name,model_type,equil,plotter):
-    if (model_type=="control" and equil==False):
+    if (model_type == ["control"] and equil==False):
         g = 0 #plotter.get_g(file_name) #if equil else 0
+    elif (model_type=="hard"):
+        g = 0
     else:
         g = plotter.get_g(file_name)
 
@@ -68,8 +70,8 @@ def make_plot(file_names,model_type,method,file_out):
 
         plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
         #plt.subplot(gs[:,3:]).plot(T_vec_noneq,np.zeros(len(T_vec_noneq)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-        plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]))
-        plt.subplot(ax).set_xlim(left=np.min(results[0])-0.1,right=np.max(results[0])+0.1)
+        #plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]))
+        #plt.subplot(ax).set_xlim(left=np.min(results[0])-0.1,right=np.max(results[0])+0.1)
         #plt.subplot(ax).set_ylim((-0.8,0.25))
 
         equil=False#repeat for the noneq results
@@ -96,26 +98,26 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T3-0_Lambda1-4_eps1_g0-001.csv",
-                  "T4-0_Lambda1-4_eps1_g0-001.csv",
-                  "T5-0_Lambda1-4_eps1_g0-001.csv",
-                  "T6-0_Lambda1-4_eps1_g0-001.csv",
-                  "T7-0_Lambda1-4_eps1_g0-001.csv",
-                  "T8-0_Lambda1-4_eps1_g0-001.csv",
-                  "T9-0_Lambda1-4_eps1_g0-001.csv",
-                  "T10-0_Lambda1-4_eps1_g0-001.csv",
-                  "T20-0_Lambda1-4_eps1_g0-001.csv",
-                  "T30-0_Lambda1-4_eps1_g0-001.csv",
-                  "T40-0_Lambda1-4_eps1_g0-001.csv",
-                  "T50-0_Lambda1-4_eps1_g0-001.csv",
-                  "T60-0_Lambda1-4_eps1_g0-001.csv",
-                  "T70-0_Lambda1-4_eps1_g0-001.csv"]
+    file_names = ["T3-0_Lambda3-0_eps1_g0-1.csv",
+                  "T4-0_Lambda3-0_eps1_g0-1.csv",
+                  #"T5-0_Lambda3-0_eps1_g0-1.csv",
+                  "T6-0_Lambda3-0_eps1_g0-1.csv",
+                  "T7-0_Lambda3-0_eps1_g0-1.csv",
+                  "T8-0_Lambda3-0_eps1_g0-1.csv",
+                  "T9-0_Lambda3-0_eps1_g0-1.csv",
+                  "T10-0_Lambda3-0_eps1_g0-1.csv",
+                  "T20-0_Lambda3-0_eps1_g0-1.csv",
+                  "T30-0_Lambda3-0_eps1_g0-1.csv",
+                  "T40-0_Lambda3-0_eps1_g0-1.csv",
+                  "T50-0_Lambda3-0_eps1_g0-1.csv",
+                  "T60-0_Lambda3-0_eps1_g0-1.csv",
+                  "T70-0_Lambda3-0_eps1_g0-1.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    model_type = "control"#["harmonic","control","log","hard"] 
-    method = "indirect"
+    model_type = "hard"#["harmonic","control","log","hard"] 
+    method = "direct"
     make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.png")
     make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 

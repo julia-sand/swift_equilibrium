@@ -232,10 +232,7 @@ class PlotParams():
 
                     try:   
                         df = self.get_data(model_type,method,equil,file_name)
-
-
-
-                        
+                       
                         plot_params_all = dict(xloc = 0.05,
                                                 yloc= 0.85,
                                                 tseries= df.t.to_numpy(),
@@ -317,7 +314,7 @@ class PlotParams():
         if model_type=="harmonic":
             return (1/2)*(lambda_vec**2) #(lambda_vec/Lambda)**2
         elif model_type=="hard":
-            return 0
+            return np.zeros_like(lambda_vec)
         elif model_type=="log":
             return np.where(np.abs(lambda_vec)<Lambda, -np.log(1-(lambda_vec/Lambda)**2),1e10)
         elif model_type=="control":

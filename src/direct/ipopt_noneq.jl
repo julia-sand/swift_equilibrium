@@ -3,11 +3,12 @@ using InfiniteOpt, Ipopt;
 using CSV;
 using DataFrames;
 
-#=We minimize entropy production between non-equilibrium states
+#=We minimize Work eq.(10) between non-equilibrium states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
 -minimization of dissipation between equilibrium states at fixed time horizon.
+-stiffness (kappa) is a state
 =#
 
 #get parsed parameters
@@ -82,11 +83,12 @@ function solve_direct(ARGS)
     @constraint(model, x1(0) == sigma0)
     @constraint(model, x2(0) == 0)
     @constraint(model, x3(0) == 1)
+    @constraint(model, kappa(0) == 1/sigma0)
+
     #final
     @constraint(model, x1(T) == sigmaT)
     @constraint(model, x2(T) == 0)
     @constraint(model, x3(T) == 1)
-    @constraint(model, kappa(0) == 1/sigma0)
     
     @constraint(model, kappa(T) == kappa_final)
 
@@ -125,6 +127,4 @@ end
     
 
 solve_direct(ARGS)
-
-
 
