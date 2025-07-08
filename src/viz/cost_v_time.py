@@ -57,23 +57,15 @@ def make_plot(file_names,model_type,method,file_out):
     param_label = None #plotter.make_paramlabel(file_names[-1])
     
     equil="equil" 
-    for ax in [gs[:,:3],gs[:,3:]]:
+    for ax,equil in zip([gs[:,:3],gs[:,3:]],["stiffness_control","noneq"]):
 
         results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out)
         plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
         plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
         plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
         plt.subplot(ax).plot(results[0],results[4],"--v",label=r"$\mathcal{C}_{t_f}$",markersize=5,linewidth=1,color="black",zorder=300)
-        #plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-
+       
         plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-        #plt.subplot(gs[:,3:]).plot(T_vec_noneq,np.zeros(len(T_vec_noneq)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-        #plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]))
-        #plt.subplot(ax).set_xlim(left=np.min(results[0])-0.1,right=np.max(results[0])+0.1)
-        #plt.subplot(ax).set_ylim((-0.8,0.25))
-
-        equil="noneq"#repeat for the noneq results
-
 
     plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title("Minimum Work Transition",fontsize=plotter.fontsizetitles)

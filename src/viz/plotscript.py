@@ -325,7 +325,8 @@ class PlotParams():
             return 
 
     def control_penalty_S(self,df):
-        return df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
+        return (df.kappa.to_numpy()*df.x1.to_numpy()-1)**2
+        #df.kappa.to_numpy()*(df.kappa.to_numpy()*df.x1.to_numpy()-1) 
 
     def compute_heat(self,df):
         """

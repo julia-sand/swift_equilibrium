@@ -76,5 +76,5 @@ if __name__=="__main__":
 
     for file_name in enumerate(file_names):
         print(file_name)
-        running_cost_plot(file_name[1],f"runningcost_equil{file_name[0]}.png",models,methods,True)
-        running_cost_plot(file_name[1],f"runningcost_noneq{file_name[0]}.png",models,methods,False)
+        running_cost_plot(file_name[1],f"runningcost_equil{file_name[0]}.png",models,methods,"equil")
+        running_cost_plot(file_name[1],f"runningcost_noneq{file_name[0]}.png",models,methods,"noneq")

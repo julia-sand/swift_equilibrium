@@ -7,7 +7,7 @@ using DataFrames;
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
--stiffness (kappa) is a state. dynamics are controlled by lambda. 
+-stiffness (kappa) is the control
 =#
 
 #get parsed parameters
@@ -41,16 +41,16 @@ function solve_direct(ARGS)
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = 0)
+    @variable(model, 0<=x1, Infinite(t), start = x1_init)
 
     #cross corellation
-    @variable(model, x2, Infinite(t), start = 0)
+    @variable(model, x2, Infinite(t), start = x2_init)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = 0)
+    @variable(model, 0<=x3, Infinite(t), start = x3_init)
 
     #the optimal control
-    @variable(model, kappa, Infinite(t), start = 0)
+    @variable(model, kappa, Infinite(t), start = kappa_init)
 
     #@variable(model, kappa_final)
 
@@ -77,7 +77,7 @@ function solve_direct(ARGS)
     @constraint(model, x1(0) == sigma0)
     @constraint(model, x2(0) == 0)
     @constraint(model, x3(0) == 1)
-    #@constraint(model, kappa(0) == 1/sigma0)
+    @constraint(model, kappa(0) == 1/sigma0)
 
     #final
     @constraint(model, x1(T) == sigmaT)

@@ -50,11 +50,10 @@ function solve_direct(ARGS)
     #momentum variance 
     @variable(model, 0<=x3, Infinite(t), start = x3_init)
 
-    #the optimal control
+    #the stiffness (a state)
     @variable(model, kappa, Infinite(t), start = kappa_init)
-
     @variable(model, kappa_final)
-
+    
     #function for the log penalty
     function logfun(y)
         
@@ -94,14 +93,12 @@ function solve_direct(ARGS)
 
     if model_type=="hard"
         #penalty on the controls: in a compact set
-        @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
+        @constraint(model, -Lambda <= lambda <= Lambda)
     end
-    
     
     #additional constraint on the stiffness.
     @constraint(model, -3 <= kappa <= 3)
 
-    
     #enforce the dynamics, see system (3)
     @constraint(model, deriv(x1,t) == 2*epsilon*x2)
     @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
