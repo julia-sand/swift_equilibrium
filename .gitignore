@@ -10,3 +10,4 @@ src/TEMP*
 core*
 src/halfbridge_*
 *.bash
+Manifest.toml
