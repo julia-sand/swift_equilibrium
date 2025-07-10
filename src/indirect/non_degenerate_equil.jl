@@ -53,10 +53,10 @@ function solve_indirect(ARGS)
         residual2[1] = u2[1] - sigmaT #position var
         residual2[2] = u2[2] - 0 #cross corr
         residual2[3] = u2[3] - 1 #mom var
-        residual1[4] = u2[4] - (1/sigmaT) #mom var
+        residual2[4] = u2[4] - (1/sigmaT) #mom var
     end   
 
-    u0 = [1.0,0.0,1.0,0.0,0.0,0.0]
+    u0 = [1.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0]
 
     bvp3 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))

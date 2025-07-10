@@ -161,11 +161,6 @@ class PlotParams():
 
     def format_subplot(self,params_dict,label_ind,c_ind):
         
-        #if params_dict["method"]=="direct":
-        #    #remove noise from end of horizon from the direct method
-        #    params_dict["tseries"] = params_dict["tseries"][:-2]
-        #    params_dict["xseries"] = params_dict["xseries"][:-2]
-
 
         if params_dict["model_type"]=="control":
             self.plot_func_cumulants_control(params_dict["subplot"],
