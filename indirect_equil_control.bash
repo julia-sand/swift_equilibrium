@@ -6,10 +6,10 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=5G
-#SBATCH --array=4-10
+#SBATCH --array=2-10
 #SBATCH --output=indirect_equil.%a.out
 
 IDXTEN=$(bc <<<"scale=3;1/(10^$SLURM_ARRAY_TASK_ID)")
 
 module load julia
-julia --project=. -- src/indirect/diffeq_equil.jl $SLURM_ARRAY_TASK_ID 0.001 "control" 1.4
+julia --project=. -- src/indirect/diffeq_equil.jl $SLURM_ARRAY_TASK_ID 0.01 "control" 1.4

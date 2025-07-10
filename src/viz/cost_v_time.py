@@ -56,8 +56,7 @@ def make_plot(file_names,model_type,method,file_out):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     
-    equil="equil" 
-    for ax,equil in zip([gs[:,:3],gs[:,3:]],["stiffness_control","noneq"]):
+    for ax,equil in zip([gs[:,:3],gs[:,3:]],["equil","noneq"]):
 
         results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out)
         plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
@@ -88,16 +87,16 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T3-0_Lambda3-0_eps1_g0-1.csv",
-                  "T4-0_Lambda3-0_eps1_g0-1.csv",
-                  #"T5-0_Lambda3-0_eps1_g0-1.csv",
-                  "T6-0_Lambda3-0_eps1_g0-1.csv",
-                  "T7-0_Lambda3-0_eps1_g0-1.csv",
-                  "T8-0_Lambda3-0_eps1_g0-1.csv",
-                  "T9-0_Lambda3-0_eps1_g0-1.csv",
-                  "T10-0_Lambda3-0_eps1_g0-1.csv",
-                  "T20-0_Lambda3-0_eps1_g0-1.csv",
-                  "T30-0_Lambda3-0_eps1_g0-1.csv",
+    file_names = ["T3-0_Lambda3-0_eps1_g0-01.csv",
+                  "T4-0_Lambda3-0_eps1_g0-01.csv",
+                  "T5-0_Lambda3-0_eps1_g0-01.csv",
+                  "T6-0_Lambda3-0_eps1_g0-01.csv",
+                  "T7-0_Lambda3-0_eps1_g0-01.csv",
+                  "T8-0_Lambda3-0_eps1_g0-01.csv",
+                  "T9-0_Lambda3-0_eps1_g0-01.csv",
+                  "T10-0_Lambda3-0_eps1_g0-01.csv",
+                  "T20-0_Lambda3-0_eps1_g0-01.csv",
+                  "T30-0_Lambda3-0_eps1_g0-01.csv",
                   "T40-0_Lambda3-0_eps1_g0-1.csv",
                   "T50-0_Lambda3-0_eps1_g0-1.csv",
                   "T60-0_Lambda3-0_eps1_g0-1.csv",
@@ -106,10 +105,10 @@ if __name__=="__main__":
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    model_type = "hard"#["harmonic","control","log","hard"] 
-    method = "direct"
+    model_type = "control"#["harmonic","control","log","hard"] 
+    method = "indirect"
     make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.png")
-    make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
+    #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 
     #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
     

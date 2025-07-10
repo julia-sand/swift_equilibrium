@@ -75,10 +75,10 @@ function solve_indirect_equil(ARGS)
             du[2] = -x2-epsilon*(x4*x1-x3) #cross corellation
             du[3] = 2*(1-x3-epsilon*x4*x2)  #momentum variance 
             du[4] = y4/g #b_control(y4)
-            du[5] = epsilon*y2*x4 + alpha*((epsilon*x4)^2)
+            du[5] = x4*(epsilon*y2+2*alpha*(x1*x4-1))#epsilon*y2*x4 + alpha*((epsilon*x4)^2)
             du[6] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4
             du[7] = 1 - epsilon*y2 + 2*y3
-            du[8] = epsilon*y2*x1 + 2*epsilon*y3*x2 + alpha*(epsilon^2)*(2*x1*x4-1)
+            du[8] = epsilon*y2*x1 + 2*epsilon*y3*x2 + 2*alpha*x1*(x1*x4-1)
         end
 
         u0 = [1.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0]

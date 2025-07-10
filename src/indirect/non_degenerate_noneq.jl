@@ -3,14 +3,14 @@ using CSV;
 using DataFrames;
 
 #= non-equilibrium transition where the stiffness is the control. 
-minimising the ENTROPY PRODUCTION 
+minimising the ENTROPY PRODUCTION and with NON DEGENERATE dunamics. (see penalty (61))
 =#
 
 include("../getfilename.jl")
 
 function solve_indirect(ARGS)
 
-    T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
+    T,g = parse(Float64,ARGS[1]), 0#parse(Float64,ARGS[2])
     epsilon = 1
     Lambda = 3.0 #parse(Float64,ARGS[4])
     alpha = 0.1
@@ -27,17 +27,17 @@ function solve_indirect(ARGS)
     tspan = (0.0,T)
 
     function x4(x1,x2,y2,y3) 
-        return (x1*(2*alpha-epsilon*y2)-2*epsilon*x2*y3)/(2*alpha*(x1^2))
+        return (alpha*epsilon - x1*(2*alpha*epsilon*y1 + y2) -x2*(alpha*epsilon*y2+2*y3))/(2*alpha*epsilon*x1)
     end
 
     function varevolution_control!(du, u, p, t)
         x1,x2,x3,y1,y2,y3 = u
-        du[1] = 2*epsilon*x2  #position var
-        du[2] = -x2-epsilon*(x4(x1,x2,y2,y3)*x1-x3) #cross corellation
+        du[1] = 2*epsilon*x2 - 2*alpha*(epsilon^2)*(x4(x1,x2,y2,y3)*x1-1)  #position var
+        du[2] = -x2*(1+alpha*(epsilon^2)*x4(x1,x2,y2,y3)) - epsilon*(x4(x1,x2,y2,y3)*x1-x3)
         du[3] = 2*(1-x3-epsilon*x4(x1,x2,y2,y3)*x2)  #momentum variance 
-        du[4] = x4(x1,x2,y2,y3)*(epsilon*y2 + 2*alpha*(x1*x4(x1,x2,y2,y3)-1))#epsilon*y2*x4
-        du[5] = -2*epsilon*y1 + y2 + 2*epsilon*y3*x4(x1,x2,y2,y3)
-        du[6] = 1 - epsilon*y2 + 2*y3
+        du[4] = epsilon*x4(x1,x2,y2,y3)*y2 + alpha*(epsilon^2)*x4(x1,x2,y2,y3)*(2*y1+x4(x1,x2,y2,y3))
+        du[5] = (1+alpha*(epsilon^2))*y2 + 2*epsilon*(y3*x4(x1,x2,y2,y3)-y1)
+        du[6] = 1-epsilon*y2+2*y3
     end
 
     #the boundary conditions at the start
@@ -60,16 +60,15 @@ function solve_indirect(ARGS)
     bvp3 = TwoPointBVProblem(varevolution_control!, (varbc_start_control!, varbc_end_control!), u0, tspan, p;
                         bcresid_prototype = (zeros(3),zeros(3)))
     sol = solve(bvp3, LobattoIIIa5(), dt = 0.1)
-    
 
 
     ##SAVE CSV HERE
-    file_out = string("results/control/noneq/indirect/",file_name)
+    file_out = string("results/control/noneq/nondegenerate/",file_name)
     df_temp = DataFrame(sol)
 
     rename!(df_temp, [:t, :x1, :x2, :x3, :y1, :y2, :y3]) #rename 
     df_temp[!, :kappa] = x4.(df_temp.x1,df_temp.x2,df_temp.y2,df_temp.y3)
-
+    
     CSV.write(file_out,df_temp)    
 end
 
