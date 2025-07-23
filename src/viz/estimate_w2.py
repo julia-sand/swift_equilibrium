@@ -5,17 +5,55 @@ import pandas as pd
 from plotscript import *
 
 Generator = npr.default_rng(seed=None) #define rng 
-batch_samples = 1000 #total number of samples 
+batch_samples = 5000 #total number of samples
+epsilon = 1 
 plotter = PlotParams()
 
 #generate the initial data
-def generate_samples(self,batch_samples,mode):
-    return np.column_stack((Generator.normal(loc=0,scale=np.sqrt(2),size=(batch_samples,1))  
+def generate_samples(batch_samples):
+    return np.column_stack((Generator.normal(loc=0,scale=1,size=(batch_samples,1))  
                             ,Generator.standard_normal(size=(batch_samples,1))))
 
-def get_drift(df,t,x):
+def get_ref_du(df,t,x):
+    return df[df["t"]==t].kappa.values*x
 
+def generate_innovation(dt,batch_samples):
+    
+    return Generator.standard_normal(size=(batch_samples,1))*np.sqrt(dt)
 
-def em_step(du,)
+def get_ref_timegrid(df):
 
+    return df.t.unique()
+
+def em_step(xn,du_bar,dt,dw):
+
+    xn[:,0,None] = xn[:,0,None] + epsilon*xn[:,1,None]*dt 
+    xn[:,1,None] = xn[:,1,None] - (xn[:,1,None] + epsilon*du_bar)*dt \
+                                    + np.sqrt(2)*dw
+    return xn 
 #compute 
+def compute_xT(batch_samples,df):
+
+    t_vec = get_ref_timegrid(df)
+    xinit = generate_samples(batch_samples)
+
+    for i in range(0,len(t_vec)-1):
+        dt = (t_vec[i+1]-t_vec[i])
+        
+        dw = generate_innovation(dt,batch_samples)
+        #xdata = torch.column_stack(())
+        du_bar = get_ref_du(df,t_vec[i],xinit[...,[0]])
+        
+        xinit = em_step(xinit,du_bar,dt,dw)
+    
+    return xinit
+
+if __name__=="__main__":
+    import pot 
+    df = plotter.get_data("hard","direct","equil","T3-0_Lambda3-0_eps1_g0-1.csv","constrained_kappa")
+    xout = compute_xT(batch_samples,df)
+    print("mom var =", np.nanvar(xout[:,1]))
+    print("mom mean =", np.nanmean(xout[:,1]))
+    print("pos var =", np.nanvar(xout[:,0]))
+    print("pos mean =", np.nanmean(xout[:,0]))
+    print("xcorr =", np.correlate(xout[:,0],xout[:,1])[0]/batch_samples)
