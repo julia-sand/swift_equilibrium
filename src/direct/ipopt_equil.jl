@@ -123,10 +123,10 @@ function solve_direct_equil(ARGS)
 
     folder = "results/$model_type/equil/direct/"
     if constraint_kappa=="kappa"
-        CSV.write(string(folder,file_name), df)
-    else 
         folder2 = string(folder,"constrained_kappa/")
         CSV.write(string(folder2,file_name), df)
+    else 
+        CSV.write(string(folder,file_name), df)
     end
     
 

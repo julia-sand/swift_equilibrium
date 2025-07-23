@@ -377,3 +377,11 @@ class PlotParams():
         S = np.trapz(self.control_penalty_S(df),df.t.to_numpy())
         
         return self.compute_work(df) + g*V + alpha*S
+
+    def get_w2_dist(self):
+        """
+        This is an estimate of the W2 distance between the initial and final distributions
+        """
+
+
+        return 0.0838963189003

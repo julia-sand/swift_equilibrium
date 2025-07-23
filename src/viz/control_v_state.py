@@ -9,6 +9,8 @@ from cost_v_time import append_Tf, set_g, compute_data
 
 
 def make_plot(file_names,model_type,method,file_out):
+    
+    
     #pdb.set_trace()
     plotter = PlotParams()
     # Plotting the cumulants
@@ -31,7 +33,8 @@ def make_plot(file_names,model_type,method,file_out):
     plt.subplot(gs[:,3:]).plot(results1[0],results1[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1,zorder=200)
     plt.subplot(gs[:,3:]).plot(results2[0],results2[1],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c2,zorder=200)
 
-
+    plt.subplot(gs[:,:3]).plot(results1[0],plotter.get_w2_dist()*np.ones(len(results1[0]))/results1[0],
+                    linestyle="dashed",color=plotter.c3,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$")
     for ax in [gs[:,:3],gs[:,3:]]:
         plotter.format_ax_plain(plt.subplot(ax))
         plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
@@ -68,9 +71,10 @@ if __name__=="__main__":
                   "T8-0_Lambda3-0_eps1_g0-1.csv",
                   "T9-0_Lambda3-0_eps1_g0-1.csv",
                   "T10-0_Lambda3-0_eps1_g0-1.csv",
-                  #"T20-0_Lambda3-0_eps1_g0-1.csv",
-                  #"T30-0_Lambda3-0_eps1_g0-1.csv"
-                  #
+                  "T20-0_Lambda3-0_eps1_g0-1.csv",
+                  "T30-0_Lambda3-0_eps1_g0-1.csv",
+                  "T40-0_Lambda3-0_eps1_g0-1.csv",
+                  "T50-0_Lambda3-0_eps1_g0-1.csv",                
                   ]
     
     #list what methods to try to plot. all those where the available parameters

@@ -26,9 +26,9 @@ if __name__=="__main__":
     #be plotted if available. 
     file_names =  [
                    # "T2-0_Lambda3-0_eps1_g0-1.csv",
-                    "T3-0_Lambda3-0_eps1_g0-1.csv",
-                   # "T4-0_Lambda3-0_eps1_g0-1.csv",
-                   # "T5-0_Lambda3-0_eps1_g0-1.csv",
+                    "T4-0_Lambda3-0_eps1_g0-1.csv",
+                   "T30-0_Lambda3-0_eps1_g0-1.csv",
+                   #  "T5-0_Lambda3-0_eps1_g0-1.csv",
                    # "T6-0_Lambda3-0_eps1_g0-1.csv",
                    # "T7-0_Lambda3-0_eps1_g0-1.csv",
                    ]
