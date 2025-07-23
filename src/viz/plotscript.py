@@ -34,6 +34,10 @@ class PlotParams():
                 label = legendlabel,
                 linestyle=linestyle)
     
+    def format_ax_plain(self,ax):
+        ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
+        ax.tick_params(labelsize=self.fontsizeticks)
+
     def format_ax(self,ax,ylabel,Tf):
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
         ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
@@ -85,7 +89,7 @@ class PlotParams():
         return self.get_param_value(params[0])
 
 
-    def get_data(self,model_type,method,equil,file_name):
+    def get_data(self,model_type,method,equil,file_name,constrained_kappa):
         
         """
         function which gets the filepath of model and method 
@@ -93,7 +97,7 @@ class PlotParams():
         Returns a dataframe if the data is available. 
         """
         #currloc = 
-        folder_path =os.path.dirname( __file__ )+f"/../../results/{model_type}/"
+        folder_path = os.path.dirname( __file__ )+f"/../../results/{model_type}/"
         
         #add equilibrium
         if equil=="equil":
@@ -104,7 +108,12 @@ class PlotParams():
             folder_path = folder_path + "stiffness_control/"
         #print(folder_path+ f"{method}/" + file_name)
 
-        return pd.DataFrame(pd.read_csv(folder_path + f"{method}/" + file_name))
+        if constrained_kappa=="constrained_kappa":
+            folder_path = folder_path + f"{method}/" + "constrained_kappa/"
+        else:
+            folder_path = folder_path + f"{method}/"
+
+        return pd.DataFrame(pd.read_csv(folder_path + file_name))
 
     def get_legend_label(self,model_type,method,
                             param_label, file_name):
@@ -212,7 +221,7 @@ class PlotParams():
         return dict_temp
 
 
-    def plot_all_cumulants(self,fig,gs_cumulants,models,methods,file_names,equil):
+    def plot_all_cumulants(self,fig,gs_cumulants,models,methods,file_names,equil,constrained_kappa):
         """
         Plots the data of specified parameters (via the filename) and returns matplotlib figure.
         """
@@ -228,7 +237,7 @@ class PlotParams():
                     #legendlabel=f"{model_type}, {method}"
 
                     try:   
-                        df = self.get_data(model_type,method,equil,file_name)
+                        df = self.get_data(model_type,method,equil,file_name,constrained_kappa)
                        
                         plot_params_all = dict(xloc = 0.05,
                                                 yloc= 0.85,
@@ -340,6 +349,7 @@ class PlotParams():
         term1 = 0.5*(df.kappa.to_numpy()[-1]*df.x1.to_numpy()[-1] - df.kappa.to_numpy()[0]*df.x1.to_numpy()[0])
         return term1 + self.compute_heat(df) 
 
+    
 
     def gibbs_shannon_entropy(self,mom,pos):
         """

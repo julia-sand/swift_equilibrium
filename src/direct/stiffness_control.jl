@@ -3,7 +3,7 @@ using InfiniteOpt, Ipopt;
 using CSV;
 using DataFrames;
 
-#=We minimize entropy production /heat release between non-equilibrium states
+#= We minimize entropy production /heat release between non-equilibrium states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
@@ -12,7 +12,7 @@ Example 4.1:
 
 #get parsed parameters
 include("../getfilename.jl")
-include("../initialisation_funs.jl")
+include("initialisation_funs.jl")
 
 ############################
 
@@ -33,7 +33,7 @@ function solve_direct(ARGS)
     sigmaT = 2
     
     model = InfiniteModel(Ipopt.Optimizer);
-    set_optimizer_attributes(model,"max_iter" => 10000)
+    set_optimizer_attributes(model,"max_iter" => 3000)
 
     #time
     @infinite_parameter(model, t in [0, T], num_supports = 3001, 
@@ -41,27 +41,17 @@ function solve_direct(ARGS)
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = x1_init)
+    @variable(model, 0<=x1, Infinite(t), start = 0)
 
     #cross corellation
-    @variable(model, x2, Infinite(t), start = x2_init)
+    @variable(model, x2, Infinite(t), start = 0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = x3_init)
+    @variable(model, 0<=x3, Infinite(t), start = 0)
 
     #the optimal control
-    @variable(model, kappa, Infinite(t), start = kappa_init)
+    @variable(model, kappa, Infinite(t), start = 0)
 
-    #@variable(model, kappa_final)
-
-    #define the objective, see Eq. (20)
-    #=if model_type=="log"
-        @objective(model, Min, 
-                    kappa_final + integral(x3-g*logfun(deriv(kappa,t)), t))
-    elseif model_type=="harmonic"
-        @objective(model, Min, 
-                   kappa_final + integral(x3+(g/2)*(deriv(kappa,t))^2, t))
-     =#
     if model_type=="hard" #heat release. 
         @objective(model, Min, 
                     integral(x3, t))
@@ -77,7 +67,7 @@ function solve_direct(ARGS)
     @constraint(model, x1(0) == sigma0)
     @constraint(model, x2(0) == 0)
     @constraint(model, x3(0) == 1)
-    @constraint(model, kappa(0) == 1/sigma0)
+    #@constraint(model, kappa(0) == 1/sigma0)
 
     #final
     @constraint(model, x1(T) == sigmaT)
@@ -86,9 +76,8 @@ function solve_direct(ARGS)
     
     #@constraint(model, kappa(T) == kappa_final)
     
-    @constraint(model, -3 <= kappa <= 3)
+    @constraint(model, 0.2 <= kappa <= 1.2)
 
-    
     #enforce the dynamics, see system (3)
     @constraint(model, deriv(x1,t) == 2*epsilon*x2)
     @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
@@ -98,7 +87,6 @@ function solve_direct(ARGS)
     optimize!(model)
 
     ########################
-
 
     # Define the header as an array of strings
     coords = hcat(collect.(supports(x1))...)'

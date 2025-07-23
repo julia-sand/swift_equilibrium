@@ -13,7 +13,7 @@ Example 4.1:
 
 #get parsed parameters
 include("../getfilename.jl")
-include("../initialisation_funs.jl")
+include("initialisation_funs.jl")
 
 ############################
 
@@ -29,12 +29,13 @@ function solve_direct(ARGS)
     file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
+    constraint_kappa = ARGS[5]
     
     sigma0 = 1
     sigmaT = 2
     
     model = InfiniteModel(Ipopt.Optimizer);
-    set_optimizer_attributes(model,"max_iter" => 10000)
+    set_optimizer_attributes(model,"max_iter" => 3000)
 
     #time
     @infinite_parameter(model, t in [0, T], num_supports = 3001, 
@@ -42,16 +43,17 @@ function solve_direct(ARGS)
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = x1_init)
+    @variable(model, 0<=x1, Infinite(t), start = 1)
 
     #cross corellation
-    @variable(model, x2, Infinite(t), start = x2_init)
+    @variable(model, x2, Infinite(t), start = 0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = x3_init)
+    @variable(model, 0<=x3, Infinite(t), start = 1)
 
     #the stiffness (a state)
-    @variable(model, kappa, Infinite(t), start = kappa_init)
+    @variable(model, kappa, Infinite(t), start = 1)
+    #final value of kappa as a variable
     @variable(model, kappa_final)
     
     #function for the log penalty
@@ -69,12 +71,9 @@ function solve_direct(ARGS)
                     kappa_final + integral(x3+(g/2)*(deriv(kappa,t))^2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
-                    kappa_final + integral(x3, t))
-    elseif model_type=="control"
-        @objective(model, Min, 
-                integral(x3 + alpha*kappa*(kappa*x1-1), t))
+                    (kappa_final*sigmaT)/2 + integral(x3, t))
     else
-        print("No valid model penalty type specified. Use log, control, harmonic or hard")
+        print("No valid model penalty type specified. Use log, harmonic, or hard")
     end
 
     #boundary conditions
@@ -93,11 +92,13 @@ function solve_direct(ARGS)
 
     if model_type=="hard"
         #penalty on the controls: in a compact set
-        @constraint(model, -Lambda <= lambda <= Lambda)
+        @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
     end
     
-    #additional constraint on the stiffness.
-    @constraint(model, -3 <= kappa <= 3)
+    #Constraint on kappa, Eq. (50)
+    if constraint_kappa=="kappa"
+        @constraint(model, 0.2 <= kappa <= 1.2)
+    end
 
     #enforce the dynamics, see system (3)
     @constraint(model, deriv(x1,t) == 2*epsilon*x2)
@@ -120,8 +121,12 @@ function solve_direct(ARGS)
                         ["t", "x1", "x2", "x3", "kappa"])
 
     folder = "results/$model_type/noneq/direct/"
-    CSV.write(string(folder,file_name), df)
-    
+    if constraint_kappa=="kappa"
+        CSV.write(string(folder,file_name), df)
+    else 
+        folder2 = string(folder,"constrained_kappa/")
+        CSV.write(string(folder2,file_name), df)
+    end
 end   
     
 

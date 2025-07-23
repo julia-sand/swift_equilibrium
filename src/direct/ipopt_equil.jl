@@ -2,6 +2,7 @@
 using InfiniteOpt, Ipopt;
 using DataFrames;
 using CSV;
+
 #=We minimize entropy production between EQUILIBRIUM states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
@@ -11,7 +12,7 @@ Example 4.1:
 
 #get parsed parameters
 include("../getfilename.jl")
-include("../initialisation_funs.jl")
+include("initialisation_funs.jl")
 ############################
 
 #=
@@ -26,7 +27,8 @@ function solve_direct_equil(ARGS)
     file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
-    
+    constraint_kappa = ARGS[5]
+
     sigma0 = 1
     sigmaT = 2
     
@@ -42,18 +44,18 @@ function solve_direct_equil(ARGS)
                             derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start=0)
+    @variable(model, 0<=x1, Infinite(t), start=1)
 
     #cross corellation
     @variable(model, x2, Infinite(t), start=0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start=0)
+    @variable(model, 0<=x3, Infinite(t), start=1)
 
     #the optimal control
     #Constraint on kappa, Eq. (50)
     #@variable(model, 0.2 <= kappa <=1.2, Infinite(t), start=0)
-    @variable(model, kappa, Infinite(t), start=0)
+    @variable(model, kappa, Infinite(t), start=1)
 
     #function for the log penalty
     function logfun(y)
@@ -62,6 +64,7 @@ function solve_direct_equil(ARGS)
     end
 
     #define the objective, see Eq. (20)
+    #minimise the ENTROPY PRODUCTION
     if model_type=="log"
         @objective(model, Min, 
                 integral(x3-g*logfun(deriv(kappa,t)), t))
@@ -70,7 +73,7 @@ function solve_direct_equil(ARGS)
                 integral(x3+g*(deriv(kappa,t)^2)/2, t))
     elseif model_type=="hard"
         @objective(model, Min, 
-                integral(x3, t))
+                integral(x3, t)) 
     else
         print("No valid model penalty type specified. Use log, control, harmonic or hard")
     end
@@ -87,11 +90,9 @@ function solve_direct_equil(ARGS)
     @constraint(model, x3(T) == 1)
 
     #for model between equilibrium systems, we need the following constraint (7)&(8)
-    if model_type != "control"
-        @constraint(model, kappa(0) == 1/sigma0)
-        @constraint(model, kappa(T) == 1/sigmaT)
-    end
-
+    @constraint(model, kappa(0) == 1/sigma0)
+    @constraint(model, kappa(T) == 1/sigmaT)
+    
     if model_type=="hard"
         #penalty on the controls: in a compact set
         @constraint(model, -Lambda <= deriv(kappa,t) <= Lambda)
@@ -101,11 +102,11 @@ function solve_direct_equil(ARGS)
     @constraint(model, deriv(x1,t) == 2*epsilon*x2)
     @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
     @constraint(model, deriv(x3,t) == 2*(1-x3-epsilon*kappa*x2))
-    #Constraint on kappa, Eq. (50)
     
-    @constraint(model, -3 <= kappa <= 3)
-
-    #@constraint(model, deriv(kappa,t) == lambda)
+    #Constraint on kappa, Eq. (50)
+    if constraint_kappa=="kappa"
+        @constraint(model, 0.2 <= kappa <= 1.2)
+    end
 
     # SOLVE THE MODEL
     optimize!(model)
@@ -121,7 +122,12 @@ function solve_direct_equil(ARGS)
                         ["t", "x1", "x2", "x3", "kappa"])
 
     folder = "results/$model_type/equil/direct/"
-    CSV.write(string(folder,file_name), df)
+    if constraint_kappa=="kappa"
+        CSV.write(string(folder,file_name), df)
+    else 
+        folder2 = string(folder,"constrained_kappa/")
+        CSV.write(string(folder2,file_name), df)
+    end
     
 
 end
