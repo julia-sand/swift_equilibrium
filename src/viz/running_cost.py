@@ -21,7 +21,7 @@ def running_cost_plot(file_name,file_out,models,methods,equil):
         for method in methods:
             try:
             
-                df = plotter.get_data(model_type,method,equil,file_name=file_name)
+                df = plotter.get_data(model_type,method,equil,file_name=file_name,constrained_kappa="constrained_kappa")
                 
                 g = plotter.get_g(file_name)
                 Lambda = plotter.get_Lambda(file_name)#math.sqrt(2)
@@ -55,26 +55,26 @@ if __name__=="__main__":
         
     #input file
     file_names = ["T2-0_Lambda3-0_eps1_g0-1.csv",
-                   "T3-0_Lambda3-0_eps1_g0-01.csv",
-                   "T4-0_Lambda3-0_eps1_g0-01.csv",
-                   "T5-0_Lambda3-0_eps1_g0-01.csv",
-                   "T6-0_Lambda3-0_eps1_g0-01.csv",
-                   "T7-0_Lambda3-0_eps1_g0-01.csv",
-                   "T8-0_Lambda3-0_eps1_g0-01.csv",
-                   "T8-0_Lambda3-0_eps1_g0-01.csv",
-                   "T10-0_Lambda3-0_eps1_g0-01.csv",
-                   "T20-0_Lambda3-0_eps1_g0-01.csv",
-                   "T30-0_Lambda3-0_eps1_g0-01.csv",
-                   "T40-0_Lambda3-0_eps1_g0-01.csv",
-                   "T50-0_Lambda3-0_eps1_g0-01.csv"]
+                   "T3-0_Lambda3-0_eps1_g0-1.csv",
+                   "T4-0_Lambda3-0_eps1_g0-1.csv",
+                   "T5-0_Lambda3-0_eps1_g0-1.csv",
+                   "T6-0_Lambda3-0_eps1_g0-1.csv",
+                   "T7-0_Lambda3-0_eps1_g0-1.csv",
+                   "T8-0_Lambda3-0_eps1_g0-1.csv",
+                   "T8-0_Lambda3-0_eps1_g0-1.csv",
+                   "T10-0_Lambda3-0_eps1_g0-1.csv",
+                   "T20-0_Lambda3-0_eps1_g0-1.csv",
+                   "T30-0_Lambda3-0_eps1_g0-1.csv",
+                   "T40-0_Lambda3-0_eps1_g0-1.csv",
+                   "T50-0_Lambda3-0_eps1_g0-1.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    models = ["harmonic","control","log","hard"] 
+    models = ["hard"] 
     methods = ["indirect","direct"]#["slowfast",
 
     for file_name in enumerate(file_names):
-        print(file_name)
-        running_cost_plot(file_name[1],f"runningcost_equil{file_name[0]}.png",models,methods,"equil")
-        running_cost_plot(file_name[1],f"runningcost_noneq{file_name[0]}.png",models,methods,"noneq")
+        #print(file_name)
+        running_cost_plot(file_name[1],f"plots/runningcost_equil{file_name[0]}.png",models,methods,"equil")
+        running_cost_plot(file_name[1],f"plots/runningcost_noneq{file_name[0]}.png",models,methods,"noneq")

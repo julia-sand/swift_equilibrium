@@ -20,7 +20,7 @@ def append_Tf(plotter,file_name,T_vec):
 
     return np.append(T_vec,plotter.get_T(file_name))
 
-def compute_data(plotter,file_names,model_type,method,equil,file_out):
+def compute_data(plotter,file_names,model_type,method,equil,file_out,constrained_kappa):
     T_vec = np.empty(0)
     work_vec = np.empty(0)
     ep_vec = np.empty(0) 
@@ -58,7 +58,7 @@ def make_plot(file_names,model_type,method,file_out):
     
     for ax,equil in zip([gs[:,:3],gs[:,3:]],["equil","noneq"]):
         for method in methods:
-            results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out)
+            results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out,constrained_kappa="constrained_kappa")
             plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
             plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
             plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
@@ -87,23 +87,23 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T2-0_Lambda3-0_eps1_g0-01.csv",
-                  "T3-0_Lambda3-0_eps1_g0-01.csv",
-                  "T4-0_Lambda3-0_eps1_g0-01.csv",
-                  "T5-0_Lambda3-0_eps1_g0-01.csv",
-                  "T6-0_Lambda3-0_eps1_g0-01.csv",
-                  "T7-0_Lambda3-0_eps1_g0-01.csv",
-                  "T8-0_Lambda3-0_eps1_g0-01.csv",
-                  "T9-0_Lambda3-0_eps1_g0-01.csv",
-                  "T10-0_Lambda3-0_eps1_g0-01.csv",
-                  "T20-0_Lambda3-0_eps1_g0-01.csv",
-                  "T30-0_Lambda3-0_eps1_g0-01.csv"]
+    file_names = ["T2-0_Lambda3-0_eps1_g0-1.csv",
+                  "T3-0_Lambda3-0_eps1_g0-1.csv",
+                  "T4-0_Lambda3-0_eps1_g0-1.csv",
+                  "T5-0_Lambda3-0_eps1_g0-1.csv",
+                  "T6-0_Lambda3-0_eps1_g0-1.csv",
+                  "T7-0_Lambda3-0_eps1_g0-1.csv",
+                  "T8-0_Lambda3-0_eps1_g0-1.csv",
+                  "T9-0_Lambda3-0_eps1_g0-1.csv",
+                  "T10-0_Lambda3-0_eps1_g0-1.csv",
+                  "T20-0_Lambda3-0_eps1_g0-1.csv",
+                  "T30-0_Lambda3-0_eps1_g0-1.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    model_type = "control"#["harmonic","control","log","hard"] 
-    methods = ["indirect","nondegenerate"]
+    model_type = "hard"#["harmonic","control","log","hard"] 
+    methods = ["direct"]
     make_plot(file_names,model_type,methods,f"plots/new_cost_{model_type}_{methods[0]}.png")
     #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 

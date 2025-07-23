@@ -19,7 +19,7 @@ def make_plot(file_names,model_type,method,file_out):
     param_label = None #plotter.make_paramlabel(file_names[-1])
     #equil = "equil"
     #pdb.set_trace()
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out)
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="constrained_kappa")
     results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out)
 
     plt.subplot(gs[:,:3]).plot(results1[0],results1[3],"-v",label="State",#label=r"$\mathcal{W}_{t_f}$",
@@ -65,12 +65,12 @@ if __name__=="__main__":
     file_names = ["T2-0_Lambda3-0_eps1_g0-1.csv",
                   "T3-0_Lambda3-0_eps1_g0-1.csv",
                   "T4-0_Lambda3-0_eps1_g0-1.csv",
-                  #"T5-0_Lambda3-0_eps1_g0-1.csv",
+                  "T5-0_Lambda3-0_eps1_g0-1.csv",
                   "T6-0_Lambda3-0_eps1_g0-1.csv",
                   "T7-0_Lambda3-0_eps1_g0-1.csv",
                   "T8-0_Lambda3-0_eps1_g0-1.csv",
                   "T9-0_Lambda3-0_eps1_g0-1.csv",
-                  #"T10-0_Lambda3-0_eps1_g0-1.csv",
+                  "T10-0_Lambda3-0_eps1_g0-1.csv",
                   #"T20-0_Lambda3-0_eps1_g0-1.csv",
                   #"T30-0_Lambda3-0_eps1_g0-1.csv"
                   #
