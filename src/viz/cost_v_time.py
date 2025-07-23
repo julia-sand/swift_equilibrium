@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from plotscript import *
 
-import pdb
+#import pdb
 
 def set_g(file_name,model_type,equil,plotter):
     if (model_type == ["control"] and equil=="noneq"):
