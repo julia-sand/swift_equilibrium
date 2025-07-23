@@ -31,7 +31,7 @@ def compute_data(plotter,file_names,model_type,method,equil,file_out,constrained
     
     for file_name in file_names:
         try:
-            df = plotter.get_data(model_type,method,equil,file_name)
+            df = plotter.get_data(model_type,method,equil,file_name,constrained_kappa)
 
             work_vec = np.append(work_vec, plotter.compute_work(df))
             heat_vec = np.append(heat_vec, plotter.compute_heat(df))

@@ -20,7 +20,7 @@ def make_plot(file_names,model_type,method,file_out):
     #equil = "equil"
     #pdb.set_trace()
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="constrained_kappa")
-    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out)
+    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa="no")
 
     plt.subplot(gs[:,:3]).plot(results1[0],results1[3],"-v",label="State",#label=r"$\mathcal{W}_{t_f}$",
                                 markersize=10,linewidth=plotter.lw,color=plotter.c1)
@@ -28,8 +28,8 @@ def make_plot(file_names,model_type,method,file_out):
     plt.subplot(gs[:,:3]).plot(results2[0],results2[3],"-o",label="Control",#,label=r"$\mathcal{W}_{t_f}$",
                                 markersize=10,linewidth=plotter.lw,color=plotter.c2)
     
-    plt.subplot(gs[:,3:]).plot(results1[0],results1[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c2,zorder=200)
-    plt.subplot(gs[:,3:]).plot(results2[0],results2[1],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1,zorder=200)
+    plt.subplot(gs[:,3:]).plot(results1[0],results1[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1,zorder=200)
+    plt.subplot(gs[:,3:]).plot(results2[0],results2[1],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c2,zorder=200)
 
 
     for ax in [gs[:,:3],gs[:,3:]]:
@@ -37,10 +37,7 @@ def make_plot(file_names,model_type,method,file_out):
         plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
 
 
-    if model_type=="hard":
-        titles = ["Entropy Production","Work"]
-    else:
-        titles = ["Engineered Swift Equilibration","Minimum Work Transition"]
+    titles = ["Entropy Production","Work"]
     plt.subplot(gs[:,:3]).set_title(titles[0],fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title(titles[1],fontsize=plotter.fontsizetitles)
 
@@ -62,7 +59,7 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T2-0_Lambda3-0_eps1_g0-1.csv",
+    file_names = [#"T2-0_Lambda3-0_eps1_g0-1.csv",
                   "T3-0_Lambda3-0_eps1_g0-1.csv",
                   "T4-0_Lambda3-0_eps1_g0-1.csv",
                   "T5-0_Lambda3-0_eps1_g0-1.csv",
@@ -81,7 +78,8 @@ if __name__=="__main__":
     #will be plotted, otherwise the entry will be skipped.
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
-    make_plot(file_names,model_type,method,f"plots/test_new_cost_{model_type}_{method}.png")
+    make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.png")
+    make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.pdf")
     #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 
     #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
