@@ -21,7 +21,13 @@ for minimum work
 ```
 julia src/direct/ipopt_noneq.jl T g "penalty" Lambda "kappa"
 ```
-for minimising entropy production where the control is no longer a state (Case S2)
+for minimising entropy production where the stiffness is the control (Case S2)
 ```
-julia src/direct/ipopt_noneq.jl T g "penalty" Lambda "kappa"
+julia src/direct/stiffness_control.jl T g "penalty" Lambda "kappa"
 ```
+ARGS (position):
+- $T$: final time of the simulation
+- $g$: size of penalty for "log"
+- "penalty": choose from "log", "hard", "harmonic" (see Sec. 4)
+- $\Lambda$: size of penalty for "log" and "hard"; "harmonic" penalty will use $\sqrt{2}$ by default.
+- "kappa": for "hard" penalty, "kappa" if to constrain, "none" if not. The value of $\kappa$ is not constrained by default. By choosing to constrain $\kappa$, the default interval is $[0.2,1.2]$. This can be changed by editing the file. 
