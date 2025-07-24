@@ -384,4 +384,4 @@ class PlotParams():
         """
 
 
-        return 0.0838963189003
+        return 0.09677807592811079

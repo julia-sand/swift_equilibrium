@@ -30,13 +30,17 @@ def make_plot(file_names,model_type,method,file_out):
     plt.subplot(gs[:,3:]).plot(results1[0],results1[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1,zorder=200)
     plt.subplot(gs[:,3:]).plot(results2[0],results2[1],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c2,zorder=200)
 
+    #plot w2 distance
     plt.subplot(gs[:,:3]).plot(results1[0],plotter.get_w2_dist()*np.ones(len(results1[0]))/results1[0],
                     linestyle="dashed",color=plotter.c3,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$")
     for ax in [gs[:,:3],gs[:,3:]]:
         plotter.format_ax_plain(plt.subplot(ax))
         plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
 
+    plt.subplot(gs[:,:3]).set_ylim((-0.02,0.17))
+    plt.subplot(gs[:,:3]).set_yticks([-0.02,0,0.02,0.04,0.06,0.08,0.1,0.12,0.14,0.16])
 
+    plt.subplot(gs[:,3:]).set_ylim((-0.4,0.5))
     titles = ["Entropy Production","Work"]
     plt.subplot(gs[:,:3]).set_title(titles[0],fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title(titles[1],fontsize=plotter.fontsizetitles)
@@ -67,11 +71,7 @@ if __name__=="__main__":
                   "T7-0_Lambda3-0_eps1_g0-1.csv",
                   "T8-0_Lambda3-0_eps1_g0-1.csv",
                   "T9-0_Lambda3-0_eps1_g0-1.csv",
-                  "T10-0_Lambda3-0_eps1_g0-1.csv",
-                  "T20-0_Lambda3-0_eps1_g0-1.csv",
-                  "T30-0_Lambda3-0_eps1_g0-1.csv",
-                  "T40-0_Lambda3-0_eps1_g0-1.csv",
-                  "T50-0_Lambda3-0_eps1_g0-1.csv",                
+                  "T10-0_Lambda3-0_eps1_g0-1.csv"               
                   ]
     
     #list what methods to try to plot. all those where the available parameters
