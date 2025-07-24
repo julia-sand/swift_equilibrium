@@ -3,16 +3,16 @@ Plotting and data manipulation is done in Python, integration is done through Ju
 
 Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages. 
 
-Step 1. Create results directory structure to save the file
+**Step 1.** Create results directory structure to save the file
 ```
 python src/make_results_dir.py
 ```
-Step 2. Instantiate Julia environment from Project.toml file
+**Step 2.** Instantiate Julia environment from Project.toml file
 ```
 julia --project=.
 ] instantiate
 ```
-Step 2. Run the results you would like to see 
+**Step 3.** Run the results you would like to see 
 e.g. for minimum entropy production
 ```
 julia src/direct/ipopt_equil.jl T g "penalty" Lambda "kappa"
@@ -31,3 +31,13 @@ ARGS (position):
 - "penalty": choose from "log", "hard", "harmonic" (see Sec. 4)
 - $\Lambda$: size of penalty for "log" and "hard"; "harmonic" penalty will use $\sqrt{2}$ by default.
 - "kappa": for "hard" penalty, "kappa" if to constrain, "none" if not. The value of $\kappa$ is not constrained by default. By choosing to constrain $\kappa$, the default interval is $[0.2,1.2]$. This can be changed by editing the file. 
+**Step 4.**: Plotting is done through Python's matplotlib library
+To see the cumulants (as Fig.1) 
+```
+python src/viz/plotting.py
+```
+Costs for control vs state (as Figs.3) 
+```
+python src/viz/control_v_state.py
+```
+To update what is being plotted, change the filenames, methods, models variables in the corresponding files. 
