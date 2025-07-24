@@ -1,12 +1,11 @@
-import numpy as np
-import pandas as pd
-"""verifies boundary conditions of the  a given csv file"""
-
-import numpy as np
-import matplotlib.pyplot as plt
-from plotscript import PlotParams #contains the plotting functions
 import os
 
+import numpy as np
+import pandas as pd
+
+from plotscript import PlotParams #contains the plotting functions
+
+#verifies boundary conditions of the  a given csv file
 
 if __name__=="__main__":
 

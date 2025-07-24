@@ -4,10 +4,7 @@ import pandas as pd
 
 from plotscript import *
 
-Generator = npr.default_rng(seed=None) #define rng 
-batch_samples = 500 #total number of samples
-epsilon = 1 
-plotter = PlotParams()
+#Estimates the W2 distance between the initial and final distributions 
 
 #generate the initial data
 def generate_samples(batch_samples):
@@ -50,6 +47,12 @@ def compute_xT(xinit,batch_samples,df):
 
 if __name__=="__main__":
     import ot 
+        
+    Generator = npr.default_rng(seed=None) #define rng 
+    batch_samples = 500 #total number of samples
+    epsilon = 1 
+    plotter = PlotParams()
+    
     df = plotter.get_data("hard","direct","equil","T4-0_Lambda3-0_eps1_g0-1.csv","constrained_kappa")
     xinit = generate_samples(batch_samples)
     xout = compute_xT(xinit,batch_samples,df)

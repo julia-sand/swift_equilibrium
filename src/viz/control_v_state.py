@@ -10,8 +10,6 @@ from cost_v_time import append_Tf, set_g, compute_data
 
 def make_plot(file_names,model_type,method,file_out):
     
-    
-    #pdb.set_trace()
     plotter = PlotParams()
     # Plotting the cumulants
     fig = plotter.make_fig()
@@ -19,8 +17,7 @@ def make_plot(file_names,model_type,method,file_out):
 
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
-    #equil = "equil"
-    #pdb.set_trace()
+    
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="constrained_kappa")
     results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa="no")
 
@@ -84,7 +81,4 @@ if __name__=="__main__":
     method = "direct"#,"nondegenerate"]
     make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.png")
     make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.pdf")
-    #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
-
-    #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
     

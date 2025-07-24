@@ -4,11 +4,9 @@ import matplotlib.pyplot as plt
 
 from plotscript import *
 
-#import pdb
-
 def set_g(file_name,model_type,equil,plotter):
     if (model_type == ["control"] and equil=="noneq"):
-        g = 0 #plotter.get_g(file_name) #if equil else 0
+        g = 0 
     elif (model_type=="hard"):
         g = 0
     else:
@@ -47,7 +45,7 @@ def compute_data(plotter,file_names,model_type,method,equil,file_out,constrained
     
 
 def make_plot(file_names,model_type,method,file_out):
-    #pdb.set_trace()
+
     plotter = PlotParams()
     # Plotting the cumulants
     fig = plotter.make_fig()
