@@ -12,7 +12,7 @@ plotter = PlotParams()
 def panel_a(ax,constraint,file_out,panel_label,plotter=plotter):
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa=constraint)
     results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa=constraint)
-    print(np.max(results1[3]))
+
     plt.subplot(ax).plot(results1[0],results1[3],"-v",label="State (S.I)",#label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c1)
 
