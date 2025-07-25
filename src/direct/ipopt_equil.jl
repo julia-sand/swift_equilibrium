@@ -40,7 +40,7 @@ function solve_direct_equil(ARGS)
     #time
     @infinite_parameter(model, 
                             t in [0, T], 
-                            num_supports = 3001, 
+                            num_supports = 18001, 
                             derivative_method=FiniteDifference(Forward(), true))
 
     #position variance

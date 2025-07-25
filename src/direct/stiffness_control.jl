@@ -36,28 +36,25 @@ function solve_direct(ARGS)
     set_optimizer_attributes(model,"max_iter" => 3000)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 3001, 
+    @infinite_parameter(model, t in [0, T], num_supports = 18001, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = 0)
+    @variable(model, 0<=x1, Infinite(t), start = 1)
 
     #cross corellation
     @variable(model, x2, Infinite(t), start = 0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = 0)
+    @variable(model, 0<=x3, Infinite(t), start = 1)
 
     #the optimal control
-    @variable(model, kappa, Infinite(t), start = 0)
+    @variable(model, kappa, Infinite(t), start = 1)
 
     if model_type=="hard" #heat release. 
         @objective(model, Min, 
                     integral(x3, t))
-    elseif model_type=="control"
-        @objective(model, Min, 
-                integral(x3 + alpha*kappa*(kappa*x1-1), t))
     else
         print("No valid model penalty type specified. Use log, control, harmonic or hard")
     end

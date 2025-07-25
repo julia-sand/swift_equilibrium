@@ -12,7 +12,7 @@ def set_g(file_name,model_type,equil,plotter):
     else:
         g = plotter.get_g(file_name)
 
-    return g
+    return plotter.get_g(file_name)
 
 def append_Tf(plotter,file_name,T_vec):
 

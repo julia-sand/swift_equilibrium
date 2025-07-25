@@ -26,16 +26,17 @@ if __name__=="__main__":
     #be plotted if available. 
     file_names =  [
                    # "T2-0_Lambda3-0_eps1_g0-1.csv",
-                    "T4-0_Lambda3-0_eps1_g0-1.csv",
-                   "T30-0_Lambda3-0_eps1_g0-1.csv",
+                    "T3-0_Lambda3-0_eps1_g0-1.csv",
+                    #"T3-0_Lambda3-0_eps1_g0-01.csv",
+                   #"T30-0_Lambda3-0_eps1_g0-1.csv",
                    #  "T5-0_Lambda3-0_eps1_g0-1.csv",
                    # "T6-0_Lambda3-0_eps1_g0-1.csv",
                    # "T7-0_Lambda3-0_eps1_g0-1.csv",
                    ]
-    models = ["hard"] #"harmonic",
-    methods = ["direct"]#["slowfast","direct","indirect"]
+    models = ["log","hard"] #"harmonic",
+    methods = ["indirect","direct"]#["slowfast","direct","indirect"]
     #plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.png", True)
     #plot_result(models,methods,file_names,f"plots/stiffness_control_plot_{models[0]}.png", "stiffness_control")
-    plot_result(models,methods,file_names,f"plots/hard_equil_plot_{models[0]}.png", "equil","constrained_kappa")
-    plot_result(models,methods,file_names,f"plots/hard_noneq_plot_{models[0]}.png", "noneq","constrained_kappa")
-    plot_result(models,methods,file_names,f"plots/hard_stiffcontrol_plot_{models[0]}.png", "stiffness_control","none")
+    #plot_result(models,methods,file_names,f"plots/minwork_equil_plot_{models[0]}.png", "equil","skip")
+    #plot_result(models,methods,file_names,f"plots/minwork_noneq_plot_{models[0]}.png", "noneq","skip")
+    plot_result(["hard"],["direct"],file_names,f"plots/new_stiffcontrol_plot_{models[0]}.png", "noneq","pass")
