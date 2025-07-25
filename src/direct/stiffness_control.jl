@@ -37,7 +37,7 @@ function solve_direct(ARGS)
     set_optimizer_attributes(model,"max_iter" => 3000)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 18001, 
+    @infinite_parameter(model, t in [0, T], num_supports = 27001, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
