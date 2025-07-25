@@ -18,8 +18,8 @@ def make_plot(file_names,model_type,method,file_out):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="constrained_kappa")
-    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa="no")
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="negative_constrained_kappa")
+    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa="negative_constrained_kappa")
 
     plt.subplot(gs[:,:3]).plot(results1[0],results1[3],"-v",label="State (S.I)",#label=r"$\mathcal{W}_{t_f}$",
                                 markersize=10,linewidth=plotter.lw,color=plotter.c1)
@@ -70,21 +70,21 @@ if __name__=="__main__":
         
     #input file
     file_names = [#"T2-0_Lambda3-0_eps1_g0-1.csv",
-                  "T3-0_Lambda3-0_eps1_g0-1.csv",
-                  "T4-0_Lambda3-0_eps1_g0-1.csv",
-                  "T5-0_Lambda3-0_eps1_g0-1.csv",
-                  "T6-0_Lambda3-0_eps1_g0-1.csv",
-                  "T7-0_Lambda3-0_eps1_g0-1.csv",
-                  "T8-0_Lambda3-0_eps1_g0-1.csv",
-                  "T9-0_Lambda3-0_eps1_g0-1.csv",                  
-                  "T10-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T12-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T13-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T14-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T15-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T20-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T30-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T40-0_Lambda3-0_eps1_g0-1.csv",               
+                  "T3-0_Lambda9-0_eps1_g0-1.csv",
+                  "T4-0_Lambda9-0_eps1_g0-1.csv",
+                  "T5-0_Lambda9-0_eps1_g0-1.csv",
+                  "T6-0_Lambda9-0_eps1_g0-1.csv",
+                  "T7-0_Lambda9-0_eps1_g0-1.csv",
+                  "T8-0_Lambda9-0_eps1_g0-1.csv",
+                  "T9-0_Lambda9-0_eps1_g0-1.csv",                  
+                  "T10-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T12-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T13-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T14-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T15-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T20-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T30-0_Lambda9-0_eps1_g0-1.csv",               
+                  "T40-0_Lambda9-0_eps1_g0-1.csv",               
                   ]
     
     #list what methods to try to plot. all those where the available parameters
@@ -92,6 +92,6 @@ if __name__=="__main__":
     #will be plotted, otherwise the entry will be skipped.
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
-    make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.png")
-    make_plot(file_names,model_type,method,f"plots/state_v_control_cost_{model_type}_{method}.pdf")
+    make_plot(file_names,model_type,method,f"plots/neg_kappa_state_v_control_cost_{model_type}_{method}.png")
+    make_plot(file_names,model_type,method,f"plots/neg_kappa_state_v_control_cost_{model_type}_{method}.pdf")
     

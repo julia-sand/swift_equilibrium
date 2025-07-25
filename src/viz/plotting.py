@@ -26,7 +26,7 @@ if __name__=="__main__":
     #be plotted if available. 
     file_names =  [
                    # "T2-0_Lambda3-0_eps1_g0-1.csv",
-                    "T3-0_Lambda3-0_eps1_g0-1.csv",
+                    "T3-0_Lambda9-0_eps1_g0-1.csv",
                     #"T3-0_Lambda3-0_eps1_g0-01.csv",
                    #"T30-0_Lambda3-0_eps1_g0-1.csv",
                    #  "T5-0_Lambda3-0_eps1_g0-1.csv",
@@ -39,4 +39,4 @@ if __name__=="__main__":
     #plot_result(models,methods,file_names,f"plots/stiffness_control_plot_{models[0]}.png", "stiffness_control")
     #plot_result(models,methods,file_names,f"plots/minwork_equil_plot_{models[0]}.png", "equil","skip")
     #plot_result(models,methods,file_names,f"plots/minwork_noneq_plot_{models[0]}.png", "noneq","skip")
-    plot_result(["hard"],["direct"],file_names,f"plots/new_stiffcontrol_plot_{models[0]}.png", "noneq","pass")
+    plot_result(["hard"],["direct"],file_names,f"plots/new_stiffcontrol_plot_{models[0]}.png", "stiffness_control","negative_constrained_kappa")

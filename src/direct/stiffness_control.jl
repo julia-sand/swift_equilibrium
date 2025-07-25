@@ -26,6 +26,7 @@ function solve_direct(ARGS)
     Lambda = parse(Float64,ARGS[4]) #sqrt(2)
     alpha = 0.1
     file_name = get_file_name(T,epsilon,g,Lambda)
+    constraint_kappa = ARGS[5] #"kappa": constraint 1 on kappa; "neg":constraint 2
 
     model_type = ARGS[3]
     
@@ -73,7 +74,12 @@ function solve_direct(ARGS)
     
     #@constraint(model, kappa(T) == kappa_final)
     
-    @constraint(model, 0.2 <= kappa <= 1.2)
+    #@constraint(model, 0.2 <= kappa <= 1.2)
+    if constraint_kappa=="kappa"
+        @constraint(model, 0.2 <= kappa <= 1.2)
+    elseif constraint_kappa=="neg"
+        @constraint(model, -1.5 <= kappa <= 1.5)
+    end
 
     #enforce the dynamics, see system (3)
     @constraint(model, deriv(x1,t) == 2*epsilon*x2)
@@ -95,8 +101,18 @@ function solve_direct(ARGS)
                         ["t", "x1", "x2", "x3", "kappa"])
 
     folder = "results/$model_type/stiffness_control/direct/"
-    CSV.write(string(folder,file_name), df)
+
+    if constraint_kappa=="kappa"
+        folder2 = string(folder,"constrained_kappa/")
+        CSV.write(string(folder2,file_name), df)
+    elseif constraint_kappa=="neg"
+        folder3 = string(folder,"negative_constrained_kappa/")
+        CSV.write(string(folder3,file_name), df)
+    else 
+        CSV.write(string(folder,file_name), df)
+    end
     
+
 end   
     
 

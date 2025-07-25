@@ -27,7 +27,7 @@ function solve_direct_equil(ARGS)
     file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
-    constraint_kappa = ARGS[5]
+    constraint_kappa = ARGS[5] #"kappa": constraint 1 on kappa; "neg":constraint 2
 
     sigma0 = 1
     sigmaT = 2
@@ -106,6 +106,8 @@ function solve_direct_equil(ARGS)
     #Constraint on kappa, Eq. (50)
     if constraint_kappa=="kappa"
         @constraint(model, 0.2 <= kappa <= 1.2)
+    elseif constraint_kappa=="neg"
+        @constraint(model, -1.5 <= kappa <= 1.5)
     end
 
     # SOLVE THE MODEL
@@ -125,6 +127,9 @@ function solve_direct_equil(ARGS)
     if constraint_kappa=="kappa"
         folder2 = string(folder,"constrained_kappa/")
         CSV.write(string(folder2,file_name), df)
+    elseif constraint_kappa=="neg"
+        folder3 = string(folder,"negative_constrained_kappa/")
+        CSV.write(string(folder3,file_name), df)
     else 
         CSV.write(string(folder,file_name), df)
     end
