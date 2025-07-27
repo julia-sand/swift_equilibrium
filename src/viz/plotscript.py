@@ -30,15 +30,32 @@ class PlotParams():
         """Simple plot and formatting to plot one line of data. Used for plotting
         Hamiltonian and running cost
         """
+
         ax.plot(x, y, lw = self.lw, 
                 label = legendlabel,
                 linestyle=linestyle)
     
     def format_ax_plain(self,ax):
-        ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
+        """
+        Adds x axis label and formats axis ticks
+        """
+        
+        ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles,labelpad=-3)
         ax.tick_params(labelsize=self.fontsizeticks)
 
     def format_ax(self,ax,ylabel,Tf):
+        """
+        Formats x axis
+
+        Args:
+            ax : artist
+                axis to apply formatting
+            ylabel : str 
+                text for y axis label
+            Tf : float
+                final time to set x axis limit
+        """
+        
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
         ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
         ax.tick_params(labelsize=self.fontsizeticks)
@@ -60,9 +77,11 @@ class PlotParams():
         return params 
  
     def make_paramlabel(self,file_name):
-        """Creates the parameter label to add to the base of the plots. 
+        """
+        Creates the parameter label to add to the base of the plots. 
         Parameters are taken from the file name of the run. 
         """
+
         #read params from filename? 
         params = self.get_params(file_name)
 
@@ -90,12 +109,12 @@ class PlotParams():
 
 
     def get_data(self,model_type,method,equil,file_name,constrained_kappa):
-        
         """
         function which gets the filepath of model and method 
         
         Returns a dataframe if the data is available. 
         """
+
         #currloc = 
         folder_path = os.path.dirname( __file__ )+f"/../../results/{model_type}/"
         
@@ -289,8 +308,8 @@ class PlotParams():
                         pass     
         plt.subplot(gs_cumulants[0, 0:2]).set_ylim(top=1.05,bottom=0.87)
         plt.subplot(gs_cumulants[0, 4:]).set_ylim(top=0.45,bottom=-0.2)
-        plt.subplot(gs_cumulants[1, 3:]).set_ylim(top=14,bottom=-14)
-        plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
+        #plt.subplot(gs_cumulants[1, 3:]).set_ylim(top=14,bottom=-14)
+        #plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
         #add legend
         plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks
                                         ,loc="lower center"

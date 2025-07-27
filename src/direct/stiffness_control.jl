@@ -37,7 +37,7 @@ function solve_direct(ARGS)
     set_optimizer_attributes(model,"max_iter" => 3000)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 27001, 
+    @infinite_parameter(model, t in [0, T], num_supports = 501, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
@@ -51,7 +51,7 @@ function solve_direct(ARGS)
     @variable(model, 0<=x3, Infinite(t), start = 1)
 
     #the optimal control
-    @variable(model, kappa, Infinite(t), start = 1)
+    @variable(model, kappa, Infinite(t), start = 0.5)
 
     if model_type=="hard" #heat release. 
         @objective(model, Min, 
@@ -78,7 +78,7 @@ function solve_direct(ARGS)
     if constraint_kappa=="kappa"
         @constraint(model, 0.2 <= kappa <= 1.2)
     elseif constraint_kappa=="neg"
-        @constraint(model, -1.5 <= kappa <= 1.5)
+        @constraint(model, -100.5 <= kappa <= 100.5)
     end
 
     #enforce the dynamics, see system (3)

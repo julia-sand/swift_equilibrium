@@ -50,29 +50,35 @@ def make_plot(file_names,model_type,method,file_out):
     # Plotting the cumulants
     fig = plotter.make_fig()
     gs = plotter.make_gridspec(fig)
-
+    
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="no")
-    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",file_out=file_out,constrained_kappa="no")
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="pass")
+    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",file_out=file_out,constrained_kappa="pass")
+    
+    for ax,results,panel_label in zip([gs[:,:3],gs[:,3:]],[results1,results2],["(a)","(b)"]):
 
-    for ax,results in zip([gs[:,:3],gs[:,3:]],[results1,results2]):
+        #results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out,constrained_kappa="pass")
         plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
         plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
         plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
+        plt.subplot(ax).plot(results[0],results[4],"--v",label=r"$\mathcal{C}_{t_f}$",markersize=5,linewidth=1,color="black",zorder=300)
     
         plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        plt.subplot(ax).text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(ax).transAxes)
+        plt.subplot(ax).set_ylim((-1,0.3))
+        plt.subplot(ax).set_xlabel(r"$t_f$")
+        plt.subplot(ax).set_ylabel(r"Cost")
+        plotter.format_ax_plain(plt.subplot(ax))
 
     plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title("Minimum Work Transition",fontsize=plotter.fontsizetitles)
 
-    ax_inset = plt.subplot(gs[:,:3]).inset_axes(bounds=[0.1,0.1,0.4,0.3],transform=plt.subplot(gs[:,:3]).transAxes)
-    
-    
-    
-    plt.subplot(gs[:,3:]).text(x=0.02,y=0.95,s="(b)",fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(gs[:,3:]).transAxes)
-    plt.subplot(gs[:,:3]).text(x=0.02,y=0.95,s="(a)",fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(gs[:,:3]).transAxes)
-    
+    ax_inset = plt.subplot(gs[:,:3]).inset_axes(bounds=[0.25,0.1,0.5,0.3],transform=plt.subplot(gs[:,:3]).transAxes)
+    plotter.format_ax_plain(ax_inset)
+    ax_inset.plot(results2[0], results1[3]-results2[3],lw=plotter.lw)
+    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
+    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
     h,l = plt.subplot(gs[:,3:]).get_legend_handles_labels()
 
     fig.legend(h,l,
@@ -103,9 +109,9 @@ if __name__=="__main__":
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
-    model_type ="harmonic"#["harmonic","control","log","hard"] 
+    model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
-    make_plot(file_names,model_type,method,f"plots/new_cost_{model_type}_{method[0]}.png")
+    make_plot(file_names,model_type,method,f"plots/costtime_plot_{model_type}_{method[0]}.png")
     #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 
     #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
