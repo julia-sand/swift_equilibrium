@@ -322,6 +322,18 @@ class PlotParams():
 
         return fig
   
+    def integrator(self,y,x,dx=0.01):
+        #
+        ti = np.minimum(x) 
+        tf = np.maximum(x)
+        nsteps = int(np.ceil(tf/dx)) #number of steps in equally spaced discretisations
+
+        t_axis = np.linspace(ti,tf,nsteps)
+        
+        #get y data
+        interp_y = np.interp(t_axis,x,y)
+        return np.trapz(interp_y,t_axis)
+
     def b(self,y4,model_type,Lambda,g):
         if model_type=="harmonic":
             return y4/g #(y4*(Lambda**2))/(2*g)
@@ -359,7 +371,7 @@ class PlotParams():
         Q_T
         """
         
-        return np.trapz(df.x3.to_numpy(),df.t.to_numpy()) - df.t.to_numpy()[-1]  
+        return self.integrator(df.x3.to_numpy(),df.t.to_numpy()) - df.t.to_numpy()[-1]  
     
     def compute_work(self,df):
         """
