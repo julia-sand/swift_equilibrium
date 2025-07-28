@@ -5,11 +5,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-
+from scipy.ndimage import generic_filter
+import scipy.ndimage as sc
 
 """
-This file contains the utility and plotting functions to 
-present the results from integration
+This file contains all the utility and plotting functions to make the plots that 
+present our results
 
 """ 
 
@@ -43,7 +44,7 @@ class PlotParams():
         ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles,labelpad=-3)
         ax.tick_params(labelsize=self.fontsizeticks)
 
-    def format_ax(self,ax,ylabel,Tf):
+    def format_ax(self,ax,ylabel,Tf,ti=0):
         """
         Formats x axis
 
@@ -59,8 +60,15 @@ class PlotParams():
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
         ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
         ax.tick_params(labelsize=self.fontsizeticks)
-        ax.set_xlim((-0.01,Tf+0.01))
+        ax.set_xlim((-0.5+ti,Tf+0.5))
 
+    def filter_(self,x,filter_delta = 20):
+        """Convenient function to apply a simple smoothing filter to
+        a series of data
+        """
+        
+        return generic_filter(x,sc.mean,filter_delta,mode = "nearest")
+    
     def get_idx(self,string):
         for i in enumerate(string):
             if str.isdigit(i[1]):
@@ -97,7 +105,7 @@ class PlotParams():
     def get_Lambda(self,file_name):
         params = self.get_params(file_name)
         lambdatemp = self.get_param_value(params[1])
-        if lambdatemp ==1.4:
+        if lambdatemp == 1.4:
             lambdatemp = np.sqrt(2)
 
         return lambdatemp
@@ -125,7 +133,6 @@ class PlotParams():
             folder_path = folder_path + "noneq/"
         else:
             folder_path = folder_path + "stiffness_control/"
-        #print(folder_path+ f"{method}/" + file_name)
 
         if constrained_kappa=="constrained_kappa":
             folder_path = folder_path + f"{method}/" + "constrained_kappa/"
@@ -283,7 +290,7 @@ class PlotParams():
                                                                 ylabel='Cross Correlation')),label_ind,c_ind)
                         self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]),
                                                                 tseries = df.t.to_numpy(),
-                                                                xseries= df["kappa"].to_numpy(),
+                                                                xseries= self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()), #df["kappa"].to_numpy(),
                                                                 letter_label="(d)",
                                                                 ylabel=r'$\kappa_t$',
                                                                 xloc=0.05*(2/3))),label_ind,c_ind)
@@ -291,7 +298,8 @@ class PlotParams():
                         lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                         
                         #else:
-                        #    lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+                        
+                        #lambda_series2 = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
                         self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]),
                                                                 #tseries = df.t.to_numpy(),
@@ -308,8 +316,8 @@ class PlotParams():
                         pass     
         plt.subplot(gs_cumulants[0, 0:2]).set_ylim(top=1.05,bottom=0.87)
         plt.subplot(gs_cumulants[0, 4:]).set_ylim(top=0.45,bottom=-0.2)
-        #plt.subplot(gs_cumulants[1, 3:]).set_ylim(top=14,bottom=-14)
-        #plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
+        plt.subplot(gs_cumulants[1, 3:]).set_ylim(top=14,bottom=-14)
+        #plt.subplot(gs_cumulants[1, 3:]).plot(df.t.to_numpy(),lambda_series)#plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
         #add legend
         plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks
                                         ,loc="lower center"
@@ -322,16 +330,16 @@ class PlotParams():
 
         return fig
   
-    def integrator(self,y,x,dx=0.01):
+    def integrator(self,y,x,dx=0.0001):
         #
-        ti = np.minimum(x) 
-        tf = np.maximum(x)
+        ti = np.min(x) 
+        tf = np.max(x)
         nsteps = int(np.ceil(tf/dx)) #number of steps in equally spaced discretisations
 
         t_axis = np.linspace(ti,tf,nsteps)
         
         #get y data
-        interp_y = np.interp(t_axis,x,y)
+        interp_y = np.interp(t_axis,x,filter_(y))
         return np.trapz(interp_y,t_axis)
 
     def b(self,y4,model_type,Lambda,g):
@@ -410,6 +418,18 @@ class PlotParams():
         S = np.trapz(self.control_penalty_S(df),df.t.to_numpy())
         
         return self.compute_work(df) + g*V + alpha*S
+
+
+    def reconstruct_kappa(self,t,x1,x2,x3):
+        """
+        This function returns an approximation for kappa given the cumulants, using the dynamical equation for cross-corellation
+        """
+
+        epsilon = 1 
+
+        x2dot = np.gradient(x2,t)
+
+        return (x2dot + x2 - epsilon*x3)/(-epsilon*x1)
 
     def get_w2_dist(self):
         """

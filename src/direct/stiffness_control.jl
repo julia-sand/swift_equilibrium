@@ -35,9 +35,11 @@ function solve_direct(ARGS)
     
     model = InfiniteModel(Ipopt.Optimizer);
     set_optimizer_attributes(model,"max_iter" => 3000)
+    set_optimizer_attribute(model, "tol", 1e-16);
+    set_optimizer_attribute(model, "acceptable_tol", 1e-16)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 501, 
+    @infinite_parameter(model, t in [0, T], num_supports = 18001, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
@@ -78,7 +80,7 @@ function solve_direct(ARGS)
     if constraint_kappa=="kappa"
         @constraint(model, 0.2 <= kappa <= 1.2)
     elseif constraint_kappa=="neg"
-        @constraint(model, -100.5 <= kappa <= 100.5)
+        @constraint(model, -1.5 <= kappa <= 1.5)
     end
 
     #enforce the dynamics, see system (3)

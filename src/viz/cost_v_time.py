@@ -68,8 +68,7 @@ def make_plot(file_names,model_type,method,file_out):
         plt.subplot(ax).text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(ax).transAxes)
         plt.subplot(ax).set_ylim((-1,0.3))
         plt.subplot(ax).set_xlabel(r"$t_f$")
-        plt.subplot(ax).set_ylabel(r"Cost")
-        plotter.format_ax_plain(plt.subplot(ax))
+        plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]),ti=np.min(results[0]))
 
     plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).set_title("Minimum Work Transition",fontsize=plotter.fontsizetitles)
@@ -94,24 +93,26 @@ def make_plot(file_names,model_type,method,file_out):
 if __name__=="__main__":
         
     #input file
-    file_names = ["T2-0_Lambda1-4_eps1_g0-01.csv",
-                  "T3-0_Lambda1-4_eps1_g0-01.csv",
-                  "T4-0_Lambda1-4_eps1_g0-01.csv",
-                  "T5-0_Lambda1-4_eps1_g0-01.csv",
-                  "T6-0_Lambda1-4_eps1_g0-01.csv",
-                  "T7-0_Lambda1-4_eps1_g0-01.csv",
-                  "T8-0_Lambda1-4_eps1_g0-01.csv",
-                  "T9-0_Lambda1-4_eps1_g0-01.csv",
-                  "T10-0_Lambda1-4_eps1_g0-01.csv",
-                  "T20-0_Lambda1-4_eps1_g0-01.csv",
-                  "T30-0_Lambda1-4_eps1_g0-01.csv"]
+    file_names = ["T2-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T3-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T4-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T5-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T6-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T7-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T8-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T9-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T10-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T20-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T30-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T40-0_Lambda1-4_eps1_g0-0001.csv",
+                  "T50-0_Lambda1-4_eps1_g0-0001.csv"]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
     #will be plotted, otherwise the entry will be skipped.
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
-    make_plot(file_names,model_type,method,f"plots/costtime_plot_{model_type}_{method[0]}.png")
+    make_plot(file_names,model_type,method,f"plots/1new_costtime_plot_{model_type}_{method[0]}.png")
     #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
 
     #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
