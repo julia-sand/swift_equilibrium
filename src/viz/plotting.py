@@ -2,6 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from plotscript import PlotParams #contains the plotting functions
 
+def adjust_subplot_lims(gs):
+    plt.subplot(gs[1,3:]).set_ylim((-20,20))
+    plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
+    plt.subplot(gs[0,4:]).set_ylim((-0.3,0.4))
+
 def plot_result(models,methods,file_names,file_out,equil,constrained_kappa):
     plotter = PlotParams()
     #change here if you want the label or not
@@ -14,7 +19,9 @@ def plot_result(models,methods,file_names,file_out,equil,constrained_kappa):
                                     methods,
                                     file_names,
                                     equil=equil,constrained_kappa=constrained_kappa)
-    
+
+
+    adjust_subplot_lims(gs_cumulants)
     fig_out.savefig(file_out, bbox_inches="tight")
 
     plt.close()
@@ -26,18 +33,14 @@ if __name__=="__main__":
     #be plotted if available. 
     file_names =  [
                    # "T2-0_Lambda3-0_eps1_g0-1.csv",
-                    "T3-0_Lambda9-0_eps1_g0-1.csv",
+                    "T3-0_Lambda1-4_eps1_g0-0001.csv",
                     #"T3-0_Lambda3-0_eps1_g0-01.csv",
                    #"T30-0_Lambda3-0_eps1_g0-1.csv",
                    #  "T5-0_Lambda3-0_eps1_g0-1.csv",
                    # "T6-0_Lambda3-0_eps1_g0-1.csv",
                    # "T7-0_Lambda3-0_eps1_g0-1.csv",
                    ]
-    models = ["hard"] #"harmonic",
-    methods = ["direct"]#["slowfast","direct","indirect"]
-    #plot_result(models,methods,file_names,f"plots/equil_plot_{models[0]}.png", True)
-    #plot_result(models,methods,file_names,f"plots/stiffness_control_plot_{models[0]}.png", "stiffness_control")
-    #plot_result(models,methods,file_names,f"plots/minwork_equil_plot_{models[0]}.png", "equil","skip")
-    #plot_result(models,methods,file_names,f"plots/minwork_noneq_plot_{models[0]}.png", "noneq","skip")
-    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.png", "stiffness_control","negative_constrained_kappa")
-    plot_result(models,methods,file_names,f"plots/cumulants_stiffnesscontrol_{models[0]}.pdf", "stiffness_control","negative_constrained_kappa")
+    models = ["harmonic"] #"harmonic",
+    methods = ["indirect"]#["slowfast","direct","indirect"]
+    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.png", "noneq","none")
+    #plot_result(models,methods,file_names,f"plots/cumulants_stiffnesscontrol_{models[0]}.pdf", "stiffness_control","negative_constrained_kappa")
