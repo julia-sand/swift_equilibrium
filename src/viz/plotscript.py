@@ -62,7 +62,7 @@ class PlotParams():
         ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
 
-    def filter_(self,x,filter_delta = 100):
+    def filter_(self,x,filter_delta = 1):
         """Convenient function to apply a simple smoothing filter to
         a series of data
         """
@@ -300,18 +300,18 @@ class PlotParams():
                                                                 ylabel=r'Stiffness, $\kappa_t$',
                                                                 xloc=0.05*(2/3))),label_ind,c_ind,
                                                                                         ylim=(-1.65,1.65))
-                        #if (method =="direct" or (model_type=="control" and equil==False)):
-                        lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+                        if (method =="direct" or (model_type=="control" and equil==False)):
+                            lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                         
-                        #else:
+                        else:
                         
-                        #lambda_series2 = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+                            lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
                         self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if equil!="stiffness_control" else None,
                                                                 #tseries = df.t.to_numpy(),
                                                                 xseries= lambda_series,
                                                                 letter_label="(e)",
-                                                                ylabel=r'$\lambda_t$',
+                                                                ylabel=r'Control, $\lambda_t$',
                                                                 xloc=0.05*(2/3))),label_ind,c_ind)
                         
                         if method =="slowfast":

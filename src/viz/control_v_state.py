@@ -78,7 +78,7 @@ if __name__=="__main__":
                   "T15-0_Lambda3-0_eps1_g0-1.csv",               
                   "T20-0_Lambda3-0_eps1_g0-1.csv",               
                   "T30-0_Lambda3-0_eps1_g0-1.csv",               
-                  "T40-0_Lambda3-0_eps1_g0-1.csv",               
+                  #"T40-0_Lambda3-0_eps1_g0-1.csv",               
                   #"T2-0_Lambda3-0_eps1_g0-1.csv",
                   "T3-0_Lambda9-0_eps1_g0-1.csv",
                   "T4-0_Lambda9-0_eps1_g0-1.csv",

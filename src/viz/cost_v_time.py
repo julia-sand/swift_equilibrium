@@ -7,10 +7,8 @@ from plotscript import *
 Produces Fig. 5 in paper
 """
 
-def set_g(file_name,model_type,equil,plotter):
-    if (model_type == ["control"] and equil=="noneq"):
-        g = 0 
-    elif (model_type=="hard"):
+def set_g(file_name,model_type,plotter):
+    if (model_type=="hard"):
         g = 0
     else:
         g = plotter.get_g(file_name)

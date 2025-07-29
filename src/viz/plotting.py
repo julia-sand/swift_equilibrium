@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from plotscript import PlotParams #contains the plotting functions
 
 def adjust_subplot_lims(gs):
-    plt.subplot(gs[1,3:]).set_ylim((-20,20))
+    plt.subplot(gs[1,3:]).set_ylim((-40,35))
     plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
     plt.subplot(gs[0,4:]).set_ylim((-0.3,0.4))
 
@@ -43,4 +43,5 @@ if __name__=="__main__":
     models = ["harmonic"] #"harmonic",
     methods = ["indirect"]#["slowfast","direct","indirect"]
     plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.png", "noneq","none")
+    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.pdf", "noneq","none")
     #plot_result(models,methods,file_names,f"plots/cumulants_stiffnesscontrol_{models[0]}.pdf", "stiffness_control","negative_constrained_kappa")
