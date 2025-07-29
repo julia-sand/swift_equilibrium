@@ -39,4 +39,5 @@ if __name__=="__main__":
     #plot_result(models,methods,file_names,f"plots/stiffness_control_plot_{models[0]}.png", "stiffness_control")
     #plot_result(models,methods,file_names,f"plots/minwork_equil_plot_{models[0]}.png", "equil","skip")
     #plot_result(models,methods,file_names,f"plots/minwork_noneq_plot_{models[0]}.png", "noneq","skip")
-    plot_result(models,methods,file_names,f"plots/3_cumulants_noneq_{models[0]}.png", "stiffness_control","negative_constrained_kappa")
+    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.png", "stiffness_control","negative_constrained_kappa")
+    plot_result(models,methods,file_names,f"plots/cumulants_stiffnesscontrol_{models[0]}.pdf", "stiffness_control","negative_constrained_kappa")

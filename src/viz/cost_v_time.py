@@ -3,6 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from plotscript import *
+"""
+Produces Fig. 5 in paper
+"""
 
 def set_g(file_name,model_type,equil,plotter):
     if (model_type == ["control"] and equil=="noneq"):
@@ -12,7 +15,7 @@ def set_g(file_name,model_type,equil,plotter):
     else:
         g = plotter.get_g(file_name)
 
-    return plotter.get_g(file_name)
+    return g#plotter.get_g(file_name)
 
 def append_Tf(plotter,file_name,T_vec):
 
@@ -66,7 +69,7 @@ def make_plot(file_names,model_type,method,file_out):
     
         plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
         plt.subplot(ax).text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(ax).transAxes)
-        plt.subplot(ax).set_ylim((-1,0.3))
+        plt.subplot(ax).set_ylim((-1,0.35))
         plt.subplot(ax).set_xlabel(r"$t_f$")
         plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]),ti=np.min(results[0]))
 
@@ -112,8 +115,8 @@ if __name__=="__main__":
     #will be plotted, otherwise the entry will be skipped.
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
-    make_plot(file_names,model_type,method,f"plots/1new_costtime_plot_{model_type}_{method[0]}.png")
-    #make_plot(file_names,model_type,method,f"plots/cost_{model_type}_{method}.pdf")
+    make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.png")
+    make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.pdf")
 
     #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
     
