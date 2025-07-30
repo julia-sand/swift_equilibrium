@@ -62,7 +62,7 @@ class PlotParams():
         ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
 
-    def filter_(self,x,filter_delta = 100):
+    def filter_(self,x,filter_delta = 50):
         """Convenient function to apply a simple smoothing filter to
         a series of data
         """
@@ -166,7 +166,7 @@ class PlotParams():
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            ax.plot(x[1:-1], self.filter_(y[1:-1]), label = legendlabel,lw=self.lw,color=self.c1)
+            ax.plot(x[1:-1], self.filter_(y[1:-1]), label = legendlabel,lw=self.lw)#,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 
@@ -175,9 +175,6 @@ class PlotParams():
                 ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color=self.c3)
             else:
                 ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="red")
-
-        ##TEST PLOT FILTER
-        #ax.plot(x, self.filter_(y), lw=self.lw,linestyle="dotted",zorder=1000,color="red")
 
         ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
         ax.set_xlabel('t',fontsize=self.fontsizetitles)
@@ -256,82 +253,91 @@ class PlotParams():
 
         label_ind = True
         c_ind = 1
-        for file_name in file_names:
-            
+        for eq in equil:
+            for file_name in file_names:
+                
+                param_label = self.make_paramlabel(file_name)
+                #pdb.set_trace()
+                for model_type in models:
+                    for method in methods:
+                        #legendlabel=f"{model_type}, {method}"
 
-            param_label = self.make_paramlabel(file_name)
-            #pdb.set_trace()
-            for model_type in models:
-                for method in methods:
-                    #legendlabel=f"{model_type}, {method}"
+                        try:   
+                            df = self.get_data(model_type,method,eq,file_name,constrained_kappa)
 
-                    try:   
-                        df = self.get_data(model_type,method,equil,file_name,constrained_kappa)
-                       
-                        plot_params_all = dict(xloc = 0.05 if equil!="stiffness_control" else (2/3)*0.05,
-                                                yloc= 0.85,
-                                                tseries= df.t.to_numpy(),
-                                                model_type=model_type,
-                                                method=method,
-                                                paramlabel= param_label,
-                                                equil=equil,
-                                                file_name=file_name)
+                            #use stiffness as a control in the plot for all values
+                            if "stiffness_control" in equil:
+                                eq_temp = "stiffness_control"
+                            else:
+                                eq_temp = eq
+                    
+                            plot_params_all = dict(xloc = 0.05 if eq_temp!="stiffness_control" else (2/3)*0.05,
+                                                    yloc= 0.85,
+                                                    tseries= df.t.to_numpy(),
+                                                    model_type=model_type,
+                                                    method=method,
+                                                    paramlabel= param_label,
+                                                    equil=eq,
+                                                    file_name=file_name)
 
-                        self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 2:4]) if equil!="stiffness_control" else plt.subplot(gs_cumulants[0,3:]),
-                                                                                        xseries= df.x1.to_numpy(),
-                                                                                        letter_label="(b)",
-                                                                                        ylabel='Position Variance')),
-                                                                                        label_ind,c_ind,
-                                                                                        ylim=(0.9,2.3))
-                        self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 0:2]) if equil!="stiffness_control" else plt.subplot(gs_cumulants[0,:3]),
-                                                                xseries= df.x3.to_numpy(),
-                                                                letter_label="(a)",
-                                                                ylabel='Mom. Variance')),label_ind,c_ind,
-                                                                                        ylim=(0.87,1.07))
-                        self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 4:]) if equil!="stiffness_control" else plt.subplot(gs_cumulants[1,:3]),
-                                                                xseries= df.x2.to_numpy(),
-                                                                letter_label="(c)",
-                                                                ylabel='Cross Correlation')),label_ind,c_ind,
-                                                                                        ylim=(-0.35,0.4))
-                        self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]) if equil!="stiffness_control" else plt.subplot(gs_cumulants[1,3:]),
-                                                                tseries = df.t.to_numpy(),
-                                                                xseries= df.kappa.to_numpy(),#self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()), #df["kappa"].to_numpy(),
-                                                                letter_label="(d)",
-                                                                ylabel=r'Stiffness, $\kappa_t$',
-                                                                xloc=0.05*(2/3))),label_ind,c_ind,
-                                                                                        ylim=(-1.65,1.65))
-                        if (method =="direct" or (model_type=="control" and equil==False)):
-                            lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
-                        
-                        else:
-                        
-                            lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 2:4]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,3:]),
+                                                                                            xseries= df.x1.to_numpy(),
+                                                                                            letter_label="(b)",
+                                                                                            ylabel='Position Variance')),
+                                                                                            label_ind,c_ind,
+                                                                                            ylim=(0.9,2.3))
+                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 0:2]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,:3]),
+                                                                    xseries= df.x3.to_numpy(),
+                                                                    letter_label="(a)",
+                                                                    ylabel='Mom. Variance')),label_ind,c_ind,
+                                                                                            ylim=(0.87,1.07))
+                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 4:]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,:3]),
+                                                                    xseries= df.x2.to_numpy(),
+                                                                    letter_label="(c)",
+                                                                    ylabel='Cross Correlation')),label_ind,c_ind,
+                                                                                            ylim=(-0.35,0.4))
+                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,3:]),
+                                                                    tseries = df.t.to_numpy(),
+                                                                    xseries= df.kappa.to_numpy(),#self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()), #df["kappa"].to_numpy(),
+                                                                    letter_label="(d)",
+                                                                    ylabel=r'Stiffness, $\kappa_t$',
+                                                                    xloc=0.05*(2/3))),label_ind,c_ind,
+                                                                                            ylim=(-1.65,1.65))
+                            if (method =="direct" or (model_type=="control" and eq==False)):
+                                lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+                            
+                            else:
+                            
+                                lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
-                        self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if equil!="stiffness_control" else None,
-                                                                #tseries = df.t.to_numpy(),
-                                                                xseries= lambda_series,
-                                                                letter_label="(e)",
-                                                                ylabel=r'Control, $\lambda_t$',
-                                                                xloc=0.05*(2/3))),label_ind,c_ind)
-                        
-                        if method =="slowfast":
-                            c_ind += 1
-                        label_ind = False #add labels only on the first pass
+                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if eq_temp!="stiffness_control" else None,
+                                                                    #tseries = df.t.to_numpy(),
+                                                                    xseries= lambda_series,
+                                                                    letter_label="(e)",
+                                                                    ylabel=r'Control, $\lambda_t$',
+                                                                    xloc=0.05*(2/3))),label_ind,c_ind)
+                            
+                            if method =="slowfast":
+                                c_ind += 1
+                            label_ind = False #add labels only on the first pass
 
-                    except FileNotFoundError:
-                        pass     
+                        except FileNotFoundError:
+                            pass     
         
         #plt.subplot(gs_cumulants[0, 0:2]).set_ylim(top=1.07,bottom=0.87)
         #plt.subplot(gs_cumulants[0, 4:]).set_ylim(top=0.45,bottom=-0.3)
         #plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.6,bottom=-1.6)
         #plt.subplot(gs_cumulants[1, :3]).plot(df.t.to_numpy(),self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()))#plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
         #add legend
-        plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks
-                                        ,loc="lower center"
-                                        ,frameon=False
-                                        ,ncols=2
-                                        ,handlelength=1
-                                        ,columnspacing=0.7)
+        if "stiffness_control" in equil:
+            pass 
+        else:
+            plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks
+                                            ,loc="lower center"
+                                            ,frameon=False
+                                            ,ncols=2
+                                            ,handlelength=1
+                                            ,columnspacing=0.7)
         plt.subplots_adjust(wspace=0.5)
         #plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
 
@@ -438,7 +444,7 @@ class PlotParams():
 
         return (x2dot + self.filter_(x2) - epsilon*self.filter_(x3))/(-epsilon*self.filter_(x1))
 
-    def get_w2_dist(self):
+    def get_w2_dist_equil_constrained_kappa(self):
         """
         This is an estimate of the W2 distance between the initial and final distributions
         computed with 20000 samples
@@ -446,7 +452,7 @@ class PlotParams():
 
         return 0.30077160452189255
 
-    def get_w2_dist_stiffness_control(self):
+    def get_w2_dist_stiffness_control_constrained_kappa(self):
         """
         This is an estimate of the W2 distance between the initial and final distributions
         when we use the stiffness as a control.

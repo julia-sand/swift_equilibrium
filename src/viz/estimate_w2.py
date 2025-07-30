@@ -46,15 +46,14 @@ def compute_xT(xinit,batch_samples,df, Generator):
     
     return xinit
 
-def compute_w2(batch_samples):
+def compute_w2(batch_samples,df):
         
     #batch_samples = 500 #total number of samples
     epsilon = 1 
-    plotter = PlotParams() #instantiate plotter
+    #plotter = PlotParams() #instantiate plotter
     Generator = npr.default_rng(seed=None) #define rng 
     
     #df = plotter.get_data("hard","direct","equil","T4-0_Lambda3-0_eps1_g0-1.csv","constrained_kappa")
-    df = plotter.get_data("hard","direct","stiffness_control","T4-0_Lambda3-0_eps1_g0-1.csv","none")
     xinit = generate_samples(batch_samples, Generator)
     xout = compute_xT(xinit.copy(),batch_samples,df, Generator)
     
@@ -67,8 +66,68 @@ def compute_w2(batch_samples):
     Gs = ot.sinkhorn2(a, b, M, lambd)
     return Gs
 
+def ex1():
+    """
+    computes the W2 distance in w2_dist_equil_constrained_kappa
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "equil",
+                            "T3-0_Lambda3-0_eps1_g0-1.csv",
+                            "constrained_kappa")
+
+    return df
+
+def ex2():
+    """
+    computes the W2 distance in get_w2_dist_equil_constrained_kappa
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "stiffness_control",
+                            "T3-0_Lambda3-0_eps1_g0-1.csv",
+                            "constrained_kappa")
+
+    return df
+
+
+def ex3():
+    """
+    computes the W2 distance in get_w2_dist_equil_negative_constrained_kappa
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "equil",
+                            "T3-0_Lambda9-0_eps1_g0-1.csv",
+                            "negative_constrained_kappa")
+
+    return df
+
+
+
+def ex4():
+    """
+    computes the W2 distance in get_w2_dist_stiffness_control_negative_constrained_kappa
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "stiffness_control",
+                            "T3-0_Lambda9-0_eps1_g0-1.csv",
+                            "negative_constrained_kappa")
+
+    return df
+
 if __name__=="__main__":
     
-    print(compute_w2(50000))
-    #Gs = compute_w2(500)
-    #print(Gs)
+    print("w2_dist_equil_constrained_kappa ",compute_w2(500,ex1()))
+    print("w2_dist_stiffness_control_constrained_kappa ",compute_w2(500,ex2()))
+    print("w2_dist_equil_negative_constrained_kappa ",compute_w2(500,ex3()))
+    print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(500,ex4()))
