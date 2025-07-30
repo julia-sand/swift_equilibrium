@@ -127,9 +127,9 @@ class PlotParams():
         folder_path = os.path.dirname( __file__ )+f"/../../results/{model_type}/"+ f"{equil}/"+ f"{method}/"
         
         if constrained_kappa=="constrained_kappa":
-            folder_path = folder_path + f"{method}/" + "constrained_kappa/"
+            folder_path = folder_path + "constrained_kappa/"
         elif constrained_kappa=="negative_constrained_kappa":
-            folder_path = folder_path + f"{method}/" + "negative_constrained_kappa/"
+            folder_path = folder_path + "negative_constrained_kappa/"
         else:
             pass
 

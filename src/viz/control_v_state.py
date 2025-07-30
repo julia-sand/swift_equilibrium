@@ -68,7 +68,7 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
     plt.subplot(ax).set_xticks([3,4,5,6,7,8,9,10])
 
-    #plt.subplot(ax).set_ylim((0.0,0.165))
+    plt.subplot(ax).set_ylim((0.0,0.165))
     plt.subplot(ax).set_yticks([0,0.02,0.04,0.06,0.08,0.1,0.12,0.14,0.16])
     #plt.subplot(ax).set_yticks([-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4])
     plt.subplot(ax).set_ylabel(r"$\mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
