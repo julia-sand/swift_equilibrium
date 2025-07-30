@@ -127,7 +127,7 @@ def ex4():
 
 if __name__=="__main__":
     
-    print("w2_dist_equil_constrained_kappa ",compute_w2(500,ex1()))
-    print("w2_dist_stiffness_control_constrained_kappa ",compute_w2(500,ex2()))
-    print("w2_dist_equil_negative_constrained_kappa ",compute_w2(500,ex3()))
-    print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(500,ex4()))
+    print("w2_dist_equil_constrained_kappa ",compute_w2(20000,ex1()))
+    print("w2_dist_stiffness_control_constrained_kappa ",compute_w2(20000,ex2()))
+    print("w2_dist_equil_negative_constrained_kappa ",compute_w2(20000,ex3()))
+    print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(20000,ex4()))

@@ -7,17 +7,62 @@ import matplotlib.pyplot as plt
 from plotscript import *
 from cost_v_time import append_Tf, compute_data
 
+def w2_dist_equil_constrained_kappa():
+    """estimate_w2.py
+    compute_w2(20000,ex1())
+    """
+
+    return 0.27043526719524696
+
+def w2_dist_stiffness_control_constrained_kappa():
+    """estimate_w2.py
+    compute_w2(20000,ex2())
+    """
+    
+    return 0.28075074424154
+
+def w2_dist_equil_negative_constrained_kappa():
+    """estimate_w2.py
+    compute_w2(20000,ex3())
+    """
+    
+    return 0.2654354307708025
+
+
+def w2_dist_stiffness_control_negative_constrained_kappa():
+    """estimate_w2.py
+    compute_w2(20000,ex4())
+    """
+    
+    return 0.26973955322968945
+
+def plot_w2(ax,w2,color1,case):
+    plt.subplot(ax).plot(np.linspace(3,10,num=8),w2*np.ones(8)/np.linspace(3,10,num=8),
+                linestyle="dashed",color=color1,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+case+")")
+
+def choose_w2(equilvar,constraint):
+    function_name = "w2_dist_"+equilvar+"_"+constraint
+    return {
+        'w2_dist_equil_constrained_kappa': lambda: w2_dist_equil_constrained_kappa(),
+        'w2_dist_stiffness_control_constrained_kappa': lambda: w2_dist_stiffness_control_constrained_kappa(),
+        'w2_dist_equil_negative_constrained_kappa': lambda: w2_dist_equil_negative_constrained_kappa(),
+        'w2_dist_stiffness_control_negative_constrained_kappa': lambda: w2_dist_stiffness_control_negative_constrained_kappa(),
+    }[function_name]()
+
 plotter = PlotParams()
 
-def panel_a(ax,constraint,file_out,panel_label,plotter=plotter):
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa=constraint)
-    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",file_out=file_out,constrained_kappa=constraint)
+def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plotter):
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa=constraint)
+    results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",constrained_kappa=constraint)
 
     plt.subplot(ax).plot(results1[0],results1[3],"-v",label="State (S.I)",#label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c1)
 
     plt.subplot(ax).plot(results2[0],results2[3],"-o",label="Control (S.II)",#,label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
+
+    plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I")
+    plot_w2(ax,choose_w2("stiffness_control",constraint),"pink","S.II")
 
     plotter.format_ax_plain(plt.subplot(ax))
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
@@ -40,13 +85,13 @@ def make_plot(file_names,model_type,method,file_out,plotter=plotter):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     for ax,constraint,label in zip([gs[:,:3],gs[:,3:]],["constrained_kappa","negative_constrained_kappa"],["(a)","(b)"]):
-        panel_a(ax,constraint,file_out,label)
+        panel_a(ax,constraint,file_names,model_type,method,label)
     
     #plot w2 distance
-    plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),plotter.get_w2_dist()*np.ones(8)/np.linspace(3,10,num=8),
-                    linestyle="dashed",color=plotter.c3,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.I)")
-    plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),plotter.get_w2_dist_stiffness_control()*np.ones(8)/np.linspace(3,10,num=8),
-                    linestyle="dashed",color="pink",alpha=0.8,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.II)")
+    #plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),get_w2_dist()*np.ones(8)/np.linspace(3,10,num=8),
+    #                linestyle="dashed",color=plotter.c3,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.I)")
+    #plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),get_w2_dist_stiffness_control()*np.ones(8)/np.linspace(3,10,num=8),
+    #                linestyle="dashed",color="pink",alpha=0.8,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.II)")
         
     h,l = plt.subplot(gs[:,:3]).get_legend_handles_labels()
 
@@ -60,8 +105,8 @@ def make_plot(file_names,model_type,method,file_out,plotter=plotter):
 
     plt.close()
 
-if __name__=="__main__":
-        
+def fig3():
+
     #input file
     file_names = [#"T2-0_Lambda3-0_eps1_g0-1.csv",
                   "T3-0_Lambda3-0_eps1_g0-1.csv",
@@ -102,6 +147,7 @@ if __name__=="__main__":
     #will be plotted, otherwise the entry will be skipped.
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
-    make_plot(file_names,model_type,method,f"plots/neg_kappa_state_v_control_cost_{model_type}_{method}.png")
-    #make_plot(file_names,model_type,method,f"plots/neg_kappa_state_v_control_cost_{model_type}_{method}.pdf")
+    make_plot(file_names,model_type,method,f"plots/fig3.png")
     
+if __name__=="__main__":
+    fig3()        

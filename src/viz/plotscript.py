@@ -443,20 +443,3 @@ class PlotParams():
         x2dot = np.gradient(x2,t)
 
         return (x2dot + self.filter_(x2) - epsilon*self.filter_(x3))/(-epsilon*self.filter_(x1))
-
-    def get_w2_dist_equil_constrained_kappa(self):
-        """
-        This is an estimate of the W2 distance between the initial and final distributions
-        computed with 20000 samples
-        """
-
-        return 0.30077160452189255
-
-    def get_w2_dist_stiffness_control_constrained_kappa(self):
-        """
-        This is an estimate of the W2 distance between the initial and final distributions
-        when we use the stiffness as a control.
-        computed with 20000 samples
-        """
-
-        return 0.2600020057905375

@@ -19,7 +19,7 @@ def append_Tf(plotter,file_name,T_vec):
 
     return np.append(T_vec,plotter.get_T(file_name))
 
-def compute_data(plotter,file_names,model_type,method,equil,file_out,constrained_kappa):
+def compute_data(plotter,file_names,model_type,method,equil,constrained_kappa):
     T_vec = np.empty(0)
     work_vec = np.empty(0)
     ep_vec = np.empty(0) 
@@ -54,12 +54,11 @@ def make_plot(file_names,model_type,method,file_out):
     
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",file_out=file_out,constrained_kappa="pass")
-    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",file_out=file_out,constrained_kappa="pass")
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa="pass")
+    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",constrained_kappa="pass")
     
     for ax,results,panel_label in zip([gs[:,:3],gs[:,3:]],[results1,results2],["(a)","(b)"]):
 
-        #results = compute_data(plotter,file_names,model_type,method,equil=equil,file_out=file_out,constrained_kappa="pass")
         plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
         plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
         plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
