@@ -36,8 +36,8 @@ def w2_dist_stiffness_control_negative_constrained_kappa():
     
     return 0.26973955322968945
 
-def plot_w2(ax,w2,color1,case):
-    plt.subplot(ax).plot(np.linspace(3,10,num=8),w2*np.ones(8)/np.linspace(3,10,num=8),
+def plot_w2(ax,w2,color1,case,tf):
+    plt.subplot(ax).plot(np.linspace(3,tf,num=20),w2/np.linspace(3,tf,num=20),
                 linestyle="dashed",color=color1,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+case+")")
 
 def choose_w2(equilvar,constraint):
@@ -61,8 +61,8 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     plt.subplot(ax).plot(results2[0],results2[3],"-o",label="Control (S.II)",#,label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
 
-    plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I")
-    plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II")
+    plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I",np.max(results1[0]))
+    plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II",np.max(results1[0]))
 
     plotter.format_ax_plain(plt.subplot(ax))
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)

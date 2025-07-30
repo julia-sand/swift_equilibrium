@@ -20,10 +20,8 @@ function slowfast(ARGS)
     sigma0 = 1
     sigmaT = 2
     
-    #vector of parameters
-    p = [epsilon]
-    
     gscale = 1/(g^(1/4))
+
     #vector of parameters
     p = [epsilon,gscale]
 
@@ -55,7 +53,9 @@ function slowfast(ARGS)
 
     #boundary conditions at the end
     function varbc_end!(residual2,u2,p)
-        residual2[1] = u2[8] - (1/sigmaT)
+        epsilon,gscale = p
+        residual2[1] = u2[1]
+        #residual2[1] = u2[8] - (1/sigmaT)
         residual2[2] = u2[5] - sigmaT #position var
         residual2[3] = u2[6] - 0 #cross corr
         residual2[4] = u2[7] - 1 #mom var
@@ -78,7 +78,7 @@ function slowfast(ARGS)
                         bcresid_prototype = (zeros(4),zeros(4)))
     sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.1)
 
-    file_out = string("results/harmonic/equil/slowfast/",file_name)
+    file_out = string("results/harmonic/noneq/slowfast/",file_name)
 
     #save as dataframe
     df_temp = DataFrame(sol2)

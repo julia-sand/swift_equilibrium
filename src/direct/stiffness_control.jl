@@ -35,11 +35,11 @@ function solve_direct(ARGS)
     
     model = InfiniteModel(Ipopt.Optimizer);
     set_optimizer_attributes(model,"max_iter" => 3000)
-    set_optimizer_attribute(model, "tol", 1e-16);
-    set_optimizer_attribute(model, "acceptable_tol", 1e-16)
+    #set_optimizer_attribute(model, "tol", 1e-10);
+    #set_optimizer_attribute(model, "acceptable_tol", 1e-10)
 
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 27001, 
+    @infinite_parameter(model, t in [0, T], num_supports = 3001, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
@@ -73,8 +73,6 @@ function solve_direct(ARGS)
     @constraint(model, x1(T) == sigmaT)
     @constraint(model, x2(T) == 0)
     @constraint(model, x3(T) == 1)
-    
-    #@constraint(model, kappa(T) == kappa_final)
     
     #@constraint(model, 0.2 <= kappa <= 1.2)
     if constraint_kappa=="kappa"
