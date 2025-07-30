@@ -124,22 +124,14 @@ class PlotParams():
         """
 
         #currloc = 
-        folder_path = os.path.dirname( __file__ )+f"/../../results/{model_type}/"
+        folder_path = os.path.dirname( __file__ )+f"/../../results/{model_type}/"+ f"{equil}/"+ f"{method}/"
         
-        #add equilibrium
-        if equil=="equil":
-            folder_path = folder_path + "equil/"
-        elif equil=="noneq": 
-            folder_path = folder_path + "noneq/"
-        else:
-            folder_path = folder_path + "stiffness_control/"
-
         if constrained_kappa=="constrained_kappa":
             folder_path = folder_path + f"{method}/" + "constrained_kappa/"
         elif constrained_kappa=="negative_constrained_kappa":
             folder_path = folder_path + f"{method}/" + "negative_constrained_kappa/"
         else:
-            folder_path = folder_path + f"{method}/"
+            pass
 
         return pd.DataFrame(pd.read_csv(folder_path + file_name))
 
