@@ -353,7 +353,7 @@ class PlotParams():
         
         #get y data
         interp_y = np.interp(t_axis,x,y)
-        return np.trapz(interp_y,t_axis)
+        return np.trapz(y,x)#np.trapz(interp_y,t_axis)
 
     def b(self,y4,model_type,Lambda,g):
         if model_type=="harmonic":

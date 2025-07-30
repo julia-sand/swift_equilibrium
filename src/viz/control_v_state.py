@@ -62,7 +62,7 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
 
     plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I")
-    plot_w2(ax,choose_w2("stiffness_control",constraint),"pink","S.II")
+    plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II")
 
     plotter.format_ax_plain(plt.subplot(ax))
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
@@ -85,14 +85,9 @@ def make_plot(file_names,model_type,method,file_out,plotter=plotter):
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     for ax,constraint,label in zip([gs[:,:3],gs[:,3:]],["constrained_kappa","negative_constrained_kappa"],["(a)","(b)"]):
+
         panel_a(ax,constraint,file_names,model_type,method,label)
     
-    #plot w2 distance
-    #plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),get_w2_dist()*np.ones(8)/np.linspace(3,10,num=8),
-    #                linestyle="dashed",color=plotter.c3,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.I)")
-    #plt.subplot(gs[:,:3]).plot(np.linspace(3,10,num=8),get_w2_dist_stiffness_control()*np.ones(8)/np.linspace(3,10,num=8),
-    #                linestyle="dashed",color="pink",alpha=0.8,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$ (S.II)")
-        
     h,l = plt.subplot(gs[:,:3]).get_legend_handles_labels()
 
     plt.subplot(gs[:,:3]).legend(h,l,
