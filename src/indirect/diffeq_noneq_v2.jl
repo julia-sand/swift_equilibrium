@@ -66,7 +66,7 @@ function solve_indirect(ARGS)
         residual2[2] = u2[2] - 0 #cross corr
         residual2[3] = u2[3] - 1 #mom var
         #residual2[4] = u2[4] - (1/sigmaT)
-        residual2[4] = u2[8] + (u2[4]/2)
+        residual2[4] = u2[8] + (sigmaT/2)#u2[8] + (u2[4]/2)
     end
 
 
