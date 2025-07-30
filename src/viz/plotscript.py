@@ -62,7 +62,7 @@ class PlotParams():
         ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
 
-    def filter_(self,x,filter_delta = 1):
+    def filter_(self,x,filter_delta = 100):
         """Convenient function to apply a simple smoothing filter to
         a series of data
         """
@@ -268,7 +268,7 @@ class PlotParams():
                     try:   
                         df = self.get_data(model_type,method,equil,file_name,constrained_kappa)
                        
-                        plot_params_all = dict(xloc = 0.05,
+                        plot_params_all = dict(xloc = 0.05 if equil!="stiffness_control" else (2/3)*0.05,
                                                 yloc= 0.85,
                                                 tseries= df.t.to_numpy(),
                                                 model_type=model_type,
