@@ -166,7 +166,7 @@ class PlotParams():
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            ax.plot(x[2:-2], self.filter_(y[2:-2]), label = legendlabel,lw=self.lw,color=self.c1)
+            ax.plot(x[1:-1], self.filter_(y[1:-1]), label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 

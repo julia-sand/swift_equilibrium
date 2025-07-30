@@ -35,7 +35,7 @@ def compute_data(plotter,file_names,model_type,method,equil,file_out,constrained
             work_vec = np.append(work_vec, plotter.compute_work(df))
             heat_vec = np.append(heat_vec, plotter.compute_heat(df))
             ep_vec = np.append(ep_vec, plotter.compute_entropy_production(df))
-            cost_vec = np.append(cost_vec, plotter.compute_cost(df,set_g(file_name,model_type,equil,plotter),plotter.get_Lambda(file_name),model_type))
+            cost_vec = np.append(cost_vec, plotter.compute_cost(df,set_g(file_name,model_type,plotter),plotter.get_Lambda(file_name),model_type))
 
             T_vec = append_Tf(plotter,file_name,T_vec)
 

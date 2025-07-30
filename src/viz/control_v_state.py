@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from plotscript import *
-from cost_v_time import append_Tf, set_g, compute_data
+from cost_v_time import append_Tf, compute_data
 
 plotter = PlotParams()
 

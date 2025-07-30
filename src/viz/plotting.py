@@ -33,7 +33,7 @@ if __name__=="__main__":
     #be plotted if available. 
     file_names =  [
                    # "T2-0_Lambda3-0_eps1_g0-1.csv",
-                    "T3-0_Lambda1-4_eps1_g0-0001.csv",
+                    "T3-0_Lambda1-4_eps1_g0-1.csv",
                     #"T3-0_Lambda3-0_eps1_g0-01.csv",
                    #"T30-0_Lambda3-0_eps1_g0-1.csv",
                    #  "T5-0_Lambda3-0_eps1_g0-1.csv",
@@ -41,7 +41,6 @@ if __name__=="__main__":
                    # "T7-0_Lambda3-0_eps1_g0-1.csv",
                    ]
     models = ["harmonic"] #"harmonic",
-    methods = ["indirect"]#["slowfast","direct","indirect"]
-    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.png", "noneq","none")
-    plot_result(models,methods,file_names,f"plots/cumulants_noneq_{models[0]}.pdf", "noneq","none")
+    methods = ["indirect","direct"]#["slowfast","direct","indirect"]
+    plot_result(models,methods,file_names,f"plots/temp_cumulants_noneq_{models[0]}.png", "noneq","none")
     #plot_result(models,methods,file_names,f"plots/cumulants_stiffnesscontrol_{models[0]}.pdf", "stiffness_control","negative_constrained_kappa")
