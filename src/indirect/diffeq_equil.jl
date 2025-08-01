@@ -21,8 +21,8 @@ function solve_indirect_equil(ARGS)
 
     model_type = ARGS[3]
     
-    sigma0 = 2
-    sigmaT = 1
+    sigma0 = 1
+    sigmaT = 2
     
     #vector of parameters
     p = epsilon

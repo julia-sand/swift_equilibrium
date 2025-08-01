@@ -12,11 +12,6 @@ function integrate_full_gaussian(ARGS)
     epsilon = parse(Float64,ARGS[2])
     outputloc = ARGS[3]
 
-    #tau = 1
-    #beta = 2
-    #m = 1
-    #ell = sqrt(12)
-
     p = epsilon #[epsilon]
 
     sigma0 = 1

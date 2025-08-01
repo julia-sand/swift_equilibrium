@@ -9,7 +9,7 @@ two gaussian states
 include("../getfilename.jl")
 
 function solve_indirect(ARGS)
-
+    print("hello")
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
     Lambda = sqrt(2)
@@ -59,7 +59,7 @@ function solve_indirect(ARGS)
         residual1[3] = u1[3] - 1 #mom var
         residual1[4] = u1[4] - (1/sigma0) #stiffness
     end
-
+    
     #boundary conditions at the end
     function varbc_end!(residual2,u2,p)
         residual2[1] = u2[1] - sigmaT #position var

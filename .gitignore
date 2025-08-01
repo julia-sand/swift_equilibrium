@@ -2,7 +2,7 @@ __pycache__
 *.png
 *.csv
 plots
-test.*
+test*
 *.out
 slowfast*.bash
 temp.*

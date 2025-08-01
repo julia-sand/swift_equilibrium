@@ -16,6 +16,7 @@ include("initialisation_funs.jl")
 
 ############################
 
+println("is this code even running???")
 #=
 Setup the infinite opt model 
 =#
