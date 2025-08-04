@@ -5,11 +5,13 @@ plots
 test*
 *.out
 slowfast*.bash
-temp.*
+temp*
 src/TEMP*
 core*
 src/halfbridge*
-*.bash
 Manifest.toml
 src/fullbridge*
 src/quarterbridge*
+direct_*
+indirect_*
+
