@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from plotscript import *
+
 """
 Produces Fig. 5 in paper
 """
@@ -43,7 +44,50 @@ def compute_data(plotter,file_names,model_type,method,equil,constrained_kappa):
             pass
     
     return T_vec,work_vec,heat_vec,ep_vec,cost_vec
+
+def plot_work(ax,tvec,workvec,plotter):
+    ax.plot(tvec,workvec,"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
     
+def plot_heat(ax,tvec,heatvec,plotter):
+    ax.plot(tvec,heatvec,"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
+    
+def plot_ep(ax,tvec,epvec,plotter):
+    ax.plot(tvec,epvec,"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
+
+def add_panel_label(ax,panel_label,plotter):
+    ax.text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,
+    fontweight="bold",transform=ax.transAxes)
+
+def format_plot(ax,tvec,plot_title,plotter):
+    ax.plot(tvec,np.zeros(len(tvec)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+    
+    ax.set_xlabel(r"$t_f$")
+    plotter.format_ax(ax,"Cost",np.max(tvec),ti=np.min(tvec))
+    ax.set_title(plot_title,fontsize=plotter.fontsizetitles)
+
+def make_split_gs_subplot(fig,gs):
+
+    ax1 = fig.add_subplot(gs[0,3:])
+    ax2 = fig.add_subplot(gs[1,3:], sharex=ax1)
+    plt.setp(ax1.get_xticklabels(), visible=False)
+        
+    ax1.spines.bottom.set_visible(False)
+    ax2.spines.top.set_visible(False)
+    #ax1.xaxis.tick_top()
+    #ax1.tick_params(labeltop=False)  # don't put tick labels at the top
+    ax2.xaxis.tick_bottom()
+
+    #from matplotlib tutorials
+    d = .5  # proportion of vertical to horizontal extent of the slanted line
+    kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+                linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+    ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
+    ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
+
+    ax1.set_ylim((-0.1,0.7))
+    ax2.set_ylim((-9,-7))
+    return ax1,ax2
+
 
 def make_plot(file_names,model_type,method,file_out):
 
@@ -52,33 +96,45 @@ def make_plot(file_names,model_type,method,file_out):
     fig = plotter.make_fig()
     gs = plotter.make_gridspec(fig)
     
+    ax1,ax2 = make_split_gs_subplot(fig,gs)
+    ax_equil = plt.subplot(gs[:,:3])
+
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa="pass")
     results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",constrained_kappa="pass")
     
-    for ax,results,panel_label in zip([gs[:,:3],gs[:,3:]],[results1,results2],["(a)","(b)"]):
+    #add data to plots
+    plot_ep(ax_equil,results1[0],results1[3],plotter)
+    plot_work(ax_equil,results1[0],results1[1],plotter)
+    plot_heat(ax_equil,results1[0],results1[2],plotter)
 
-        plt.subplot(ax).plot(results[0],results[1],"-v",label=r"$\mathcal{W}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c1)
-        plt.subplot(ax).plot(results[0],results[2],"-x",label=r"$\mathcal{Q}_{t_f}$",markersize=10,linewidth=plotter.lw-1,color=plotter.c2,zorder=100)
-        plt.subplot(ax).plot(results[0],results[3],"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
-        #plt.subplot(ax).plot(results[0],results[4],"--v",label=r"$\mathcal{C}_{t_f}$",markersize=5,linewidth=1,color="black",zorder=300)
-    
-        plt.subplot(ax).plot(results[0],np.zeros(len(results[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-        plt.subplot(ax).text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,fontweight="bold",transform=plt.subplot(ax).transAxes)
-        plt.subplot(ax).set_ylim((-1,0.35))
-        plt.subplot(ax).set_xlabel(r"$t_f$")
-        plotter.format_ax(plt.subplot(ax),"Cost",np.max(results[0]),ti=np.min(results[0]))
+    plot_ep(ax1,results2[0],results2[3],plotter)
+    plot_work(ax2,results2[0],results2[1],plotter)
+    plot_heat(ax1,results2[0],results2[2],plotter)
 
-    plt.subplot(gs[:,:3]).set_title("Engineered Swift Equilibration",fontsize=plotter.fontsizetitles)
-    plt.subplot(gs[:,3:]).set_title("Minimum Work Transition",fontsize=plotter.fontsizetitles)
+    #formatting
+    format_plot(ax_equil,results1[0],"Engineered Swift Equilibration",plotter)
+    format_plot(ax1,results2[0],"Minimum Work",plotter)
+    format_plot(ax2,results2[0],None,plotter)
+    ax1.set_xlabel(None)
+    ax2.set_ylabel(None)
 
-    ax_inset = plt.subplot(gs[:,:3]).inset_axes(bounds=[0.25,0.1,0.5,0.3],transform=plt.subplot(gs[:,:3]).transAxes)
+    add_panel_label(ax_equil,"(a)",plotter)
+    add_panel_label(plt.subplot(gs[:,3:]),"(b)",plotter)
+
+    plt.subplot(gs[:,3:]).patch.set_alpha(0)
+    plt.subplot(gs[:,3:]).set_ylabel("Cost")
+    plt.subplot(gs[:,3:]).yaxis.set_label_coords(-0.12,0.5)
+    #plt.subplot(gs[:,3:]).set_axis_off()
+
+    ax_inset = ax_equil.inset_axes(bounds=[0.25,0.1,0.5,0.3],transform=ax_equil.transAxes)
     plotter.format_ax_plain(ax_inset)
     ax_inset.plot(results2[0], results1[3]-results2[3],lw=plotter.lw)
     ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
     ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
-    h,l = plt.subplot(gs[:,3:]).get_legend_handles_labels()
+    
+    h,l = ax_equil.get_legend_handles_labels()
 
     fig.legend(h,l,
                                 fontsize = plotter.fontsizetitles,
@@ -90,22 +146,23 @@ def make_plot(file_names,model_type,method,file_out):
 
     plt.close()
 
-if __name__=="__main__":
-        
+def fig6():
+
     #input file
-    file_names = ["T2-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T3-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T4-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T5-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T6-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T7-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T8-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T9-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T10-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T20-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T30-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T40-0_Lambda1-4_eps1_g0-0001.csv",
-                  "T50-0_Lambda1-4_eps1_g0-0001.csv"]
+    file_names = [#"T2-0_Lambda1-4_eps1_g0-01.csv",
+                  "T3-0_Lambda1-4_eps1_g0-01.csv",
+                  "T4-0_Lambda1-4_eps1_g0-01.csv",
+                  "T5-0_Lambda1-4_eps1_g0-01.csv",
+                  #"T6-0_Lambda1-4_eps1_g0-01.csv",
+                  "T7-0_Lambda1-4_eps1_g0-01.csv",
+                  "T8-0_Lambda1-4_eps1_g0-01.csv",
+                  "T9-0_Lambda1-4_eps1_g0-01.csv",
+                  "T10-0_Lambda1-4_eps1_g0-01.csv",
+                  "T20-0_Lambda1-4_eps1_g0-01.csv",
+                  "T30-0_Lambda1-4_eps1_g0-01.csv",
+                  "T40-0_Lambda1-4_eps1_g0-01.csv",
+                  #"T50-0_Lambda1-4_eps1_g0-01.csv"
+		]
     
     #list what methods to try to plot. all those where the available parameters
     #  exist 
@@ -115,5 +172,7 @@ if __name__=="__main__":
     make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.png")
     make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.pdf")
 
-    #make_plot(file_names,model_type,method,False,f"noneq_cost_{model_type}_{method}.png")
-    
+
+
+if __name__=="__main__":
+   fig6()

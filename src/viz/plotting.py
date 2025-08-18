@@ -3,6 +3,15 @@ import matplotlib.pyplot as plt
 
 from plotscript import PlotParams #contains the plotting functions
 
+def adjust_subplot_fig5(gs):
+    #reset all ylims
+    plt.subplot(gs[1,3:]).set_ylim((-130,40))
+    plt.subplot(gs[1,:3]).set_ylim((-9,4))
+    plt.subplot(gs[0,:2]).set_ylim((0.7,1.4))
+    plt.subplot(gs[0,2:4]).set_ylim((0.9,2.6))
+    plt.subplot(gs[0,4:]).set_ylim((-1.2,1.4))
+    plt.subplot(gs[1,3:]).yaxis.set_label_coords(-0.12,0.5)
+
 def adjust_subplot_fig1(gs):
     plt.subplot(gs[1,3:]).set_ylim((-40,35))
     plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
@@ -69,7 +78,18 @@ def fig4():
     fig_out.savefig(f"plots/fig4.pdf", bbox_inches="tight")
     plt.close()
 
+
+def fig5():
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv"]#,"T3-0_Lambda1-4_eps1_g0-01.csv"]
+                   #"T7-0_Lambda1-4_eps1_g0-01.csv"]
+    models = ["harmonic"] #"harmonic",
+    methods = ["indirect","direct"]
+    fig_out = plot_result(models,methods,file_names, ["noneq"],"none",adjust_subplot_fig5)
+    fig_out.savefig(f"plots/fig5.png", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig5.pdf",bbox_inches="tight")
+    plt.close()
+
 if __name__=="__main__":
     
-    fig4()
+    fig5()
 

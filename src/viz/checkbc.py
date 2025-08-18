@@ -17,10 +17,10 @@ if __name__=="__main__":
         param_label = plotter.make_paramlabel("results/harmonic/noneq/indirect/"+filename)
         df = pd.read_csv("results/harmonic/noneq/indirect/"+filename)
 
-        match_bc = np.max([df.kappa.to_numpy()[0] -1,#df.y4.to_numpy()[-1] - (-df.kappa.to_numpy()[-1]/2),
-                                df.x1.to_numpy()[0] - 1,
-                                df.x2.to_numpy()[0] - 0,
-                                df.x3.to_numpy()[0] - 1])
+        match_bc = np.max([np.abs(df.y4.to_numpy()[-1] - (-df.x1.to_numpy()[-1]/2)),
+                                np.abs(df.x1.to_numpy()[0] - 1),
+                                np.abs(df.x2.to_numpy()[0] - 0),
+                                np.abs(df.x3.to_numpy()[0] - 1)])
         print(rf"{param_label}")
         print(f"BC: {match_bc}")
 

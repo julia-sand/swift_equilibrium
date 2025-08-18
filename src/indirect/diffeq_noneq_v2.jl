@@ -92,7 +92,7 @@ function solve_indirect(ARGS)
 
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))
-    sol = solve(bvp2, LobattoIIIa5(), dt = 0.1)
+    sol = solve(bvp2, LobattoIIIa5(), dt = 0.01)
     
     format_sol(sol,model_type)
 

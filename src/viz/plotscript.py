@@ -158,7 +158,7 @@ class PlotParams():
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            ax.plot(x[1:-1], self.filter_(y[1:-1]), label = legendlabel,lw=self.lw)#,color=self.c1)
+            ax.plot(x,y, label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 
@@ -332,6 +332,7 @@ class PlotParams():
                                             ,columnspacing=0.7)
         plt.subplots_adjust(wspace=0.5)
         #plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+
 
         return fig
   
