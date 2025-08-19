@@ -14,7 +14,7 @@ def set_g(file_name,model_type,plotter):
     else:
         g = plotter.get_g(file_name)
 
-    return g#plotter.get_g(file_name)
+    return g #plotter.get_g(file_name)
 
 def append_Tf(plotter,file_name,T_vec):
 
@@ -62,8 +62,11 @@ def format_plot(ax,tvec,plot_title,plotter):
     ax.plot(tvec,np.zeros(len(tvec)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
     
     ax.set_xlabel(r"$t_f$")
-    plotter.format_ax(ax,"Cost",np.max(tvec),ti=np.min(tvec))
+    plotter.format_ax(ax,None,np.max(tvec),ti=np.min(tvec))
     ax.set_title(plot_title,fontsize=plotter.fontsizetitles)
+
+def add_ylabel(ax,plotter):
+    ax.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
 
 def make_split_gs_subplot(fig,gs):
 
@@ -73,9 +76,9 @@ def make_split_gs_subplot(fig,gs):
         
     ax1.spines.bottom.set_visible(False)
     ax2.spines.top.set_visible(False)
-    #ax1.xaxis.tick_top()
+    ax1.set_xticks([])
     #ax1.tick_params(labeltop=False)  # don't put tick labels at the top
-    ax2.xaxis.tick_bottom()
+    #ax2.xaxis.tick_bottom()
 
     #from matplotlib tutorials
     d = .5  # proportion of vertical to horizontal extent of the slanted line
@@ -85,7 +88,7 @@ def make_split_gs_subplot(fig,gs):
     ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
 
     ax1.set_ylim((-0.1,0.7))
-    ax2.set_ylim((-9,-7))
+    ax2.set_ylim((-8.6,-8))
     return ax1,ax2
 
 
@@ -94,7 +97,7 @@ def make_plot(file_names,model_type,method,file_out):
     plotter = PlotParams()
     # Plotting the cumulants
     fig = plotter.make_fig()
-    gs = plotter.make_gridspec(fig)
+    gs = plotter.make_gridspec(fig,hspace=0.05)
     
     ax1,ax2 = make_split_gs_subplot(fig,gs)
     ax_equil = plt.subplot(gs[:,:3])
@@ -119,21 +122,38 @@ def make_plot(file_names,model_type,method,file_out):
     format_plot(ax2,results2[0],None,plotter)
     ax1.set_xlabel(None)
     ax2.set_ylabel(None)
+    ax_equil.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
 
     add_panel_label(ax_equil,"(a)",plotter)
     add_panel_label(plt.subplot(gs[:,3:]),"(b)",plotter)
 
     plt.subplot(gs[:,3:]).patch.set_alpha(0)
-    plt.subplot(gs[:,3:]).set_ylabel("Cost")
+    plt.subplot(gs[:,3:]).set_ylabel("Cost",fontsize=plotter.fontsizetitles)
     plt.subplot(gs[:,3:]).yaxis.set_label_coords(-0.12,0.5)
-    #plt.subplot(gs[:,3:]).set_axis_off()
+    plt.subplot(gs[:,3:]).tick_params(which="both",axis="x",labelsize=plotter.fontsizeticks)
+    plt.subplot(gs[:,3:]).set_yticks([])
+    plt.subplot(gs[:,3:]).spines.left.set_visible(False)
+    plt.subplot(gs[:,3:]).spines.right.set_visible(False)
 
-    ax_inset = ax_equil.inset_axes(bounds=[0.25,0.1,0.5,0.3],transform=ax_equil.transAxes)
+
+    ax2.set_yticks([-8.5,-8.3,-8.1])
+
+    ax2.xaxis.set_label_coords(0.5,-0.12)
+    ax_equil.set_ylim((-0.38,0.25))
+    ax_equil.yaxis.set_label_coords(-0.12,0.5)
+    ax_equil.set_xticks([3,5,10,20,30,40])
+    plt.subplot(gs[:,3:]).set_xticks([3,5,10,20,30,40])
+    plt.subplot(gs[:,3:]).set_xlim((2.5,40.5))
+
+    ax_inset = ax_equil.inset_axes(bounds=[0.3,0.22,0.5,0.3],transform=ax_equil.transAxes)
     plotter.format_ax_plain(ax_inset)
-    ax_inset.plot(results2[0], results1[3]-results2[3],lw=plotter.lw)
+    ax_inset.scatter(results2[0], results1[3]-results2[3],lw=plotter.lw-1,color="black")
+    ax_inset.set_xticks([3,10,20,30,40])
     ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
     ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
-    
+    ax_inset.set_ylim((-0.6,0.05))
+    #plt.subplots_adjust(hspace=0)
+
     h,l = ax_equil.get_legend_handles_labels()
 
     fig.legend(h,l,

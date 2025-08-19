@@ -57,7 +57,7 @@ class PlotParams():
                 final time to set x axis limit
         """
         
-        ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
+        
         ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
         ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
@@ -218,14 +218,14 @@ class PlotParams():
         fig = plt.figure(figsize=(15, 8))#, constrained_layout=True)
         return fig
 
-    def make_gridspec(self,fig):
+    def make_gridspec(self,fig,hspace=0.4):
 
         # figure setup
         #gs_cumulants = gridspec.GridSpec(2, 6, 
         gs_cumulants = fig.add_gridspec(2, 6, 
                             width_ratios=[1, 1, 1, 1,1,1], 
                             height_ratios=[1, 1],
-                            hspace=0.4,
+                            hspace=hspace,
                             wspace=1.2)        
         
         return gs_cumulants
