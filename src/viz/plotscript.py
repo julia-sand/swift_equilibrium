@@ -130,6 +130,8 @@ class PlotParams():
             folder_path = folder_path + "constrained_kappa/"
         elif constrained_kappa=="negative_constrained_kappa":
             folder_path = folder_path + "negative_constrained_kappa/"
+        elif constrained_kappa=="contract":
+            folder_path = folder_path + "contract/"
         else:
             pass
 
@@ -158,7 +160,7 @@ class PlotParams():
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            ax.plot(x,y, label = legendlabel,lw=self.lw,color=self.c1)
+            ax.plot(x[2:-2],y[2:-2], label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 
@@ -179,7 +181,7 @@ class PlotParams():
         
         #legendlabel = self.get_legend_label(model_type,method,param_label)
         if method =="direct":
-            ax.plot(x[2:-2], self.filter_(y[2:-2]), label = "direct",lw=self.lw,color=self.c1)
+            ax.plot(x, self.filter_(y), label = "direct",lw=self.lw,color=self.c1)
         elif (method =="indirect" and equil=="noneq"): 
             ax.plot(x, y, label = "indirect",lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif (method =="indirect" and equil == "equil"): 

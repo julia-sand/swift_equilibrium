@@ -12,6 +12,16 @@ def adjust_subplot_fig5(gs):
     plt.subplot(gs[0,4:]).set_ylim((-1.2,1.4))
     plt.subplot(gs[1,3:]).yaxis.set_label_coords(-0.12,0.5)
 
+
+def adjust_subplot_fig5b(gs):
+    #reset all ylims
+    plt.subplot(gs[1,3:]).set_ylim((-130,40))
+    plt.subplot(gs[1,:3]).set_ylim((-9,4))
+    plt.subplot(gs[0,:2]).set_ylim((0.7,1.4))
+    plt.subplot(gs[0,2:4]).set_ylim((0.9,2.6))
+    plt.subplot(gs[0,4:]).set_ylim((-1.2,1.4))
+    plt.subplot(gs[1,3:]).yaxis.set_label_coords(-0.12,0.5)
+
 def adjust_subplot_fig1(gs):
     plt.subplot(gs[1,3:]).set_ylim((-40,35))
     plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
@@ -22,6 +32,13 @@ def adjust_subplot_fig2(gs):
     plt.subplot(gs[1,3:]).set_ylim((-40,35))
     plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
     plt.subplot(gs[0,4:]).set_ylim((-0.3,0.4))
+
+def adjust_subplot_fig2b(gs):
+    plt.subplot(gs[0,:2]).set_ylim((0.95,1.32))
+    plt.subplot(gs[0,2:4]).set_ylim((0.1,1.2))
+    plt.subplot(gs[0,4:]).set_ylim((-0.25,0.12))
+    plt.subplot(gs[1,:3]).set_ylim((0,2.8))
+    plt.subplot(gs[1,3:]).set_ylim((-10,10))
 
 def adjust_subplot_fig4(gs):
     plt.subplot(gs[1,3:]).set_ylim((-1.6,1.6))
@@ -62,6 +79,17 @@ def fig2():
 
     plt.close()
 
+
+def fig2b():
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv"]
+    models = ["harmonic"] #"harmonic",
+    methods = ["slowfast","direct","indirect"]
+    fig_out = plot_result(models,methods,file_names, ["equil"],"contract",adjust_subplot_fig2b)
+    fig_out.savefig(f"plots/fig2b.png", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig2b.pdf", bbox_inches="tight")
+
+    plt.close()
+
 def fig4():
     file_names =  ["T3-0_Lambda9-0_eps1_g0-1.csv"]
     models = ["hard"] #"harmonic",
@@ -89,7 +117,18 @@ def fig5():
     fig_out.savefig(f"plots/fig5.pdf",bbox_inches="tight")
     plt.close()
 
+
+def fig5b():
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv"]#,"T3-0_Lambda1-4_eps1_g0-01.csv"]
+                   #"T7-0_Lambda1-4_eps1_g0-01.csv"]
+    models = ["harmonic"] #"harmonic",
+    methods = ["indirect","direct"]
+    fig_out = plot_result(models,methods,file_names, ["noneq"],"contract",adjust_subplot_fig2b)
+    fig_out.savefig(f"plots/fig5b.png", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig5b.pdf",bbox_inches="tight")
+    plt.close()
+
 if __name__=="__main__":
     
-    fig5()
+    fig5b()
 

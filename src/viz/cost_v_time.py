@@ -87,12 +87,28 @@ def make_split_gs_subplot(fig,gs):
     ax1.plot([0, 1], [0, 0], transform=ax1.transAxes, **kwargs)
     ax2.plot([0, 1], [1, 1], transform=ax2.transAxes, **kwargs)
 
-    ax1.set_ylim((-0.1,0.7))
-    ax2.set_ylim((-8.6,-8))
     return ax1,ax2
 
+def adjust_subplots_fig6(ax1,ax2,ax_equil):
+    ax2.set_yticks([-8.5,-8.3,-8.1])
 
-def make_plot(file_names,model_type,method,file_out):
+    ax1.set_ylim((-0.1,0.7))
+    ax2.set_ylim((-8.6,-8))
+    
+def adjust_subplots_fig6cd(ax1,ax2,ax_equil):
+    #ax2.set_yticks([-8.5,-8.3,-8.1])
+
+    #ax1.set_ylim((-0.1,0.7))
+    #ax2.set_ylim((-8.6,-8)) 
+
+    pass
+
+def make_plot(file_names,
+                model_type,
+                method,
+                constrained_kappa,
+                file_out,
+                adjust_subplots_fun):
 
     plotter = PlotParams()
     # Plotting the cumulants
@@ -104,8 +120,8 @@ def make_plot(file_names,model_type,method,file_out):
 
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
-    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa="pass")
-    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",constrained_kappa="pass")
+    results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa=constrained_kappa)
+    results2 = compute_data(plotter,file_names,model_type,method,equil="noneq",constrained_kappa=constrained_kappa)
     
     #add data to plots
     plot_ep(ax_equil,results1[0],results1[3],plotter)
@@ -134,25 +150,25 @@ def make_plot(file_names,model_type,method,file_out):
     plt.subplot(gs[:,3:]).set_yticks([])
     plt.subplot(gs[:,3:]).spines.left.set_visible(False)
     plt.subplot(gs[:,3:]).spines.right.set_visible(False)
-
-
-    ax2.set_yticks([-8.5,-8.3,-8.1])
-
-    ax2.xaxis.set_label_coords(0.5,-0.12)
-    ax_equil.set_ylim((-0.38,0.25))
-    ax_equil.yaxis.set_label_coords(-0.12,0.5)
-    ax_equil.set_xticks([3,5,10,20,30,40])
     plt.subplot(gs[:,3:]).set_xticks([3,5,10,20,30,40])
-    plt.subplot(gs[:,3:]).set_xlim((2.5,40.5))
+    plt.subplot(gs[:,3:]).set_xlim((2.5,40.5))  
+    
+    #formatting 
+    ax2.xaxis.set_label_coords(0.5,-0.12)
+    ax_equil.yaxis.set_label_coords(-0.12,0.5)
+
+
 
     ax_inset = ax_equil.inset_axes(bounds=[0.3,0.22,0.5,0.3],transform=ax_equil.transAxes)
+    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
+    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
     plotter.format_ax_plain(ax_inset)
     ax_inset.scatter(results2[0], results1[3]-results2[3],lw=plotter.lw-1,color="black")
+
     ax_inset.set_xticks([3,10,20,30,40])
-    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
-    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
     ax_inset.set_ylim((-0.6,0.05))
-    #plt.subplots_adjust(hspace=0)
+
+    adjust_subplots_fun(ax1,ax2,ax_equil)
 
     h,l = ax_equil.get_legend_handles_labels()
 
@@ -189,10 +205,36 @@ def fig6():
     #will be plotted, otherwise the entry will be skipped.
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
-    make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.png")
-    make_plot(file_names,model_type,method,f"plots/costs_v_time{model_type}_{method[0]}.pdf")
+    constrained_kappa = "pass"
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6)
 
 
+
+def fig6cd():
+
+    #input file
+    file_names = [#"T2-0_Lambda1-4_eps1_g0-01.csv",
+                  "T3-0_Lambda1-4_eps1_g0-01.csv",
+                  "T4-0_Lambda1-4_eps1_g0-01.csv",
+                  "T5-0_Lambda1-4_eps1_g0-01.csv",
+                  #"T6-0_Lambda1-4_eps1_g0-01.csv",
+                  "T7-0_Lambda1-4_eps1_g0-01.csv",
+                  "T8-0_Lambda1-4_eps1_g0-01.csv",
+                  "T9-0_Lambda1-4_eps1_g0-01.csv",
+                  "T10-0_Lambda1-4_eps1_g0-01.csv",
+                  "T20-0_Lambda1-4_eps1_g0-01.csv",
+                  "T30-0_Lambda1-4_eps1_g0-01.csv",
+                  "T40-0_Lambda1-4_eps1_g0-01.csv",
+                  #"T50-0_Lambda1-4_eps1_g0-01.csv"
+		]
+    
+    model_type = "harmonic"#["harmonic","control","log","hard"] 
+    method = "indirect"
+    constrained_kappa = "contract"
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6cd)
 
 if __name__=="__main__":
    fig6()
+   fig6cd()
