@@ -75,7 +75,7 @@ def ex1():
     df = plotter.get_data("hard",
                             "direct",
                             "equil",
-                            "T3-0_Lambda3-0_eps1_g0-1.csv",
+                            "T3-0_Lambda1-0_eps1_g0-1.csv",
                             "constrained_kappa")
 
     return df
@@ -89,7 +89,7 @@ def ex2():
     df = plotter.get_data("hard",
                             "direct",
                             "stiffness_control",
-                            "T3-0_Lambda3-0_eps1_g0-1.csv",
+                            "T3-0_Lambda1-0_eps1_g0-1.csv",
                             "constrained_kappa")
 
     return df
@@ -104,7 +104,7 @@ def ex3():
     df = plotter.get_data("hard",
                             "direct",
                             "equil",
-                            "T3-0_Lambda9-0_eps1_g0-1.csv",
+                            "T3-0_Lambda10-0_eps1_g0-1.csv",
                             "negative_constrained_kappa")
 
     return df
@@ -120,7 +120,7 @@ def ex4():
     df = plotter.get_data("hard",
                             "direct",
                             "stiffness_control",
-                            "T3-0_Lambda9-0_eps1_g0-1.csv",
+                            "T3-0_Lambda10-0_eps1_g0-1.csv",
                             "negative_constrained_kappa")
 
     return df

@@ -80,6 +80,8 @@ function solve_direct(ARGS)
         @constraint(model, 0.2 <= kappa <= 1.2)
     elseif constraint_kappa=="neg"
         @constraint(model, -1.5 <= kappa <= 1.5)
+    elseif constraint_kappa=="neg2"
+        @constraint(model, -0.5 <= kappa <= 1.5)
     end
 
     #enforce the dynamics, see system (3)

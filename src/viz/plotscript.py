@@ -139,14 +139,6 @@ class PlotParams():
 
     def get_legend_label(self,model_type,method,
                             param_label, file_name):
-
-        #if model_type=="hard": #overwrite legend label
-        #    legendlabel = f"compact, {method}" 
-        #else:
-        #    legendlabel = f"{model_type}, {method}" 
-
-        #if param_label is not None:
-        #    legendlabel = legendlabel+f"; {param_label}"
         
         legendlabel = f"{method}" 
         if method == "slowfast":
@@ -155,12 +147,15 @@ class PlotParams():
 
         return legendlabel
 
-    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method,param_label,file_name
+    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method,param_label,file_name,equil
                                 ,c_ind,ylim):
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            ax.plot(x[2:-2],y[2:-2], label = legendlabel,lw=self.lw,color=self.c1)
+            if equil=="stiffness_control":
+                ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c2)
+            else:
+                ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 
@@ -204,7 +199,8 @@ class PlotParams():
                                         params_dict["model_type"],
                                         params_dict["method"],
                                         params_dict["paramlabel"],
-                                        params_dict["file_name"],c_ind,ylim)
+                                        params_dict["file_name"],
+                                        params_dict["equil"],c_ind,ylim)
             
             if label_ind:         
                 params_dict["subplot"].text(x=params_dict["xloc"], 
@@ -265,8 +261,8 @@ class PlotParams():
                             else:
                                 eq_temp = eq
                     
-                            plot_params_all = dict(xloc = 0.05 if eq_temp!="stiffness_control" else (2/3)*0.05,
-                                                    yloc= 0.85,
+                            plot_params_all = dict(xloc = 0.02 if eq_temp!="stiffness_control" else (2/3)*0.02,
+                                                    yloc= 0.88,
                                                     tseries= df.t.to_numpy(),
                                                     model_type=model_type,
                                                     method=method,
@@ -295,7 +291,7 @@ class PlotParams():
                                                                     xseries= df.kappa.to_numpy(),#self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()), #df["kappa"].to_numpy(),
                                                                     letter_label="(d)",
                                                                     ylabel=r'Stiffness, $\kappa_t$',
-                                                                    xloc=0.05*(2/3))),label_ind,c_ind,
+                                                                    xloc=0.02*(2/3))),label_ind,c_ind,
                                                                                             ylim=(-1.65,1.65))
                             if (method =="direct" or (model_type=="control" and eq==False)):
                                 lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
@@ -309,7 +305,7 @@ class PlotParams():
                                                                     xseries= lambda_series,
                                                                     letter_label="(e)",
                                                                     ylabel=r'Control, $\lambda_t$',
-                                                                    xloc=0.05*(2/3))),label_ind,c_ind)
+                                                                    xloc=0.02*(2/3))),label_ind,c_ind)
                             
                             if method =="slowfast":
                                 c_ind += 1

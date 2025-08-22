@@ -31,30 +31,30 @@ function solve_direct(ARGS)
     model_type = ARGS[3]
     constraint_kappa = ARGS[5]
     
-    sigma0 = 1
-    sigmaT = 0.5
+    sigma0 = 4
+    sigmaT = 1#0.5
     
     model = InfiniteModel(Ipopt.Optimizer);
     set_optimizer_attributes(model,"max_iter" => 3000)
-    set_optimizer_attribute(model, "tol", 1e-10);
-    set_optimizer_attribute(model, "acceptable_tol", 1e-10)
+    set_optimizer_attribute(model, "tol", 1e-12);
+    set_optimizer_attribute(model, "acceptable_tol", 1e-12)
     
     #time
-    @infinite_parameter(model, t in [0, T], num_supports = 6001, 
+    @infinite_parameter(model, t in [0, T], num_supports = 18001, 
                         derivative_method=FiniteDifference(Forward(), true))
             #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
-    @variable(model, 0<=x1, Infinite(t), start = x1_init)
+    @variable(model, 0<=x1, Infinite(t), start = 1)
 
     #cross corellation
-    @variable(model, x2, Infinite(t), start = x2_init)
+    @variable(model, x2, Infinite(t), start = 0)
 
     #momentum variance 
-    @variable(model, 0<=x3, Infinite(t), start = x3_init)
+    @variable(model, 0<=x3, Infinite(t), start = 1)
 
     #the stiffness (a state)
-    @variable(model, kappa, Infinite(t), start = kappa_init)
+    @variable(model, kappa, Infinite(t), start = 2)
     #final value of kappa as a variable
     @variable(model, kappa_final)
     

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from plotscript import *
 
 """
-Produces Fig. 5 in paper
+Produces Fig. 8 in paper
 """
 
 def set_g(file_name,model_type,plotter):
@@ -89,12 +89,46 @@ def make_split_gs_subplot(fig,gs):
 
     return ax1,ax2
 
+def adjust_inset_fig6(ax_inset):
+    ax_inset.set_ylim((-0.02, 0.57))
+  
+def adjust_inset_fig6cd(ax_inset):
+    ax_inset.set_ylim((-0.002, 0.06))
+
 def adjust_subplots_fig6(ax1,ax2,ax_equil):
     ax2.set_yticks([-8.5,-8.3,-8.1])
 
     ax1.set_ylim((-0.1,0.7))
     ax2.set_ylim((-8.6,-8))
-    
+    ax_equil.set_ylim((-0.38,0.25))
+
+def adjust_subplots_fig6cd(ax_noneq,ax_equil):
+    ax_equil.set
+
+def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
+
+    ax_inset = ax_equil.inset_axes(bounds=[0.35,0.24,0.5,0.3],transform=ax_equil.transAxes)
+    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
+    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles,
+                    color="maroon")
+    plotter.format_ax_plain(ax_inset)
+    ax_inset.scatter(results2[0], results2[3]-results1[3],
+                label=r"$\mathcal{E}^{\boldsymbol{(b)}}_{t_f}-\mathcal{E}^{\boldsymbol{(a)}}_{t_f}$",lw=plotter.lw-1,color="maroon")
+
+    ax_inset.set_xticks([3,10,20,30,40])
+    #ax_inset.set_ylim((-0.03,0.63))
+    ax_inset.xaxis.label.set_color("maroon") 
+    #h_inset = plt.Line2D([0], [0],linestyle=' ',marker="o",linewidth=plotter.lw, 
+                                    #label=r"$\Delta \mathcal{E}_{t_f}$",
+    #                                color='maroon')
+                                    
+    #l.append(r"$\mathcal{E}^{\boldsymbol{(b)}}_{t_f}-\mathcal{E}^{\boldsymbol{(a)}}_{t_f}$")
+    ax_inset.legend(frameon=False,
+            loc="lower right",
+            fontsize=plotter.fontsizetitles,
+            handletextpad=-0.05)
+    adjust_inset(ax_inset)
+
 def adjust_subplots_fig6cd(ax1,ax2,ax_equil):
     #ax2.set_yticks([-8.5,-8.3,-8.1])
 
@@ -108,15 +142,17 @@ def make_plot(file_names,
                 method,
                 constrained_kappa,
                 file_out,
-                adjust_subplots_fun):
+                adjust_subplots_fun,
+                adjust_inset):
 
     plotter = PlotParams()
+
     # Plotting the cumulants
     fig = plotter.make_fig()
     gs = plotter.make_gridspec(fig,hspace=0.05)
     
-    ax1,ax2 = make_split_gs_subplot(fig,gs)
     ax_equil = plt.subplot(gs[:,:3])
+    ax_noneq = plt.subplot(gs[:,3:])
 
     #get parameter label from filename
     param_label = None #plotter.make_paramlabel(file_names[-1])
@@ -128,50 +164,54 @@ def make_plot(file_names,
     plot_work(ax_equil,results1[0],results1[1],plotter)
     plot_heat(ax_equil,results1[0],results1[2],plotter)
 
-    plot_ep(ax1,results2[0],results2[3],plotter)
-    plot_work(ax2,results2[0],results2[1],plotter)
-    plot_heat(ax1,results2[0],results2[2],plotter)
+    if constrained_kappa!="contract":
+        ax1,ax2 = make_split_gs_subplot(fig,gs)
+        plot_ep(ax1,results2[0],results2[3],plotter)
+        plot_work(ax2,results2[0],results2[1],plotter)
+        plot_heat(ax1,results2[0],results2[2],plotter)
+        format_plot(ax1,results2[0],"Minimum Work",plotter)
+        format_plot(ax2,results2[0],None,plotter)
+        ax1.set_xlabel(None)
+        ax2.set_ylabel(None)
+        ax2.xaxis.set_label_coords(0.5,-0.12)
+        adjust_subplots_fun(ax1,ax2,ax_equil)
+
+        #hide noneq axis if splitting the yax 
+        ax_noneq.patch.set_alpha(0)
+        ax_noneq.set_yticks([])
+        ax_noneq.spines.left.set_visible(False)
+        ax_noneq.spines.right.set_visible(False)
+
+    else: 
+        plot_ep(ax_noneq,results2[0],results2[3],plotter)
+        plot_work(ax_noneq,results2[0],results2[1],plotter)
+        plot_heat(ax_noneq,results2[0],results2[2],plotter)
+           
+    ax_noneq.tick_params(which="both",axis="x",labelsize=plotter.fontsizeticks)
+    ax_noneq.set_xticks([3,5,10,20,30,40])
+    ax_equil.set_xticks([3,5,10,20,30,40])
+    ax_noneq.yaxis.set_label_coords(-0.12,0.5)
+    ax_noneq.set_xlim((2.5,40.5))  
+    ax_noneq.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
 
     #formatting
+    format_plot(ax_noneq,results2[0],"Minimum Work",plotter)
     format_plot(ax_equil,results1[0],"Engineered Swift Equilibration",plotter)
-    format_plot(ax1,results2[0],"Minimum Work",plotter)
-    format_plot(ax2,results2[0],None,plotter)
-    ax1.set_xlabel(None)
-    ax2.set_ylabel(None)
     ax_equil.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
-
-    add_panel_label(ax_equil,"(a)",plotter)
-    add_panel_label(plt.subplot(gs[:,3:]),"(b)",plotter)
-
-    plt.subplot(gs[:,3:]).patch.set_alpha(0)
-    plt.subplot(gs[:,3:]).set_ylabel("Cost",fontsize=plotter.fontsizetitles)
-    plt.subplot(gs[:,3:]).yaxis.set_label_coords(-0.12,0.5)
-    plt.subplot(gs[:,3:]).tick_params(which="both",axis="x",labelsize=plotter.fontsizeticks)
-    plt.subplot(gs[:,3:]).set_yticks([])
-    plt.subplot(gs[:,3:]).spines.left.set_visible(False)
-    plt.subplot(gs[:,3:]).spines.right.set_visible(False)
-    plt.subplot(gs[:,3:]).set_xticks([3,5,10,20,30,40])
-    plt.subplot(gs[:,3:]).set_xlim((2.5,40.5))  
     
     #formatting 
-    ax2.xaxis.set_label_coords(0.5,-0.12)
     ax_equil.yaxis.set_label_coords(-0.12,0.5)
 
+    #add label
+    add_panel_label(ax_equil,"(a)",plotter)
+    add_panel_label(ax_noneq,"(b)",plotter)
 
-
-    ax_inset = ax_equil.inset_axes(bounds=[0.3,0.22,0.5,0.3],transform=ax_equil.transAxes)
-    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
-    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
-    plotter.format_ax_plain(ax_inset)
-    ax_inset.scatter(results2[0], results1[3]-results2[3],lw=plotter.lw-1,color="black")
-
-    ax_inset.set_xticks([3,10,20,30,40])
-    ax_inset.set_ylim((-0.6,0.05))
-
-    adjust_subplots_fun(ax1,ax2,ax_equil)
-
+    #plot inset
+    plot_inset(ax_equil,results1,results2,plotter,adjust_inset)
+    # Manually adding an extra legend item.
+ 
     h,l = ax_equil.get_legend_handles_labels()
-
+   
     fig.legend(h,l,
                                 fontsize = plotter.fontsizetitles,
                                 frameon=False,
@@ -206,16 +246,14 @@ def fig6():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "pass"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6)
-
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6,adjust_inset_fig6)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6,adjust_inset_fig6)
 
 
 def fig6cd():
 
     #input file
-    file_names = [#"T2-0_Lambda1-4_eps1_g0-01.csv",
-                  "T3-0_Lambda1-4_eps1_g0-01.csv",
+    file_names = ["T3-0_Lambda1-4_eps1_g0-01.csv",
                   "T4-0_Lambda1-4_eps1_g0-01.csv",
                   "T5-0_Lambda1-4_eps1_g0-01.csv",
                   #"T6-0_Lambda1-4_eps1_g0-01.csv",
@@ -226,14 +264,13 @@ def fig6cd():
                   "T20-0_Lambda1-4_eps1_g0-01.csv",
                   "T30-0_Lambda1-4_eps1_g0-01.csv",
                   "T40-0_Lambda1-4_eps1_g0-01.csv",
-                  #"T50-0_Lambda1-4_eps1_g0-01.csv"
-		]
+        ]
     
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "contract"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6cd)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6cd,adjust_inset_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6cd,adjust_inset_fig6cd)
 
 if __name__=="__main__":
    fig6()

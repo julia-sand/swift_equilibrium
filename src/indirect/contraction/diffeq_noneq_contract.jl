@@ -19,8 +19,8 @@ function solve_indirect(ARGS)
 
     model_type = ARGS[3]
     
-    sigma0 = 1
-    sigmaT = 0.5
+    sigma0 = 4
+    sigmaT = 1
 
     function b(y) #initialise function b
 
