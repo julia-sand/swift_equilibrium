@@ -91,7 +91,7 @@ def fig2b():
     plt.close()
 
 def fig4():
-    file_names =  ["T20-0_Lambda10-0_eps1_g0-1.csv"]
+    file_names =  ["T4-0_Lambda10-0_eps1_g0-1.csv"]
     models = ["hard"] #"harmonic",
     methods = ["direct"]
     fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"constrained_kappa",adjust_subplot_fig4)
@@ -130,5 +130,5 @@ def fig5b():
 
 if __name__=="__main__":
     
-    fig5b()
+    fig4()
 

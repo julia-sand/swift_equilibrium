@@ -100,10 +100,12 @@ def adjust_subplots_fig6(ax1,ax2,ax_equil):
 
     ax1.set_ylim((-0.1,0.7))
     ax2.set_ylim((-8.6,-8))
-    ax_equil.set_ylim((-0.38,0.25))
+    ax_equil.set_ylim((-0.38,0.22))
 
-def adjust_subplots_fig6cd(ax_noneq,ax_equil):
-    ax_equil.set
+def adjust_subplots_fig6cd(ax_noneq,ax2,ax_equil):
+
+    ax_noneq.set_ylim((-0.28,0.65))
+    ax_equil.set_ylim((-0.05,0.55))
 
 def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
 

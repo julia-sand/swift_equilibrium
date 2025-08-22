@@ -7,13 +7,21 @@ import matplotlib.pyplot as plt
 from plotscript import *
 from cost_v_time import append_Tf, compute_data
 
-def w2_dist_equil_constrained_kappa():
+
+def w2_dist_equil_constrained_kappa_lambda1():
     """estimate_w2.py
     compute_w2(20000,ex1())
     """
 
     return 0.27497567812511065
     #0.27043526719524696
+
+def w2_dist_equil_constrained_kappa_lambda10():
+    """estimate_w2.py
+    compute_w2(20000,ex1a())
+    """
+
+    return 0
 
 def w2_dist_stiffness_control_constrained_kappa():
     """estimate_w2.py
@@ -31,6 +39,19 @@ def w2_dist_equil_negative_constrained_kappa():
     return 0.2757935786361591
     #0.2654354307708025
 
+def w2_dist_equil_negative_constrained_kappa_small_lambda1():
+    """estimate_w2.py
+    compute_w2(20000,**())
+    """
+    
+    return 0
+
+def w2_dist_equil_negative_constrained_kappa_small_lambda10():
+    """estimate_w2.py
+    compute_w2(20000,**())
+    """
+    
+    return 0
 
 def w2_dist_stiffness_control_negative_constrained_kappa():
     """estimate_w2.py
@@ -38,7 +59,13 @@ def w2_dist_stiffness_control_negative_constrained_kappa():
     """
     
     return 0.2677920569772281
-    #0.26973955322968945
+
+def w2_dist_stiffness_control_negative_constrained_kappa_small():
+    """estimate_w2.py
+    compute_w2(20000,ex5())
+    """
+    
+    return 0
 
 def plot_w2(ax,w2,color1,case,tf):
     plt.subplot(ax).plot(np.linspace(3,tf,num=20),w2/np.linspace(3,tf,num=20),
@@ -65,8 +92,8 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     plt.subplot(ax).plot(results2[0],results2[3],"-o",label="Control (S.II)",#,label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
 
-    plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I",np.max(results1[0]))
-    plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II",np.max(results1[0]))
+    #plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I",np.max(results1[0]))
+    #plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II",np.max(results1[0]))
 
     plotter.format_ax_plain(plt.subplot(ax))
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
@@ -124,8 +151,8 @@ def make_plot(model_type,method,file_out,plotter=plotter):
     panel_a(gs[0,:3],"constrained_kappa",lambda_1,model_type,method,"(a)")
     panel_a(gs[0,3:],"constrained_kappa",lambda_10,model_type,method,"(b)")
 
-    panel_a(gs[1,:3],"negative_constrained_kappa",lambda_1,model_type,method,"(c)")
-    panel_a(gs[1,3:],"negative_constrained_kappa",lambda_10,model_type,method,"(d)")
+    panel_a(gs[1,:3],"negative_constrained_kappa_small",lambda_1,model_type,method,"(c)")
+    panel_a(gs[1,3:],"negative_constrained_kappa_small",lambda_10,model_type,method,"(d)")
 
     h,l = plt.subplot(gs[0,:3]).get_legend_handles_labels()
 

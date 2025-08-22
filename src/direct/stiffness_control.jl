@@ -82,6 +82,8 @@ function solve_direct(ARGS)
         @constraint(model, -1.5 <= kappa <= 1.5)
     elseif constraint_kappa=="neg2"
         @constraint(model, -0.5 <= kappa <= 1.5)
+    elseif constraint_kappa=="neg3"
+        @constraint(model, -0.1 <= kappa <= 1.2)
     end
 
     #enforce the dynamics, see system (3)
@@ -110,6 +112,9 @@ function solve_direct(ARGS)
         CSV.write(string(folder2,file_name), df)
     elseif constraint_kappa=="neg"
         folder3 = string(folder,"negative_constrained_kappa/")
+        CSV.write(string(folder3,file_name), df)
+    elseif constraint_kappa=="neg3"
+        folder3 = string(folder,"negative_constrained_kappa_small/")
         CSV.write(string(folder3,file_name), df)
     else 
         CSV.write(string(folder,file_name), df)

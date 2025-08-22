@@ -94,6 +94,19 @@ def ex2():
 
     return df
 
+def ex1a():
+    """
+    computes the W2 distance in get_w2_dist_equil_constrained_kappa_lambda10
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "equil",
+                            "T3-0_Lambda10-0_eps1_g0-1.csv",
+                            "constrained_kappa")
+
+    return df
 
 def ex3():
     """
@@ -110,6 +123,34 @@ def ex3():
     return df
 
 
+def ex3a():
+    """
+    computes the W2 distance in get_w2_dist_equil_negative_constrained_kappa_small_lambda10
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "equil",
+                            "T3-0_Lambda1-0_eps1_g0-1.csv",
+                            "negative_constrained_kappa_small")
+
+    return df
+
+
+def ex3b():
+    """
+    computes the W2 distance in get_w2_dist_equil_negative_constrained_kappa_small_lambda10
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "equil",
+                            "T3-0_Lambda10-0_eps1_g0-1.csv",
+                            "negative_constrained_kappa_small")
+
+    return df
 
 def ex4():
     """
@@ -125,9 +166,32 @@ def ex4():
 
     return df
 
+def ex5():
+    """
+    computes the W2 distance in get_w2_dist_stiffness_control_negative_constrained_kappa_small
+    """
+
+    plotter = PlotParams()
+    df = plotter.get_data("hard",
+                            "direct",
+                            "stiffness_control",
+                            "T3-0_Lambda10-0_eps1_g0-1.csv",
+                            "negative_constrained_kappa_small")
+
+    return df
+
+
+
 if __name__=="__main__":
     
-    print("w2_dist_equil_constrained_kappa ",compute_w2(20000,ex1()))
-    print("w2_dist_stiffness_control_constrained_kappa ",compute_w2(20000,ex2()))
-    print("w2_dist_equil_negative_constrained_kappa ",compute_w2(20000,ex3()))
-    print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(20000,ex4()))
+    #print("w2_dist_equil_constrained_kappa ",compute_w2(20000,ex1()))
+    #print("w2_dist_stiffness_control_constrained_kappa ",compute_w2(20000,ex2()))
+    #print("w2_dist_equil_negative_constrained_kappa ",compute_w2(20000,ex3()))
+    #print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(20000,ex4()))
+
+    print("w2_dist_equil_constrained_kappa_lambda10 ",compute_w2(20000,ex1a()))
+
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda1 ",compute_w2(20000,ex3a()))
+    print("w2_dist_stiffness_control_negative_constrained_kappa_small ",compute_w2(20000,ex5()))
+
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda10 ",compute_w2(20000,ex3b()))

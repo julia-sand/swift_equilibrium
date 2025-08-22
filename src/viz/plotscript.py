@@ -130,6 +130,8 @@ class PlotParams():
             folder_path = folder_path + "constrained_kappa/"
         elif constrained_kappa=="negative_constrained_kappa":
             folder_path = folder_path + "negative_constrained_kappa/"
+        elif constrained_kappa=="negative_constrained_kappa_small":
+            folder_path = folder_path + "negative_constrained_kappa_small/"
         elif constrained_kappa=="contract":
             folder_path = folder_path + "contract/"
         else:
