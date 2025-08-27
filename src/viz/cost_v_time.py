@@ -54,12 +54,8 @@ def plot_heat(ax,tvec,heatvec,plotter):
 def plot_ep(ax,tvec,epvec,plotter):
     ax.plot(tvec,epvec,"-o",label=r"$\mathcal{E}_{t_f}$",markersize=10,linewidth=plotter.lw,color=plotter.c3,zorder=200)
 
-def add_panel_label(ax,panel_label,plotter):
-    ax.text(x=0.02,y=0.95,s=panel_label,fontsize=plotter.fontsizetitles,
-    fontweight="bold",transform=ax.transAxes)
 
 def format_plot(ax,tvec,plot_title,plotter):
-    ax.plot(tvec,np.zeros(len(tvec)),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
     
     ax.set_xlabel(r"$t_f$")
     plotter.format_ax(ax,None,np.max(tvec),ti=np.min(tvec))
@@ -93,7 +89,7 @@ def adjust_inset_fig6(ax_inset):
     ax_inset.set_ylim((-0.02, 0.57))
   
 def adjust_inset_fig6cd(ax_inset):
-    ax_inset.set_ylim((-0.002, 0.06))
+    ax_inset.set_ylim((-0.002, 0.065))
 
 def adjust_subplots_fig6(ax1,ax2,ax_equil):
     ax2.set_yticks([-8.5,-8.3,-8.1])
@@ -104,8 +100,8 @@ def adjust_subplots_fig6(ax1,ax2,ax_equil):
 
 def adjust_subplots_fig6cd(ax_noneq,ax2,ax_equil):
 
-    ax_noneq.set_ylim((-0.28,0.65))
-    ax_equil.set_ylim((-0.05,0.55))
+    ax_noneq.set_ylim((-0.35,0.62))
+    ax_equil.set_ylim((-0.05,0.55)) 
 
 def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
 
@@ -114,30 +110,18 @@ def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
     ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles,
                     color="maroon")
     plotter.format_ax_plain(ax_inset)
-    ax_inset.scatter(results2[0], results2[3]-results1[3],
-                label=r"$\mathcal{E}^{\boldsymbol{(b)}}_{t_f}-\mathcal{E}^{\boldsymbol{(a)}}_{t_f}$",lw=plotter.lw-1,color="maroon")
+    ax_inset.plot(results2[0], results2[3]-results1[3],marker="o",markersize=10,
+                label=r"$\mathcal{E}^{\boldsymbol{(b)}}_{t_f}-\mathcal{E}^{\boldsymbol{(a)}}_{t_f}$",lw=plotter.lw-2,color="maroon")
 
     ax_inset.set_xticks([3,10,20,30,40])
     #ax_inset.set_ylim((-0.03,0.63))
     ax_inset.xaxis.label.set_color("maroon") 
-    #h_inset = plt.Line2D([0], [0],linestyle=' ',marker="o",linewidth=plotter.lw, 
-                                    #label=r"$\Delta \mathcal{E}_{t_f}$",
-    #                                color='maroon')
-                                    
-    #l.append(r"$\mathcal{E}^{\boldsymbol{(b)}}_{t_f}-\mathcal{E}^{\boldsymbol{(a)}}_{t_f}$")
     ax_inset.legend(frameon=False,
             loc="lower right",
             fontsize=plotter.fontsizetitles,
             handletextpad=-0.05)
     adjust_inset(ax_inset)
 
-def adjust_subplots_fig6cd(ax1,ax2,ax_equil):
-    #ax2.set_yticks([-8.5,-8.3,-8.1])
-
-    #ax1.set_ylim((-0.1,0.7))
-    #ax2.set_ylim((-8.6,-8)) 
-
-    pass
 
 def make_plot(file_names,
                 model_type,
@@ -176,26 +160,37 @@ def make_plot(file_names,
         ax1.set_xlabel(None)
         ax2.set_ylabel(None)
         ax2.xaxis.set_label_coords(0.5,-0.12)
+        ax2.set_xlabel(None)
         adjust_subplots_fun(ax1,ax2,ax_equil)
+        ax1.plot(results2[0],np.zeros(len(results2[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
 
         #hide noneq axis if splitting the yax 
         ax_noneq.patch.set_alpha(0)
         ax_noneq.set_yticks([])
         ax_noneq.spines.left.set_visible(False)
         ax_noneq.spines.right.set_visible(False)
+        ax1.text(x=0.02,y=0.9,s="(b)",fontsize=plotter.fontsizetitles,
+            fontweight="bold",transform=ax1.transAxes,zorder=1000)
 
     else: 
         plot_ep(ax_noneq,results2[0],results2[3],plotter)
         plot_work(ax_noneq,results2[0],results2[1],plotter)
         plot_heat(ax_noneq,results2[0],results2[2],plotter)
-           
+        ax_noneq.plot(results2[0],np.zeros(len(results2[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        adjust_subplots_fun(ax_noneq,None,ax_equil)
+        ax_noneq.text(x=0.02,y=0.95,s="(b)",fontsize=plotter.fontsizetitles,
+            fontweight="bold",transform=ax_noneq.transAxes,zorder=1000)
+    
     ax_noneq.tick_params(which="both",axis="x",labelsize=plotter.fontsizeticks)
     ax_noneq.set_xticks([3,5,10,20,30,40])
     ax_equil.set_xticks([3,5,10,20,30,40])
     ax_noneq.yaxis.set_label_coords(-0.12,0.5)
     ax_noneq.set_xlim((2.5,40.5))  
     ax_noneq.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
-
+    ax_equil.plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+    ax_equil.text(x=0.02,y=0.95,s="(a)",fontsize=plotter.fontsizetitles,
+            fontweight="bold",transform=ax_equil.transAxes,zorder=1000)
+    
     #formatting
     format_plot(ax_noneq,results2[0],"Minimum Work",plotter)
     format_plot(ax_equil,results1[0],"Engineered Swift Equilibration",plotter)
@@ -204,13 +199,8 @@ def make_plot(file_names,
     #formatting 
     ax_equil.yaxis.set_label_coords(-0.12,0.5)
 
-    #add label
-    add_panel_label(ax_equil,"(a)",plotter)
-    add_panel_label(ax_noneq,"(b)",plotter)
-
     #plot inset
     plot_inset(ax_equil,results1,results2,plotter,adjust_inset)
-    # Manually adding an extra legend item.
  
     h,l = ax_equil.get_legend_handles_labels()
    
@@ -224,7 +214,7 @@ def make_plot(file_names,
 
     plt.close()
 
-def fig6():
+def fig8():
 
     #input file
     file_names = [#"T2-0_Lambda1-4_eps1_g0-01.csv",
@@ -248,11 +238,11 @@ def fig6():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "pass"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6,adjust_inset_fig6)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6,adjust_inset_fig6)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8.png",adjust_subplots_fig6,adjust_inset_fig6)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8.pdf",adjust_subplots_fig6,adjust_inset_fig6)
 
 
-def fig6cd():
+def fig8cd():
 
     #input file
     file_names = ["T3-0_Lambda1-4_eps1_g0-01.csv",
@@ -271,9 +261,9 @@ def fig6cd():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "contract"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.png",adjust_subplots_fig6cd,adjust_inset_fig6cd)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/2_costs_v_time{model_type}_{method[0]}.pdf",adjust_subplots_fig6cd,adjust_inset_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8cd.png",adjust_subplots_fig6cd,adjust_inset_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8cd.pdf",adjust_subplots_fig6cd,adjust_inset_fig6cd)
 
 if __name__=="__main__":
-   fig6()
-   fig6cd()
+   fig8()
+   fig8cd()

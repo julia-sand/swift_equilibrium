@@ -157,6 +157,13 @@ class PlotParams():
             if equil=="stiffness_control":
                 ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c2)
             else:
+                    
+                #if c_ind==3:
+                #    ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=10$)",lw=self.lw,zorder=100,color=self.c3)
+                #else:
+                #
+                #     ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=1$)",lw=self.lw,zorder=100,color=self.c1)
+
                 ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
@@ -308,7 +315,7 @@ class PlotParams():
                                                                     letter_label="(e)",
                                                                     ylabel=r'Control, $\lambda_t$',
                                                                     xloc=0.02*(2/3))),label_ind,c_ind)
-                            
+                            c_ind += 1
                             if method =="slowfast":
                                 c_ind += 1
                             label_ind = False #add labels only on the first pass
@@ -336,6 +343,7 @@ class PlotParams():
 
         return fig
   
+
     def integrator(self,y,x,dx=0.001):
         #
         ti = np.min(x) 

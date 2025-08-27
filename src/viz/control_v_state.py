@@ -13,7 +13,9 @@ def w2_dist_equil_constrained_kappa_lambda1():
     compute_w2(20000,ex1())
     """
 
-    return 0.27497567812511065
+    return 0,0
+    
+    #0.27497567812511065
     #0.27043526719524696
 
 def w2_dist_equil_constrained_kappa_lambda10():
@@ -21,14 +23,16 @@ def w2_dist_equil_constrained_kappa_lambda10():
     compute_w2(20000,ex1a())
     """
 
-    return 0
+    return 0.2666750978904591,0.2156160217610507
+    #0.27609550015160056
 
 def w2_dist_stiffness_control_constrained_kappa():
     """estimate_w2.py
     compute_w2(20000,ex2())
     """
     
-    return 0.27868650834397246
+    return 0,0
+    #0.27868650834397246
     #0.28075074424154
 
 def w2_dist_equil_negative_constrained_kappa():
@@ -42,16 +46,20 @@ def w2_dist_equil_negative_constrained_kappa():
 def w2_dist_equil_negative_constrained_kappa_small_lambda1():
     """estimate_w2.py
     compute_w2(20000,**())
+    returns: 
+        w2 (state), w2 (configuration)
     """
     
-    return 0
+    return 0.27273010958133515, 0.22192763442459496
+    #0.25493365343063396
 
 def w2_dist_equil_negative_constrained_kappa_small_lambda10():
     """estimate_w2.py
     compute_w2(20000,**())
     """
     
-    return 0
+    return 0.27449983054736726,0.22277244235018087
+    #0.2738703038801249
 
 def w2_dist_stiffness_control_negative_constrained_kappa():
     """estimate_w2.py
@@ -65,19 +73,42 @@ def w2_dist_stiffness_control_negative_constrained_kappa_small():
     compute_w2(20000,ex5())
     """
     
-    return 0
+    return 0.2644955232145077,0.21335551558235102
+    #0.2678660709004442
 
 def plot_w2(ax,w2,color1,case,tf):
-    plt.subplot(ax).plot(np.linspace(3,tf,num=20),w2/np.linspace(3,tf,num=20),
-                linestyle="dashed",color=color1,alpha=0.5,lw=plotter.lw, label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+case+")")
+        
+    w2_state = w2[1]
+    w2_conf = w2[0]
 
-def choose_w2(equilvar,constraint):
-    function_name = "w2_dist_"+equilvar+"_"+constraint
+    plt.subplot(ax).plot(np.linspace(3,tf,num=20),
+                        w2_conf/np.linspace(3,tf,num=20),
+                        linestyle="--",
+                        label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"Config."+")")
+    plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
+                        (w2_conf-(20000**-0.5))/np.linspace(3,tf,num=20),
+                        (w2_conf+(20000**-0.5))/np.linspace(3,tf,num=20)
+                        ,color=color1,alpha=0.5)
+    plt.subplot(ax).plot(np.linspace(3,tf,num=20),
+                        w2_state/np.linspace(3,tf,num=20),
+                        linestyle="dotted",
+                        label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"State"+")")
+    plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
+                        (w2_state-(20000**-0.5))/np.linspace(3,tf,num=20),
+                        (w2_state+(20000**-0.5))/np.linspace(3,tf,num=20)
+                        ,color=color1,alpha=0.5)
+
+def choose_w2(equilvar,constraint,lambda_val):
+    function_name = "w2_dist_"+equilvar+"_"+constraint+"_"+lambda_val
     return {
-        'w2_dist_equil_constrained_kappa': lambda: w2_dist_equil_constrained_kappa(),
-        'w2_dist_stiffness_control_constrained_kappa': lambda: w2_dist_stiffness_control_constrained_kappa(),
+        'w2_dist_equil_constrained_kappa_lambda1': lambda: w2_dist_equil_constrained_kappa_lambda1(),
+        'w2_dist_equil_constrained_kappa_lambda10': lambda: w2_dist_equil_constrained_kappa_lambda10(),
         'w2_dist_equil_negative_constrained_kappa': lambda: w2_dist_equil_negative_constrained_kappa(),
-        'w2_dist_stiffness_control_negative_constrained_kappa': lambda: w2_dist_stiffness_control_negative_constrained_kappa(),
+        'w2_dist_equil_negative_constrained_kappa_small_lambda1': lambda: w2_dist_equil_negative_constrained_kappa_small_lambda1(),
+        'w2_dist_equil_negative_constrained_kappa_small_lambda10': lambda: w2_dist_equil_negative_constrained_kappa_small_lambda10(),
+        'w2_dist_stiffness_control_constrained_kappa_': lambda: w2_dist_stiffness_control_constrained_kappa(),
+        'w2_dist_stiffness_control_negative_constrained_kappa_': lambda: w2_dist_stiffness_control_negative_constrained_kappa(),
+        'w2_dist_stiffness_control_negative_constrained_kappa_small_': lambda: w2_dist_stiffness_control_negative_constrained_kappa_small(),
     }[function_name]()
 
 plotter = PlotParams()
@@ -92,20 +123,20 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     plt.subplot(ax).plot(results2[0],results2[3],"-o",label="Control (S.II)",#,label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
 
-    #plot_w2(ax,choose_w2("equil",constraint),plotter.c1,"S.I",np.max(results1[0]))
-    #plot_w2(ax,choose_w2("stiffness_control",constraint),plotter.c2,"S.II",np.max(results1[0]))
+    plot_w2(ax,choose_w2("equil",constraint,f"lambda{str(int(plotter.get_Lambda(file_names[0])))}"),plotter.c1,"S.I",np.max(results1[0]))
+    #plot_w2(ax,choose_w2("stiffness_control",constraint,""),plotter.c2,"S.II",np.max(results1[0]))
 
     plotter.format_ax_plain(plt.subplot(ax))
     #plt.subplot(ax).plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
     plt.subplot(ax).set_xticks([3,4,5,6,7,8,9,10])
 
-    plt.subplot(ax).set_ylim((-0.01,0.225))
+    plt.subplot(ax).set_ylim((-0.01,0.238))
     plt.subplot(ax).set_xlim((2.8,10.2))
     plt.subplot(ax).set_yticks([0,0.04,0.08,0.12,0.16,0.2])
     #plt.subplot(ax).set_yticks([-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4])
     plt.subplot(ax).set_ylabel(r"$\mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
 
-    plt.subplot(ax).text(x=0.88,y=0.88,s=f"{panel_label}",fontsize=plotter.fontsizetitles,fontweight="bold",
+    plt.subplot(ax).text(x=0.01,y=0.9,s=f"{panel_label}",fontsize=plotter.fontsizetitles,fontweight="bold",
                 transform=plt.subplot(ax).transAxes)
     
 
@@ -156,11 +187,13 @@ def make_plot(model_type,method,file_out,plotter=plotter):
 
     h,l = plt.subplot(gs[0,:3]).get_legend_handles_labels()
 
-    plt.subplot(gs[0,:3]).legend(h,l,
-                                fontsize = plotter.fontsizetitles,
+    plt.subplot(gs[0,3:]).legend(h,l,
+                                fontsize = plotter.fontsizetitles-4,
                                 frameon=False,
                                 handlelength=1,
+                                ncols=2,
                                 loc="upper right")
+    #plt.tight_layout()
     plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=plotter.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.savefig(file_out,bbox_inches="tight")
 
@@ -175,6 +208,7 @@ def fig4():
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
     make_plot(model_type,method,f"plots/fig4.png")
+    make_plot(model_type,method,f"plots/fig4.pdf")
     
 if __name__=="__main__":
     fig4()        

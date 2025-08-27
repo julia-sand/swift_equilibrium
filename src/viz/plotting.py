@@ -40,9 +40,11 @@ def adjust_subplot_fig2b(gs):
     plt.subplot(gs[1,:3]).set_ylim((0,2.8))
     plt.subplot(gs[1,3:]).set_ylim((-10,10))
 
-def adjust_subplot_fig4(gs):
-    plt.subplot(gs[1,3:]).set_ylim((-1.6,1.6))
-    plt.subplot(gs[1,:3]).set_ylim((-0.35,0.4))
+def adjust_subplot_fig4b(gs):
+    plt.subplot(gs[0,:3]).set_ylim((0.88,1.04))
+    plt.subplot(gs[0,3:]).set_ylim((0.95,2.15))
+    plt.subplot(gs[1,3:]).set_ylim((0.05,1.15))
+    plt.subplot(gs[1,:3]).set_ylim((-0.25,0.25))
 
 def plot_result(models,methods,file_names,equil,constrained_kappa,adjust_subplot):
     plotter = PlotParams()
@@ -90,20 +92,21 @@ def fig2b():
 
     plt.close()
 
-def fig4():
-    file_names =  ["T4-0_Lambda10-0_eps1_g0-1.csv"]
+def fig4b():
+    file_names =  ["T4-0_Lambda1-0_eps1_g0-1.csv","T4-0_Lambda10-0_eps1_g0-1.csv"]
     models = ["hard"] #"harmonic",
     methods = ["direct"]
-    fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"constrained_kappa",adjust_subplot_fig4)
-    plt.gca().legend(labels= ["Control","State"]
+    fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"constrained_kappa",adjust_subplot_fig4b)
+    h,l = plt.gca().get_legend_handles_labels()
+    plt.gca().legend(handles = h,labels= ["Control",r"State ($\Lambda=1$)",r"State ($\Lambda=10$)"]
                                         ,fontsize=20
-                                        ,loc="lower left"
+                                        ,loc="lower center"
                                         ,frameon=False
-                                        ,ncols=2
+                                        ,ncols=1
                                         ,handlelength=1
                                         ,columnspacing=0.7)
-    fig_out.savefig(f"plots/fig4_test.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig4_test.pdf", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig4b_temp2.png", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig4b.pdf", bbox_inches="tight")
     plt.close()
 
 
@@ -130,5 +133,5 @@ def fig5b():
 
 if __name__=="__main__":
     
-    fig4()
+    fig4b()
 

@@ -46,6 +46,18 @@ def compute_xT(xinit,batch_samples,df, Generator):
     
     return xinit
 
+def return_w2(xinit, xout,batch_samples):
+
+    M = ot.dist(xinit, xout, metric="sqeuclidean")
+
+    # reg term
+    lambd = 1e-1
+    a, b = np.ones((batch_samples,)) / batch_samples, np.ones((batch_samples,)) / batch_samples  # uniform distribution on samples
+
+    Gs = ot.sinkhorn2(a, b, M, lambd)
+    return Gs
+
+
 def compute_w2(batch_samples,df):
         
     #batch_samples = 500 #total number of samples
@@ -57,14 +69,9 @@ def compute_w2(batch_samples,df):
     xinit = generate_samples(batch_samples, Generator)
     xout = compute_xT(xinit.copy(),batch_samples,df, Generator)
     
-    M = ot.dist(xinit, xout, metric="sqeuclidean")
-
-    # reg term
-    lambd = 1e-1
-    a, b = np.ones((batch_samples,)) / batch_samples, np.ones((batch_samples,)) / batch_samples  # uniform distribution on samples
-
-    Gs = ot.sinkhorn2(a, b, M, lambd)
-    return Gs
+    Gs_marg = return_w2(xinit[:,[0]],xout[:,[0]],batch_samples)
+    Gs_all = return_w2(xinit,xout,batch_samples)
+    return Gs_all,Gs_marg
 
 def ex1():
     """
@@ -77,8 +84,11 @@ def ex1():
                             "equil",
                             "T3-0_Lambda1-0_eps1_g0-1.csv",
                             "constrained_kappa")
+    res = compute_w2(20000,df)
+    print("w2_dist_equil_constrained_kappa_lambda1 ",res[0])
+    print("w2_dist_equil_constrained_kappa_lambda1 ",res[1])
 
-    return df
+    return 
 
 def ex2():
     """
@@ -105,8 +115,11 @@ def ex1a():
                             "equil",
                             "T3-0_Lambda10-0_eps1_g0-1.csv",
                             "constrained_kappa")
+    res = compute_w2(20000,df)
+    print("w2_dist_equil_constrained_kappa_lambda10 ",res[0])
+    print("w2_dist_equil_constrained_kappa_lambda10 ",res[1])
 
-    return df
+    return 
 
 def ex3():
     """
@@ -135,7 +148,11 @@ def ex3a():
                             "T3-0_Lambda1-0_eps1_g0-1.csv",
                             "negative_constrained_kappa_small")
 
-    return df
+    res = compute_w2(20000,df)
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda1 ",res[0])
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda1_marg ",res[1])
+
+    return 
 
 
 def ex3b():
@@ -150,7 +167,11 @@ def ex3b():
                             "T3-0_Lambda10-0_eps1_g0-1.csv",
                             "negative_constrained_kappa_small")
 
-    return df
+    res = compute_w2(20000,df)
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda10 ",res[0])
+    print("w2_dist_equil_negative_constrained_kappa_small_lambda10_marg ",res[1])
+
+    return 
 
 def ex4():
     """
@@ -177,8 +198,12 @@ def ex5():
                             "stiffness_control",
                             "T3-0_Lambda10-0_eps1_g0-1.csv",
                             "negative_constrained_kappa_small")
+    res = compute_w2(20000,df)
 
-    return df
+    print("w2_dist_stiffness_control_negative_constrained_kappa_small ",res[0])
+    print("w2_dist_stiffness_control_negative_constrained_kappa_small_marg ",res[1])
+
+    return 
 
 
 
@@ -189,9 +214,8 @@ if __name__=="__main__":
     #print("w2_dist_equil_negative_constrained_kappa ",compute_w2(20000,ex3()))
     #print("w2_dist_stiffness_control_negative_constrained_kappa ",compute_w2(20000,ex4()))
 
-    print("w2_dist_equil_constrained_kappa_lambda10 ",compute_w2(20000,ex1a()))
-
-    print("w2_dist_equil_negative_constrained_kappa_small_lambda1 ",compute_w2(20000,ex3a()))
-    print("w2_dist_stiffness_control_negative_constrained_kappa_small ",compute_w2(20000,ex5()))
-
-    print("w2_dist_equil_negative_constrained_kappa_small_lambda10 ",compute_w2(20000,ex3b()))
+    #ex1a()
+    #ex3a()
+    #ex3b()
+    #ex5()
+    ex1()
