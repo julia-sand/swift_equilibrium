@@ -158,13 +158,13 @@ class PlotParams():
                 ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c2)
             else:
                     
-                #if c_ind==3:
-                #    ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=10$)",lw=self.lw,zorder=100,color=self.c3)
-                #else:
-                #
-                #     ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=1$)",lw=self.lw,zorder=100,color=self.c1)
+                if c_ind==3:
+                    ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=10$)",lw=self.lw,zorder=100,color=self.c3)
+                else:
+                
+                     ax.plot(x, self.filter_(y), label = legendlabel+r"($\Lambda=1$)",lw=self.lw,zorder=100,color=self.c1)
 
-                ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
+                #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
         elif method =="slowfast": 

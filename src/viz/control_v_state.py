@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 from plotscript import *
 from cost_v_time import append_Tf, compute_data
@@ -13,7 +14,7 @@ def w2_dist_equil_constrained_kappa_lambda1():
     compute_w2(20000,ex1())
     """
 
-    return 0,0
+    return 0.2701455999727414,0.21875233413886042
     
     #0.27497567812511065
     #0.27043526719524696
@@ -78,8 +79,8 @@ def w2_dist_stiffness_control_negative_constrained_kappa_small():
 
 def plot_w2(ax,w2,color1,case,tf):
         
-    w2_state = w2[1]
-    w2_conf = w2[0]
+    w2_state = w2[0]
+    w2_conf = w2[1]
 
     plt.subplot(ax).plot(np.linspace(3,tf,num=20),
                         w2_conf/np.linspace(3,tf,num=20),
@@ -89,14 +90,14 @@ def plot_w2(ax,w2,color1,case,tf):
                         (w2_conf-(20000**-0.5))/np.linspace(3,tf,num=20),
                         (w2_conf+(20000**-0.5))/np.linspace(3,tf,num=20)
                         ,color=color1,alpha=0.5)
-    plt.subplot(ax).plot(np.linspace(3,tf,num=20),
-                        w2_state/np.linspace(3,tf,num=20),
-                        linestyle="dotted",
-                        label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"State"+")")
-    plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
-                        (w2_state-(20000**-0.5))/np.linspace(3,tf,num=20),
-                        (w2_state+(20000**-0.5))/np.linspace(3,tf,num=20)
-                        ,color=color1,alpha=0.5)
+    #plt.subplot(ax).plot(np.linspace(3,tf,num=20),
+    #                    w2_state/np.linspace(3,tf,num=20),
+    #                    linestyle="dotted",
+    #                    label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"State"+")")
+    #plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
+    #                    (w2_state-(20000**-0.5))/np.linspace(3,tf,num=20),
+    #                    (w2_state+(20000**-0.5))/np.linspace(3,tf,num=20)
+    #                    ,color=color1,alpha=0.5)
 
 def choose_w2(equilvar,constraint,lambda_val):
     function_name = "w2_dist_"+equilvar+"_"+constraint+"_"+lambda_val
@@ -187,6 +188,11 @@ def make_plot(model_type,method,file_out,plotter=plotter):
 
     h,l = plt.subplot(gs[0,:3]).get_legend_handles_labels()
 
+    blue_patch = mpatches.Patch(color=plotter.c1,alpha=0.5)
+
+    h.append(blue_patch)
+    l.append("st. error")
+
     plt.subplot(gs[0,3:]).legend(h,l,
                                 fontsize = plotter.fontsizetitles-4,
                                 frameon=False,
@@ -207,8 +213,11 @@ def fig4():
     #will be plotted, otherwise the entry will be skipped.
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
-    make_plot(model_type,method,f"plots/fig4.png")
-    make_plot(model_type,method,f"plots/fig4.pdf")
+    make_plot(model_type,method,f"plots/control_v_state.png")
+    make_plot(model_type,method,f"plots/control_v_state.pdf")
     
+
+
+
 if __name__=="__main__":
     fig4()        

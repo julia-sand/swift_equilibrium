@@ -14,4 +14,4 @@ src/fullbridge*
 src/quarterbridge*
 direct_*
 indirect_*
-
+*.pdf

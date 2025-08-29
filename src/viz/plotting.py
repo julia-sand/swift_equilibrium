@@ -46,6 +46,12 @@ def adjust_subplot_fig4b(gs):
     plt.subplot(gs[1,3:]).set_ylim((0.05,1.15))
     plt.subplot(gs[1,:3]).set_ylim((-0.25,0.25))
 
+def adjust_subplot_fig4c(gs):
+    plt.subplot(gs[0,:3]).set_ylim((0.88,1.04))
+    plt.subplot(gs[0,3:]).set_ylim((0.92,2.18))
+    plt.subplot(gs[1,3:]).set_ylim((-0.25,1.35))
+    plt.subplot(gs[1,:3]).set_ylim((-0.22,0.28))
+
 def plot_result(models,methods,file_names,equil,constrained_kappa,adjust_subplot):
     plotter = PlotParams()
 
@@ -110,6 +116,24 @@ def fig4b():
     plt.close()
 
 
+
+def fig4c():
+    file_names =  ["T4-0_Lambda1-0_eps1_g0-1.csv","T4-0_Lambda10-0_eps1_g0-1.csv"]
+    models = ["hard"] #"harmonic",
+    methods = ["direct"]
+    fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"negative_constrained_kappa_small",adjust_subplot_fig4c)
+    h,l = plt.gca().get_legend_handles_labels()
+    plt.gca().legend(handles = h,labels= ["Control",r"State ($\Lambda=1$)",r"State ($\Lambda=10$)"]
+                                        ,fontsize=20
+                                        ,loc="lower center"
+                                        ,frameon=False
+                                        ,ncols=1
+                                        ,handlelength=1
+                                        ,columnspacing=0.7)
+    fig_out.savefig(f"plots/fig4c.png", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig4c.pdf", bbox_inches="tight")
+    plt.close()
+
 def fig5():
     file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv"]#,"T3-0_Lambda1-4_eps1_g0-01.csv"]
                    #"T7-0_Lambda1-4_eps1_g0-01.csv"]
@@ -133,5 +157,5 @@ def fig5b():
 
 if __name__=="__main__":
     
-    fig4b()
+    fig4c()
 
