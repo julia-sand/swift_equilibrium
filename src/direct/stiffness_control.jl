@@ -3,8 +3,9 @@ using InfiniteOpt, Ipopt;
 using CSV;
 using DataFrames;
 
-#= We minimize entropy production /heat release between non-equilibrium states
-where the boundary conditions are given by GAUSSIANs
+#= 
+We minimize entropy production /heat release between non-equilibrium states
+where the boundary conditions are given by GAUSSIAN distributions
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
 -stiffness (kappa) is the control
@@ -16,7 +17,6 @@ include("initialisation_funs.jl")
 
 ############################
 
-println("is this code even running???")
 #=
 Setup the infinite opt model 
 =#

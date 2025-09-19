@@ -8,6 +8,7 @@ where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
 -minimization of dissipation between equilibrium states at fixed time horizon.
+-stiffness (kappa) is a state 
 =#
 
 #get parsed parameters
@@ -29,12 +30,11 @@ function solve_direct_equil(ARGS)
     model_type = ARGS[3]
     constraint_kappa = ARGS[5] #"kappa": constraint 1 on kappa; "neg":constraint 2
 
+    #boundary conditions on the variance
     sigma0 = 1
     sigmaT = 2
     
-    #vector of parameters
-    p = [epsilon]
-    
+    #define the model
     model = InfiniteModel(Ipopt.Optimizer);
 
     #time
@@ -103,7 +103,7 @@ function solve_direct_equil(ARGS)
     @constraint(model, deriv(x2,t) == -x2-epsilon*(kappa*x1-x3))
     @constraint(model, deriv(x3,t) == 2*(1-x3-epsilon*kappa*x2))
     
-    #Constraint on kappa, Eq. (50)
+    #Constraints on kappa, Eq. (50)
     if constraint_kappa=="kappa"
         @constraint(model, 0.2 <= kappa <= 1.2)
     elseif constraint_kappa=="neg"
@@ -119,7 +119,7 @@ function solve_direct_equil(ARGS)
 
     ########################
 
-    # Define the header as an array of strings
+    #save the results of the optimisation to CSV
     coords = hcat(collect.(supports(x1))...)'
     
     data_rows = [coords[:,1],value(x1),value(x2),value(x3),value(kappa)]

@@ -1,10 +1,16 @@
 """
-Run this file in order to make the results directory. 
+This file should be run first in order to make the results directory 
+and save the results as CSVs. 
 
 """
+
 import os
 
 def make_results_dir():
+    """
+    Makes results directory to store CSVs from integration.
+    """
+
     #get cwd
     cwd = os.getcwd()
     try:

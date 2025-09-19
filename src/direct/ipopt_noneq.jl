@@ -1,14 +1,14 @@
-#get all the packages
 using InfiniteOpt, Ipopt;
 using CSV;
 using DataFrames;
 
-#=We minimize Work eq.(10) between non-equilibrium states
+#=
+We minimize Work eq.(10) between non-equilibrium states
 where the boundary conditions are given by GAUSSIANs
 Example 4.1: 
 -we keep the means constant, and look only at the change of variance problem
 -minimization of dissipation between equilibrium states at fixed time horizon.
--stiffness (kappa) is a state
+-stiffness (kappa) is a state 
 =#
 
 #get parsed parameters
@@ -17,30 +17,37 @@ include("initialisation_funs.jl")
 
 ############################
 
-#=
-Setup the infinite opt model 
-=#
 function solve_direct(ARGS)
+    #=
+    Sets up the infinite opt model using command line arguments. 
+    Optimises the model
+    Writes results to CSV
+    =#
 
+    #set parameters
     T,g = parse(Float64,ARGS[1]),parse(Float64,ARGS[2])
     epsilon = 1
     Lambda = parse(Float64,ARGS[4]) #sqrt(2)
     alpha=0.1
+
+    #generate file name
     file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = ARGS[3]
     constraint_kappa = ARGS[5]
     
+    #initial and final values of \sigma
     sigma0 = 1
     sigmaT = 2
     
+    #define model
     model = InfiniteModel(Ipopt.Optimizer);
-    set_optimizer_attributes(model,"max_iter" => 3000)
+    #set_optimizer_attributes(model,"max_iter" => 3000)
 
+    #add variables
     #time
     @infinite_parameter(model, t in [0, T], num_supports = 6001, 
                         derivative_method=FiniteDifference(Forward(), true))
-            #, derivative_method=FiniteDifference(Forward(), true))
 
     #position variance
     @variable(model, 0<=x1, Infinite(t), start = 1)
@@ -53,6 +60,7 @@ function solve_direct(ARGS)
 
     #the stiffness (a state)
     @variable(model, kappa, Infinite(t), start = 1)
+
     #final value of kappa as a variable
     @variable(model, kappa_final)
     
@@ -111,7 +119,7 @@ function solve_direct(ARGS)
     ########################
 
 
-    # Define the header as an array of strings
+    #save the results of the optimisation
     coords = hcat(collect.(supports(x1))...)'
     
     data_rows = [coords[:,1],value(x1),value(x2),value(x3),value(kappa)]
@@ -130,6 +138,5 @@ function solve_direct(ARGS)
     
 end   
     
-
 solve_direct(ARGS)
 
