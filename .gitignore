@@ -8,10 +8,8 @@ slowfast*.bash
 temp*
 src/TEMP*
 core*
-src/halfbridge*
+*bridge*
 Manifest.toml
-src/fullbridge*
-src/quarterbridge*
 direct_*
 indirect_*
 *.pdf
