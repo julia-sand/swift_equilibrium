@@ -5,7 +5,7 @@ plots
 test*
 *.out
 slowfast*.bash
-temp*
+*temp*
 src/TEMP*
 core*
 *bridge*
