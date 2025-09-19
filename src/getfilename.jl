@@ -1,11 +1,13 @@
 using IfElse
 
 
-function get_file_name(T,epsilon,g,Lambda=sqrt(2))
+function get_file_name(T,epsilon,g,Lambda)
     #=
     Generates a filename containing parameter values
+    format:
+    T$(T)_Lambda$(Lambda)_eps$(epsilon)_g$(g).csv
     =#
-    
+
     Ttemp = replace(string(T),"."=>"-")
     Lambdatemp = IfElse.ifelse(Lambda==sqrt(2), "1-4", replace(string(Lambda),"."=>"-"))
     epstemp = replace(string(epsilon),"."=>"-")

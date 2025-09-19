@@ -2,7 +2,8 @@ using DifferentialEquations;
 using CSV;
 using DataFrames;
 
-#= we start by examining the situation of equilibirum transitions between
+#= 
+we start by examining the situation of equilibirum transitions between
 two gaussian states
 =#
 

@@ -13,7 +13,7 @@ function slowfast(ARGS)
     epsilon = 1
     Lambda = sqrt(2)
 
-    file_name = get_file_name(T,epsilon,g)
+    file_name = get_file_name(T,epsilon,g,Lambda)
 
     model_type = "harmonic"
     
