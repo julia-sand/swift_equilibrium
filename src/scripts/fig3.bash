@@ -6,6 +6,6 @@
 #SBATCH --mem-per-cpu=4G
 
 module load julia
-julia --project=. -- ../src/direct/ipopt_equil.jl 3 0 "hard" 9 "none"&
-julia --project=. -- ../src/indirect/diffeq_equil.jl 3 0.01 "log" 9 "none"&
+julia --project=. -- src/direct/ipopt_equil.jl 3 0 "hard" 9 "none"&
+julia --project=. -- src/indirect/diffeq_equil.jl 3 0.01 "log" 9 "none"&
 wait
