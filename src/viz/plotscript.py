@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.ndimage import generic_filter
@@ -14,18 +15,30 @@ present our results
 
 """ 
 
+def update_mpl():
+    """
+    Sets default parameters for any matplotlib plotting formatting
+    """
+
+    #update matplotlib config
+    mpl.rcParams['lines.linewidth'] = 3
+    mpl.rcParams['xtick.labelsize'] = 18
+    mpl.rcParams['ytick.labelsize'] = 18
+    mpl.rcParams['font.size'] = 22
+    mpl.rcParams['axes.labelsize'] = 22
+    mpl.rcParams['legend.fontsize'] = 22
+
 class PlotParams():
     def __init__(self):
         
-        #set up fontsizes
-        self.fontsizeticks = 18
-        self.fontsizetitles = 20
+        update_mpl()
 
         self.lw = 3
         
         self.c1 = "#1f77b4" #darkblue, DIRECT
         self.c2 = '#ff7f0e' #orange, INDIRECT
         self.c3 = '#2ca02c' #green SLOWFAST
+
 
     def plot_func(self,ax,x,y,legendlabel,linestyle="solid"):
         """Simple plot and formatting to plot one line of data. Used for plotting
@@ -41,8 +54,8 @@ class PlotParams():
         Adds x axis label and formats axis ticks
         """
         
-        ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles,labelpad=-3)
-        ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlabel(r'$t_f$',labelpad=-3)
+        #ax.tick_params(labelsize=self.fontsizeticks)
 
     def format_ax(self,ax,ylabel,Tf,ti=0):
         """
@@ -58,8 +71,8 @@ class PlotParams():
         """
         
         
-        ax.set_xlabel(r'$t_f$',fontsize=self.fontsizetitles)
-        ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlabel(r'$t_f$')#,fontsize=self.fontsizetitles)
+        #ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
 
     def filter_(self,x,filter_delta = 50):
@@ -166,7 +179,8 @@ class PlotParams():
 
                 #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif method =="indirect": 
-            ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
+            ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",
+                    zorder=300,color=self.c2)
         elif method =="slowfast": 
 
             if c_ind==2:
@@ -174,11 +188,11 @@ class PlotParams():
             else:
                 ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="red")
 
-        ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
-        ax.set_xlabel('t',fontsize=self.fontsizetitles)
-        ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
+        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
+        #ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.1,x[-1]+0.1))
-        ax.set_ylim(ylim)
+        #ax.set_ylim(ylim)
 
     def plot_func_cumulants_control(self,ax,x,y,ylabel,
                                     method,equil):
@@ -192,9 +206,9 @@ class PlotParams():
             ax.plot(x, y, label = "equilibration",lw=self.lw,linestyle="dotted",zorder=100,color=self.c3)
             #ax.plot(x, y,lw=self.lw,zorder=50,color="gray",alpha=0.5)
         
-        ax.set_ylabel(ylabel,fontsize=self.fontsizetitles)
-        ax.set_xlabel('t',fontsize=self.fontsizetitles)
-        ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
+        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
+        #ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.1,x[-1]+0.1))
         ax.set_ylim(ylim)
 
@@ -216,7 +230,6 @@ class PlotParams():
                                             y=params_dict["yloc"], 
                                             s=params_dict["letter_label"],
                                             transform=params_dict["subplot"].transAxes,
-                                            fontsize=self.fontsizetitles,
                                             fontweight="bold",
                                             zorder=10000)
         except AttributeError:
@@ -305,6 +318,10 @@ class PlotParams():
                             if (method =="direct" or (model_type=="control" and eq==False)):
                                 lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                             
+                            elif method =="slowfast":
+                            
+                                lambda_series = self.b(df.f4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+
                             else:
                             
                                 lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
@@ -327,16 +344,7 @@ class PlotParams():
         #plt.subplot(gs_cumulants[0, 4:]).set_ylim(top=0.45,bottom=-0.3)
         #plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.6,bottom=-1.6)
         #plt.subplot(gs_cumulants[1, :3]).plot(df.t.to_numpy(),self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()))#plt.subplot(gs_cumulants[1, :3]).set_ylim(top=1.2,bottom=-0.3)
-        #add legend
-        if "stiffness_control" in equil:
-            pass 
-        else:
-            plt.subplot(gs_cumulants[1, 3:]).legend(fontsize=self.fontsizeticks
-                                            ,loc="lower center"
-                                            ,frameon=False
-                                            ,ncols=2
-                                            ,handlelength=1
-                                            ,columnspacing=0.7)
+        
         plt.subplots_adjust(wspace=0.5)
         #plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
 

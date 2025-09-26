@@ -3,21 +3,34 @@ import matplotlib.pyplot as plt
 
 from plotscript import PlotParams #contains the plotting functions
 
+def make_legend(h,l,gs):
+    plt.subplot(gs[1, 3:]).legend(h,l
+                                ,loc="lower center"
+                                ,frameon=False
+                                ,ncols=2
+                                ,handlelength=1
+                                ,columnspacing=0.7)
+
+
 def adjust_subplot_fig1(gs):
+    plt.subplot(gs[0,:2]).set_ylim((0.85,1.04))
+    plt.subplot(gs[0,2:4]).set_ylim((0.96,2.14))
+    plt.subplot(gs[0,4:]).set_ylim((-0.27,0.43))
     plt.subplot(gs[1,3:]).set_ylim((-40,35))
     plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
-    plt.subplot(gs[0,4:]).set_ylim((-0.3,0.4))
 
 def adjust_subplot_fig2(gs):
-    plt.subplot(gs[1,3:]).set_ylim((-40,35))
-    plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
-    plt.subplot(gs[0,4:]).set_ylim((-0.3,0.4))
+    plt.subplot(gs[0,:2]).set_ylim((0.87,1.06))
+    plt.subplot(gs[0,2:4]).set_ylim((0.94,2.17))
+    plt.subplot(gs[0,4:]).set_ylim((-0.27,0.43))
+    plt.subplot(gs[1,3:]).set_ylim((-20,20))
+    plt.subplot(gs[1,:3]).set_ylim((-0.84,1.54))
 
 def adjust_subplot_fig3(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.95,1.32))
     plt.subplot(gs[0,2:4]).set_ylim((0.1,1.2))
     plt.subplot(gs[0,4:]).set_ylim((-0.25,0.12))
-    plt.subplot(gs[1,:3]).set_ylim((0,2.8))
+    plt.subplot(gs[1,:3]).set_ylim((0.77,2.8))
     plt.subplot(gs[1,3:]).set_ylim((-10,10))
 
 def adjust_subplot_fig5(gs):
@@ -44,9 +57,9 @@ def adjust_subplot_fig7(gs):
 def adjust_subplot_fig8(gs):
     #reset all ylims
     plt.subplot(gs[1,3:]).set_ylim((-12,5.2))
-    plt.subplot(gs[1,:3]).set_ylim((-1.52,1.72))
+    plt.subplot(gs[1,:3]).set_ylim((-0.52,1.72))
     plt.subplot(gs[0,:2]).set_ylim((0.88,1.32))
-    plt.subplot(gs[0,2:4]).set_ylim((0.7,4.52))
+    plt.subplot(gs[0,2:4]).set_ylim((0.7,4.62))
     plt.subplot(gs[0,4:]).set_ylim((-0.55,0.25))
     plt.subplot(gs[1,3:]).yaxis.set_label_coords(-0.12,0.5)
 
@@ -64,23 +77,27 @@ def plot_result(models,methods,file_names,equil,constrained_kappa,adjust_subplot
                                     file_names,
                                     equil=equil,constrained_kappa=constrained_kappa)
 
+    
     adjust_subplot(gs_cumulants)
+    h,l = plt.subplot(gs_cumulants[1,:3]).get_legend_handles_labels()
+    make_legend(h,l,gs_cumulants)
+    
     return fig_out
 
 def fig1():
     file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv"]
     models = ["harmonic"] #"harmonic",
     methods = ["slowfast","direct","indirect"]
-    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig2)
+    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1)
     fig_out.savefig(f"plots/fig1.png", bbox_inches="tight")
 
     plt.close()
 
 def fig2():
-    file_names =  ["T3-0_Lambda9-0_eps1_g0-001.csv","T3-0_Lambda9-0_eps1_g0-1.csv"]
+    file_names =  ["T3-0_Lambda9-0_eps1_g0-001.csv","T3-0_Lambda9-0_eps1_g0-0.csv"]
     models = ["log","hard"] #"harmonic",
     methods = ["direct","indirect"]
-    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1)
+    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig2)
     fig_out.savefig(f"plots/fig2.png", bbox_inches="tight")
 
     plt.close()
@@ -90,8 +107,8 @@ def fig3():
     models = ["harmonic"] #"harmonic",
     methods = ["slowfast","direct","indirect"]
     fig_out = plot_result(models,methods,file_names, ["equil"],"contract",adjust_subplot_fig3)
-    fig_out.savefig(f"plots/fig2b.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig2b.pdf", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig3.png", bbox_inches="tight")
+    #fig_out.savefig(f"plots/fig3.pdf", bbox_inches="tight")
 
     plt.close()
 
@@ -108,8 +125,8 @@ def fig5():
                                         ,ncols=1
                                         ,handlelength=1
                                         ,columnspacing=0.7)
-    fig_out.savefig(f"plots/fig4b_temp2.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig4b.pdf", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig5.png", bbox_inches="tight")
+    #fig_out.savefig(f"plots/fig5.pdf", bbox_inches="tight")
     plt.close()
 
 
@@ -127,8 +144,8 @@ def fig6():
                                         ,ncols=1
                                         ,handlelength=1
                                         ,columnspacing=0.7)
-    fig_out.savefig(f"plots/fig4c.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig4c.pdf", bbox_inches="tight")
+    fig_out.savefig(f"plots/fig6.png", bbox_inches="tight")
+    #fig_out.savefig(f"plots/fig6.pdf", bbox_inches="tight")
     plt.close()
 
 def fig7():
@@ -137,8 +154,8 @@ def fig7():
     models = ["harmonic"] #"harmonic",
     methods = ["indirect","direct"]
     fig_out = plot_result(models,methods,file_names, ["noneq"],"none",adjust_subplot_fig7)
-    fig_out.savefig(f"plots/fig5.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig5.pdf",bbox_inches="tight")
+    fig_out.savefig(f"plots/fig7.png", bbox_inches="tight")
+    #fig_out.savefig(f"plots/fig7.pdf",bbox_inches="tight")
     plt.close()
 
 
@@ -148,11 +165,18 @@ def fig8():
     models = ["harmonic"] #"harmonic",
     methods = ["indirect","direct"]
     fig_out = plot_result(models,methods,file_names, ["noneq"],"contract",adjust_subplot_fig8)
-    fig_out.savefig(f"plots/fig5b.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig5b.pdf",bbox_inches="tight")
+    fig_out.savefig(f"plots/fig8.png", bbox_inches="tight")
+    #fig_out.savefig(f"plots/fig5b.pdf",bbox_inches="tight")
     plt.close()
 
 if __name__=="__main__":
     
     fig1()
+    fig2()
+    fig3()
+    fig5()
+    fig6()
+    fig7()
+    fig8()
+
 
