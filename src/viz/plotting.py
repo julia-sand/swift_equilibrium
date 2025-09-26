@@ -24,7 +24,7 @@ def adjust_subplot_fig2(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.87,1.06))
     plt.subplot(gs[0,2:4]).set_ylim((0.94,2.17))
     plt.subplot(gs[0,4:]).set_ylim((-0.27,0.43))
-    plt.subplot(gs[1,3:]).set_ylim((-20,20))
+    plt.subplot(gs[1,3:]).set_ylim((-13,13))
     plt.subplot(gs[1,:3]).set_ylim((-0.84,1.54))
 
 def adjust_subplot_fig3(gs):

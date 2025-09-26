@@ -166,14 +166,23 @@ class PlotParams():
 
         return legendlabel
 
-    def plot_func_cumulants(self,ax,x,y,ylabel,model_type,method,param_label,file_name,equil
-                                ,c_ind):
+    def plot_func_cumulants(self,ax,x,y,model_type,method,param_label,file_name,equil
+                                ,c_ind,label_ind):
         
         legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
         if method =="direct":
-            if equil=="stiffness_control":
+            if (equil=="stiffness_control" and label_ind==1):
                 #Stiffness as a control 
-                ax.plot(x,self.filter_(y), label = "Stiffness as a control",lw=self.lw,color=self.c2)
+                ax.plot(x,self.filter_(y), label = "stiffness as a control",
+                                        lw=self.lw,color=self.c2)
+            elif (equil=="stiffness_control" and label_ind!=1):
+                pass
+            
+            elif label_ind!=1:
+                lambda_temp = self.get_Lambda(file_name)
+                col = self.c1 if lambda_temp==1 else self.c3
+                ax.plot(x, self.filter_(y), label="stiffness as a state"+ r" ($\Lambda =$"+ f"{lambda_temp})",lw=self.lw,zorder=100,color=col)
+                #label = legendlabel + r" ($\Lambda =$"+ f"{lambda_temp})"
             
             else:
                     
@@ -188,34 +197,13 @@ class PlotParams():
         elif method =="indirect": 
             ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",
                     zorder=300,color=self.c2)
+           
         elif method =="slowfast": 
 
             if c_ind==2:
-                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color=self.c3)
+                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=1000,color=self.c3)
             else:
-                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="red")
-
-        ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
-        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
-        #ax.tick_params(labelsize=self.fontsizeticks)
-        ax.set_xlim((-0.1,x[-1]+0.1))
-
-    def plot_func_cumulants_control(self,ax,x,y,ylabel,
-                                    method,equil):
-        
-        #legendlabel = self.get_legend_label(model_type,method,param_label)
-        if method =="direct":
-            ax.plot(x, self.filter_(y), label = "direct",lw=self.lw,color=self.c1)
-        elif (method =="indirect" and equil=="noneq"): 
-            ax.plot(x, y, label = "indirect",lw=self.lw,linestyle="dashed",zorder=100,color=self.c2)
-        elif (method =="indirect" and equil == "equil"): 
-            ax.plot(x, y, label = "equilibration",lw=self.lw,linestyle="dotted",zorder=100,color=self.c3)
-            #ax.plot(x, y,lw=self.lw,zorder=50,color="gray",alpha=0.5)
-        
-        ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
-        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
-        #ax.tick_params(labelsize=self.fontsizeticks)
-        ax.set_xlim((-0.1,x[-1]+0.1))
+                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="m")
 
     def format_subplot(self,params_dict,label_ind,c_ind):
         
@@ -223,20 +211,13 @@ class PlotParams():
             self.plot_func_cumulants(params_dict["subplot"],
                                         params_dict["tseries"], 
                                         params_dict["xseries"],
-                                        params_dict["ylabel"],
                                         params_dict["model_type"],
                                         params_dict["method"],
                                         params_dict["paramlabel"],
                                         params_dict["file_name"],
-                                        params_dict["equil"],c_ind)
+                                        params_dict["equil"],c_ind,label_ind)
             
-            if label_ind:         
-                params_dict["subplot"].text(x=params_dict["xloc"], 
-                                            y=params_dict["yloc"], 
-                                            s=params_dict["letter_label"],
-                                            transform=params_dict["subplot"].transAxes,
-                                            fontweight="bold",
-                                            zorder=10000)
+            
         except AttributeError:
                     pass
     def make_fig(self):
@@ -268,12 +249,13 @@ class PlotParams():
         Plots the data of specified parameters (via the filename) and returns matplotlib figure.
         """
 
-        label_ind = True
+        label_ind = 1
         c_ind = 1
         for eq in equil:
             for file_name in file_names:
                 
                 param_label = self.make_paramlabel(file_name)
+                xmax = 0
                 #pdb.set_trace()
                 for model_type in models:
                     for method in methods:
@@ -287,67 +269,90 @@ class PlotParams():
                                 eq_temp = "stiffness_control"
                             else:
                                 eq_temp = eq
+                            if "slowfast" in methods:
+                                c_temp = "slowfast"
+                            else:
+                                c_temp = "0"
                     
-                            plot_params_all = dict(xloc = 0.02 if eq_temp!="stiffness_control" else (2/3)*0.02,
-                                                    yloc= 0.88,
-                                                    tseries= df.t.to_numpy(),
+                            plot_params_all = dict(tseries= df.t.to_numpy(),
                                                     model_type=model_type,
                                                     method=method,
                                                     paramlabel= param_label,
                                                     equil=eq,
                                                     file_name=file_name)
-
-                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 2:4]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,3:]),
-                                                                                            xseries= df.x1.to_numpy(),
-                                                                                            letter_label="(b)",
-                                                                                            ylabel='Position Variance')),
-                                                                                            label_ind,c_ind)
-                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 0:2]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,:3]),
-                                                                    xseries= df.x3.to_numpy(),
-                                                                    letter_label="(a)",
-                                                                    ylabel='Mom. Variance')),label_ind,c_ind)
-                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 4:]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,:3]),
-                                                                    xseries= df.x2.to_numpy(),
-                                                                    letter_label="(c)",
-                                                                    ylabel='Cross Correlation')),label_ind,c_ind)
-                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,3:]),
+                            posvardict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 2:4]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,3:]),
+                                                                                            xseries= df.x1.to_numpy()))
+                            self.format_subplot(posvardict,label_ind,c_ind)
+                            momvardict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 0:2]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,:3]),
+                                                                    xseries= df.x3.to_numpy()))
+                            self.format_subplot(momvardict,label_ind,c_ind)
+                            xcordict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 4:]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,:3]),
+                                                                    xseries= df.x2.to_numpy()))
+                            self.format_subplot(xcordict,label_ind,c_ind)
+                            stiffnessdict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,3:]),
                                                                     tseries = df.t.to_numpy(),
-                                                                    xseries= df.kappa.to_numpy(),#self.reconstruct_kappa(df.t.to_numpy(),df.x1.to_numpy(),df.x2.to_numpy(),df.x3.to_numpy()), #df["kappa"].to_numpy(),
-                                                                    letter_label="(d)",
-                                                                    ylabel=r'Stiffness, $\kappa_t$',
-                                                                    xloc=0.02*(2/3))),label_ind,c_ind)
+                                                                    xseries= df.kappa.to_numpy()))
+                            self.format_subplot(stiffnessdict,label_ind,c_ind)
                             if (method =="direct" or (model_type=="control" and eq==False)):
                                 lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                             
                             elif method =="slowfast":
                             
-                                lambda_series = self.b(df.f4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+                                lambda_series = self.b(df.f1,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
                             else:
                             
                                 lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
-                            self.format_subplot(self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if eq_temp!="stiffness_control" else None,
-                                                                    #tseries = df.t.to_numpy(),
-                                                                    xseries= lambda_series,
-                                                                    letter_label="(e)",
-                                                                    ylabel=r'Control, $\lambda_t$',
-                                                                    xloc=0.02*(2/3))),label_ind,c_ind)
+                            lambdadict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if eq_temp!="stiffness_control" else None,
+                                                                    xseries= lambda_series))
+                                                                    
+                            self.format_subplot(lambdadict,label_ind,c_ind)
                             #c_ind += 1
-                            if method =="slowfast":
+                            if c_temp =="slowfast":
                                 c_ind += 1
-                            
-                            label_ind = False #add labels only on the first pass
 
+                            if eq_temp == "stiffness_control":    
+                                label_ind += 1
+                            
+                            #get max time for x axis adjusting
+                            xmax = df.t.max() 
                         except FileNotFoundError:
                             pass     
-        
+                        
         plt.subplots_adjust(wspace=0.5)
-        #plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=self.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
-
+        xloc = 0.02 if eq_temp!="stiffness_control" else (2/3)*0.02
+        yloc= 0.88
+        #xmax = 5
+                                                    
+        if eq_temp!="stiffness_control":
+            self.add_labels(plt.subplot(gs_cumulants[0,0:2]),xmax,"(a)",xloc,yloc,"Mom. Variance")
+            self.add_labels(plt.subplot(gs_cumulants[0,2:4]),xmax,"(b)",xloc,yloc,"Position Variance")
+            self.add_labels(plt.subplot(gs_cumulants[0,4:]),xmax,"(c)",xloc,yloc,"Cross Correlation")
+            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$")
+            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(e)",xloc*(2/3),yloc,r"Control, $\lambda_t$")
+        else: 
+            self.add_labels(plt.subplot(gs_cumulants[0,:3]),xmax,"(a)",xloc*(2/3),yloc,"Mom. Variance")
+            self.add_labels(plt.subplot(gs_cumulants[0,3:]),xmax,"(b)",xloc*(2/3),yloc,"Position Variance")
+            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(c)",xloc*(2/3),yloc,"Cross Correlation")
+            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$")
 
         return fig
   
+    def add_labels(self,ax,xmax,letter_label,xloc,yloc,ylabel):
+
+        #add axis labels 
+        ax.text(x=xloc, 
+                    y=yloc, 
+                    s=letter_label,
+                    transform=ax.transAxes,
+                    fontweight="bold",
+                    zorder=10000)
+        ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
+        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
+        #ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlim((-0.1,xmax+0.1))
+
 
     def integrator(self,y,x,dx=0.001):
         #
