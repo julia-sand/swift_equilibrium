@@ -85,7 +85,7 @@ def plot_w2(ax,w2,color1,case,tf):
     plt.subplot(ax).plot(np.linspace(3,tf,num=20),
                         w2_conf/np.linspace(3,tf,num=20),
                         linestyle="--",
-                        label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"Config."+")")
+                        label=r"$\frac{1}{t_f}(\mathcal{W}_2 \pm n^{-1/2})$")
     plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
                         (w2_conf-(20000**-0.5))/np.linspace(3,tf,num=20),
                         (w2_conf+(20000**-0.5))/np.linspace(3,tf,num=20)
@@ -118,10 +118,10 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa=constraint)
     results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",constrained_kappa=constraint)
 
-    plt.subplot(ax).plot(results1[0],results1[3],"-v",label="State (S.I)",#label=r"$\mathcal{W}_{t_f}$",
+    plt.subplot(ax).plot(results1[0],results1[3],"-v",label="stiffness as a state",#label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c1)
 
-    plt.subplot(ax).plot(results2[0],results2[3],"-o",label="Control (S.II)",#,label=r"$\mathcal{W}_{t_f}$",
+    plt.subplot(ax).plot(results2[0],results2[3],"-o",label="stiffness as a control",#,label=r"$\mathcal{W}_{t_f}$",
                                     markersize=10,linewidth=plotter.lw,color=plotter.c2)
 
     plot_w2(ax,choose_w2("equil",constraint,f"lambda{str(int(plotter.get_Lambda(file_names[0])))}"),plotter.c1,"S.I",np.max(results1[0]))
@@ -135,9 +135,9 @@ def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plott
     plt.subplot(ax).set_xlim((2.8,10.2))
     plt.subplot(ax).set_yticks([0,0.04,0.08,0.12,0.16,0.2])
     #plt.subplot(ax).set_yticks([-0.3,-0.2,-0.1,0.0,0.1,0.2,0.3,0.4])
-    plt.subplot(ax).set_ylabel(r"$\mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles)
+    plt.subplot(ax).set_ylabel(r"$\mathcal{E}_{t_f}$")
 
-    plt.subplot(ax).text(x=0.01,y=0.9,s=f"{panel_label}",fontsize=plotter.fontsizetitles,fontweight="bold",
+    plt.subplot(ax).text(x=0.01,y=0.9,s=f"{panel_label}",fontweight="bold",
                 transform=plt.subplot(ax).transAxes)
     
 
@@ -188,20 +188,25 @@ def make_plot(model_type,method,file_out,plotter=plotter):
 
     h,l = plt.subplot(gs[0,:3]).get_legend_handles_labels()
 
-    blue_patch = mpatches.Patch(color=plotter.c1,alpha=0.5)
+    blue_patch = mpatches.Patch(color=plotter.c1,alpha=0.5,zorder=1)
 
-    h.append(blue_patch)
-    l.append("st. error")
+    final_leg_handle = (h[-1],blue_patch)
+    h[-1] = final_leg_handle
+    #l.append("st. error")
 
-    plt.subplot(gs[0,3:]).legend(h,l,
-                                fontsize = plotter.fontsizetitles-4,
+    fig.legend(h,l,
                                 frameon=False,
-                                handlelength=1,
-                                ncols=2,
-                                loc="upper right")
+                                #handlelength=1,
+                                ncols=3,
+                                columnspacing=0.8,
+                                loc="upper center",
+                                bbox_to_anchor=(0.5, -0.05))
+
+    fig.subplots_adjust(bottom=0.01)
     #plt.tight_layout()
-    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=plotter.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
-    plt.savefig(file_out,bbox_inches="tight")
+    plt.figtext(0.5, 0.01, param_label, ha="center", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    plt.savefig(f"plots/{file_out}.png",format="png",bbox_inches="tight")
+    plt.savefig(f"plots/{file_out}.pdf",format="pdf",bbox_inches="tight")
 
     plt.close()
 
@@ -213,8 +218,7 @@ def fig4():
     #will be plotted, otherwise the entry will be skipped.
     model_type = "hard"#["harmonic","control","log","hard"] 
     method = "direct"#,"nondegenerate"]
-    make_plot(model_type,method,f"plots/control_v_state.png")
-    make_plot(model_type,method,f"plots/control_v_state.pdf")
+    make_plot(model_type,method,"fig4")
     
 
 

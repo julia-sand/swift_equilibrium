@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from plotscript import PlotParams #contains the plotting functions
 
 def make_legend(h,l,fig):
+    
     fig.legend(h,l
                 ,loc="upper center"
                 ,frameon=False
@@ -12,6 +13,22 @@ def make_legend(h,l,fig):
                 #,columnspacing=1.
                 ,bbox_to_anchor=(0.5, -0.05))
     fig.subplots_adjust(bottom=0.01)
+
+def make_legend_fig56(handles,labels,fig):
+    
+    handles = np.concatenate((handles[::2],handles[1::2]),axis=0)
+    labels = np.concatenate((labels[::2],labels[1::2]),axis=0)
+
+    fig.legend(handles,labels
+                ,loc="upper center"
+                ,frameon=False
+                ,ncols=2
+                #,handlelength=0.8
+                #,columnspacing=0.7
+                #,handletextpad=-0.02
+                ,bbox_to_anchor=(0.5, -0.05))
+    fig.subplots_adjust(bottom=0.01)
+
 
 def adjust_subplot_fig1(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.85,1.04))
@@ -64,7 +81,8 @@ def adjust_subplot_fig8(gs):
     plt.subplot(gs[0,4:]).set_ylim((-0.55,0.25))
     plt.subplot(gs[1,3:]).yaxis.set_label_coords(-0.12,0.5)
 
-def plot_result(models,methods,file_names,equil,constrained_kappa,adjust_subplot):
+def plot_result(models,methods,file_names,equil,constrained_kappa,
+                adjust_subplot,make_legend=make_legend):
     plotter = PlotParams()
 
     #uncomment if you want the label
@@ -121,15 +139,8 @@ def fig5():
     file_names =  ["T4-0_Lambda1-0_eps1_g0-1.csv","T4-0_Lambda10-0_eps1_g0-1.csv"]
     models = ["hard"] #"harmonic",
     methods = ["direct"]
-    fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"constrained_kappa",adjust_subplot_fig5)
+    fig_out = plot_result(models,methods,file_names, ["equil","stiffness_control"],"constrained_kappa",adjust_subplot_fig5,make_legend_fig56)
     h,l = plt.gca().get_legend_handles_labels()
-    #plt.gca().legend(handles = h,labels= ["Control",r"State ($\Lambda=1$)",r"State ($\Lambda=10$)"]
-    #                                    ,fontsize=20
-    #                                    ,loc="lower center"
-    #                                    ,frameon=False
-    #                                    ,ncols=1
-    #                                    ,handlelength=1
-    #                                    ,columnspacing=0.7)
     fig_out.savefig(f"plots/fig5.png", bbox_inches="tight")
     fig_out.savefig(f"plots/fig5.pdf", format="pdf", bbox_inches="tight")
     plt.close()
@@ -140,15 +151,7 @@ def fig6():
     file_names =  ["T4-0_Lambda1-0_eps1_g0-1.csv","T4-0_Lambda10-0_eps1_g0-1.csv"]
     models = ["hard"] #"harmonic",
     methods = ["direct"]
-    fig_out = plot_result(models,methods,file_names, ["stiffness_control","equil"],"negative_constrained_kappa_small",adjust_subplot_fig6)
-    h,l = plt.gca().get_legend_handles_labels()
-    #plt.gca().legend(handles = h,labels= ["Control",r"State ($\Lambda=1$)",r"State ($\Lambda=10$)"]
-    #                                    ,fontsize=20
-    #                                    ,loc="lower center"
-    #                                    ,frameon=False
-    #                                    ,ncols=1
-    #                                    ,handlelength=1
-    #                                    ,columnspacing=0.7)
+    fig_out = plot_result(models,methods,file_names, ["equil","stiffness_control"],"negative_constrained_kappa_small",adjust_subplot_fig6,make_legend_fig56)
     fig_out.savefig(f"plots/fig6.png", bbox_inches="tight")
     fig_out.savefig(f"plots/fig6.pdf", format="pdf", bbox_inches="tight")
     plt.close()

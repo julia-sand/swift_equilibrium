@@ -59,10 +59,10 @@ def format_plot(ax,tvec,plot_title,plotter):
     
     ax.set_xlabel(r"$t_f$")
     plotter.format_ax(ax,None,np.max(tvec),ti=np.min(tvec))
-    ax.set_title(plot_title,fontsize=plotter.fontsizetitles)
+    ax.set_title(plot_title)
 
 def add_ylabel(ax,plotter):
-    ax.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
+    ax.set_ylabel("Cost")
 
 def make_split_gs_subplot(fig,gs):
 
@@ -85,20 +85,20 @@ def make_split_gs_subplot(fig,gs):
 
     return ax1,ax2
 
-def adjust_inset_fig6(ax_inset):
+def adjust_inset_fig8(ax_inset):
     ax_inset.set_ylim((-0.02, 0.57))
   
-def adjust_inset_fig6cd(ax_inset):
+def adjust_inset_fig9(ax_inset):
     ax_inset.set_ylim((-0.002, 0.065))
 
-def adjust_subplots_fig6(ax1,ax2,ax_equil):
+def adjust_subplots_fig8(ax1,ax2,ax_equil):
     ax2.set_yticks([-8.5,-8.3,-8.1])
 
     ax1.set_ylim((-0.1,0.7))
     ax2.set_ylim((-8.6,-8))
-    ax_equil.set_ylim((-0.38,0.22))
+    ax_equil.set_ylim((-0.38,0.26))
 
-def adjust_subplots_fig6cd(ax_noneq,ax2,ax_equil):
+def adjust_subplots_fig9(ax_noneq,ax2,ax_equil):
 
     ax_noneq.set_ylim((-0.35,0.62))
     ax_equil.set_ylim((-0.05,0.55)) 
@@ -107,7 +107,7 @@ def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
 
     ax_inset = ax_equil.inset_axes(bounds=[0.35,0.24,0.5,0.3],transform=ax_equil.transAxes)
     ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray")
-    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",fontsize=plotter.fontsizetitles,
+    ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",
                     color="maroon")
     plotter.format_ax_plain(ax_inset)
     ax_inset.plot(results2[0], results2[3]-results1[3],marker="o",markersize=10,
@@ -118,7 +118,6 @@ def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
     ax_inset.xaxis.label.set_color("maroon") 
     ax_inset.legend(frameon=False,
             loc="lower right",
-            fontsize=plotter.fontsizetitles,
             handletextpad=-0.05)
     adjust_inset(ax_inset)
 
@@ -169,7 +168,7 @@ def make_plot(file_names,
         ax_noneq.set_yticks([])
         ax_noneq.spines.left.set_visible(False)
         ax_noneq.spines.right.set_visible(False)
-        ax1.text(x=0.02,y=0.9,s="(b)",fontsize=plotter.fontsizetitles,
+        ax1.text(x=0.02,y=0.9,s="(b)",
             fontweight="bold",transform=ax1.transAxes,zorder=1000)
 
     else: 
@@ -178,23 +177,22 @@ def make_plot(file_names,
         plot_heat(ax_noneq,results2[0],results2[2],plotter)
         ax_noneq.plot(results2[0],np.zeros(len(results2[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
         adjust_subplots_fun(ax_noneq,None,ax_equil)
-        ax_noneq.text(x=0.02,y=0.95,s="(b)",fontsize=plotter.fontsizetitles,
+        ax_noneq.text(x=0.02,y=0.95,s="(b)",
             fontweight="bold",transform=ax_noneq.transAxes,zorder=1000)
     
-    ax_noneq.tick_params(which="both",axis="x",labelsize=plotter.fontsizeticks)
     ax_noneq.set_xticks([3,5,10,20,30,40])
     ax_equil.set_xticks([3,5,10,20,30,40])
     ax_noneq.yaxis.set_label_coords(-0.12,0.5)
     ax_noneq.set_xlim((2.5,40.5))  
-    ax_noneq.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
+    ax_noneq.set_ylabel("Cost")
     ax_equil.plot(results1[0],np.zeros(len(results1[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
-    ax_equil.text(x=0.02,y=0.95,s="(a)",fontsize=plotter.fontsizetitles,
+    ax_equil.text(x=0.02,y=0.95,s="(a)",
             fontweight="bold",transform=ax_equil.transAxes,zorder=1000)
     
     #formatting
     format_plot(ax_noneq,results2[0],"Minimum Work",plotter)
     format_plot(ax_equil,results1[0],"Engineered Swift Equilibration",plotter)
-    ax_equil.set_ylabel("Cost",fontsize=plotter.fontsizetitles)
+    ax_equil.set_ylabel("Cost")
     
     #formatting 
     ax_equil.yaxis.set_label_coords(-0.12,0.5)
@@ -205,12 +203,16 @@ def make_plot(file_names,
     h,l = ax_equil.get_legend_handles_labels()
    
     fig.legend(h,l,
-                                fontsize = plotter.fontsizetitles,
-                                frameon=False,
-                                handlelength=1,
-                                loc="center right")
-    plt.figtext(0.5, 0.01, param_label, ha="center", fontsize=plotter.fontsizetitles, bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
-    plt.savefig(file_out,bbox_inches="tight")
+                frameon=False,
+                ncols=3,
+                #handlelength=1,
+                loc="upper center",
+                bbox_to_anchor=(0.5, -0.05))
+    fig.subplots_adjust(bottom=0.01)
+
+    plt.figtext(0.5, 0.01, param_label, ha="center", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    plt.savefig(f"plots/{file_out}.png",format="png",bbox_inches="tight")
+    plt.savefig(f"plots/{file_out}.pdf",format="pdf",bbox_inches="tight")
 
     plt.close()
 
@@ -238,8 +240,7 @@ def fig8():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "pass"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8.png",adjust_subplots_fig6,adjust_inset_fig6)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8.pdf",adjust_subplots_fig6,adjust_inset_fig6)
+    make_plot(file_names,model_type,method,constrained_kappa,"fig8",adjust_subplots_fig8,adjust_inset_fig8)
 
 
 def fig8cd():
@@ -261,8 +262,7 @@ def fig8cd():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "contract"
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8cd.png",adjust_subplots_fig6cd,adjust_inset_fig6cd)
-    make_plot(file_names,model_type,method,constrained_kappa,f"plots/fig8cd.pdf",adjust_subplots_fig6cd,adjust_inset_fig6cd)
+    make_plot(file_names,model_type,method,constrained_kappa,"fig9",adjust_subplots_fig9,adjust_inset_fig9)
 
 if __name__=="__main__":
    fig8()

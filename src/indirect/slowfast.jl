@@ -17,6 +17,7 @@ function slowfast(ARGS)
 
     model_type = "harmonic"
     
+    #initial and final sigma
     sigma0 = 1
     sigmaT = 2
     
