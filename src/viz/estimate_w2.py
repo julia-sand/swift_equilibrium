@@ -39,7 +39,6 @@ def compute_xT(xinit,batch_samples,df, Generator):
         dt = (t_vec[i+1]-t_vec[i])
         
         #dw = generate_innovation(dt,batch_samples, Generator)
-        #xdata = torch.column_stack(())
         du_bar = get_ref_du(df,t_vec[i],xinit[...,[0]])
         
         xinit = em_step(xinit,du_bar,dt,batch_samples,Generator,)

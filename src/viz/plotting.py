@@ -17,8 +17,8 @@ def adjust_subplot_fig1(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.85,1.04))
     plt.subplot(gs[0,2:4]).set_ylim((0.96,2.14))
     plt.subplot(gs[0,4:]).set_ylim((-0.27,0.43))
-    plt.subplot(gs[1,3:]).set_ylim((-40,35))
-    plt.subplot(gs[1,:3]).set_ylim((-0.7,1.5))
+    plt.subplot(gs[1,3:]).set_ylim((-17,17))
+    plt.subplot(gs[1,:3]).set_ylim((-0.11,1.21))
 
 def adjust_subplot_fig2(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.87,1.06))
@@ -108,9 +108,9 @@ def fig2():
     plt.close()
 
 def fig3():
-    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv"]
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv"]
     models = ["harmonic"] #"harmonic",
-    methods = ["slowfast","direct","indirect"]
+    methods = ["direct","indirect"]
     fig_out = plot_result(models,methods,file_names, ["equil"],"contract",adjust_subplot_fig3)
     fig_out.savefig(f"plots/fig3.png", bbox_inches="tight")
     fig_out.savefig(f"plots/fig3.pdf", format="pdf", bbox_inches="tight")

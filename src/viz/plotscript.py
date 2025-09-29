@@ -75,12 +75,15 @@ class PlotParams():
         #ax.tick_params(labelsize=self.fontsizeticks)
         ax.set_xlim((-0.5+ti,Tf+0.5))
 
-    def filter_(self,x,filter_delta = 50):
+    def filter_(self,x,filter_delta = None):
         """Convenient function to apply a simple smoothing filter to
         a series of data
         """
-        
-        return generic_filter(x,sc.mean,filter_delta,mode = "nearest")
+
+        if filter_delta is None:
+            return x 
+        else:
+            return generic_filter(x,sc.mean,filter_delta,mode = "nearest")
     
     def get_idx(self,string):
         for i in enumerate(string):
@@ -160,66 +163,60 @@ class PlotParams():
             gtemp = self.get_g(file_name)
             legendlabel = f"centre manifold (g = {gtemp})" #legendlabel+f" (g = {gtemp})"
         elif method == "indirect":
-            legendlabel = "first order solution"
+            legendlabel = "solution of first order conditions"
         elif method == "direct":
             legendlabel = f"direct optimisation"
 
         return legendlabel
 
-    def plot_func_cumulants(self,ax,x,y,model_type,method,param_label,file_name,equil
-                                ,c_ind,label_ind):
+    def plot_func_cumulants(self,ax,xseries,c_ind,label_ind,filter_delta,**params_dict):
+                                               
         
-        legendlabel = self.get_legend_label(model_type,method,param_label,file_name)
-        if method =="direct":
-            if (equil=="stiffness_control" and label_ind==1):
+        legendlabel = self.get_legend_label(params_dict["model_type"],params_dict["method"],params_dict["paramlabel"],params_dict["file_name"])
+        if params_dict["method"] =="direct":
+            if (params_dict["equil"]=="stiffness_control" and label_ind==1):
                 #Stiffness as a control 
-                ax.plot(x,self.filter_(y), label = "stiffness as a control",
+                ax.plot(params_dict["tseries"],self.filter_(xseries,filter_delta), label = "stiffness as a control",
                                         lw=self.lw,color=self.c2)
-            elif (equil=="stiffness_control" and label_ind!=1):
+            elif (params_dict["equil"]=="stiffness_control" and label_ind!=1):
                 pass
             
             elif label_ind!=1:
-                lambda_temp = self.get_Lambda(file_name)
+                lambda_temp = self.get_Lambda(params_dict["file_name"])
                 col = self.c1 if lambda_temp==1 else self.c3
-                ax.plot(x, self.filter_(y), label="stiffness as a state"+ r" ($\Lambda =$"+ f"{lambda_temp})",lw=self.lw,zorder=100,color=col)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label="stiffness as a state"+ r" ($\Lambda =$"+ f"{lambda_temp})",lw=self.lw,zorder=100,color=col)
                 #label = legendlabel + r" ($\Lambda =$"+ f"{lambda_temp})"
             
             else:
                     
                 if c_ind==3:
-                    ax.plot(x, self.filter_(y), label = legendlabel,lw=self.lw,zorder=100,color=self.c3)
+                    ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c3)
                     #+r"($\Lambda=10$)"
                 else:
                 
-                    ax.plot(x, self.filter_(y), label = legendlabel,lw=self.lw,zorder=100,color=self.c1)
+                    ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c1)
 
                 #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
-        elif method =="indirect": 
-            ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dashed",
+        elif params_dict["method"] =="indirect": 
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
                     zorder=300,color=self.c2)
            
-        elif method =="slowfast": 
+        elif params_dict["method"] =="slowfast": 
 
             if c_ind==2:
-                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=1000,color=self.c3)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=1000,color=self.c3)
             else:
-                ax.plot(x, y, label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="m")
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="m")
 
-    def format_subplot(self,params_dict,label_ind,c_ind):
+    def format_subplot(self,ax,xseries,label_ind,c_ind,filter_delta,**params_dict):
         
         try:
-            self.plot_func_cumulants(params_dict["subplot"],
-                                        params_dict["tseries"], 
-                                        params_dict["xseries"],
-                                        params_dict["model_type"],
-                                        params_dict["method"],
-                                        params_dict["paramlabel"],
-                                        params_dict["file_name"],
-                                        params_dict["equil"],c_ind,label_ind)
+            self.plot_func_cumulants(ax,xseries,c_ind,label_ind,filter_delta,**params_dict)
             
             
         except AttributeError:
-                    pass
+            pass
+
     def make_fig(self):
         fig = plt.figure(figsize=(15, 8))#, constrained_layout=True)
         return fig
@@ -267,8 +264,10 @@ class PlotParams():
                             #use stiffness as a control in the plot for all values
                             if "stiffness_control" in equil:
                                 eq_temp = "stiffness_control"
+                                filter_delta=50
                             else:
                                 eq_temp = eq
+                                filter_delta=None
                             if "slowfast" in methods:
                                 c_temp = "slowfast"
                             else:
@@ -280,36 +279,32 @@ class PlotParams():
                                                     paramlabel= param_label,
                                                     equil=eq,
                                                     file_name=file_name)
-                            posvardict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 2:4]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,3:]),
-                                                                                            xseries= df.x1.to_numpy()))
-                            self.format_subplot(posvardict,label_ind,c_ind)
-                            momvardict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 0:2]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,:3]),
-                                                                    xseries= df.x3.to_numpy()))
-                            self.format_subplot(momvardict,label_ind,c_ind)
-                            xcordict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[0, 4:]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,:3]),
-                                                                    xseries= df.x2.to_numpy()))
-                            self.format_subplot(xcordict,label_ind,c_ind)
-                            stiffnessdict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1,:3]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,3:]),
-                                                                    tseries = df.t.to_numpy(),
-                                                                    xseries= df.kappa.to_numpy()))
-                            self.format_subplot(stiffnessdict,label_ind,c_ind)
+                            ax =plt.subplot(gs_cumulants[0, 2:4]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,3:])
+                            self.format_subplot(ax,df.x1.to_numpy(),label_ind,c_ind,filter_delta,**plot_params_all)
+                            ax=plt.subplot(gs_cumulants[0, 0:2]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[0,:3])
+                            self.format_subplot(ax,df.x3.to_numpy(),label_ind,c_ind,filter_delta,**plot_params_all)
+                            ax=plt.subplot(gs_cumulants[0, 4:]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,:3])
+                            self.format_subplot(ax,df.x2.to_numpy(),label_ind,c_ind,filter_delta,**plot_params_all)
+                            ax=plt.subplot(gs_cumulants[1,:3]) if eq_temp!="stiffness_control" else plt.subplot(gs_cumulants[1,3:])
+                            self.format_subplot(ax,df.kappa.to_numpy(),label_ind,c_ind,filter_delta,**plot_params_all)
                             if (method =="direct" or (model_type=="control" and eq==False)):
                                 lambda_series = np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
                             
                             elif method =="slowfast":
                             
-                                lambda_series = self.b(df.f1,model_type,self.get_Lambda(file_name),self.get_g(file_name))
+                                lambda_series = self.get_slowfast_y4(df,self.get_g(file_name))
+                                #np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+                                #
+                                #self.b(df.f1/(self.get_g(file_name)**4),"harmonic",self.get_Lambda(file_name),self.get_g(file_name))
 
                             else:
                             
                                 lambda_series = self.b(df.y4,model_type,self.get_Lambda(file_name),self.get_g(file_name))
 
-                            lambdadict = self.make_cumulant_dictionary(plot_params_all,dict(subplot=plt.subplot(gs_cumulants[1, 3:]) if eq_temp!="stiffness_control" else None,
-                                                                    xseries= lambda_series))
-                                                                    
-                            self.format_subplot(lambdadict,label_ind,c_ind)
+                            ax = plt.subplot(gs_cumulants[1, 3:]) if eq_temp!="stiffness_control" else None                                      
+                            self.format_subplot(ax,lambda_series,label_ind,c_ind,filter_delta,**plot_params_all)
                             #c_ind += 1
-                            if c_temp =="slowfast":
+                            if method =="slowfast":
                                 c_ind += 1
 
                             if eq_temp == "stiffness_control":    
@@ -349,10 +344,15 @@ class PlotParams():
                     fontweight="bold",
                     zorder=10000)
         ax.set_ylabel(ylabel)#,fontsize=self.fontsizetitles)
-        ax.set_xlabel('t')#,fontsize=self.fontsizetitles)
-        #ax.tick_params(labelsize=self.fontsizeticks)
+        ax.set_xlabel('t')
         ax.set_xlim((-0.1,xmax+0.1))
 
+    def get_slowfast_y4(self,df,g):
+        eps = 1
+        f00 = 2*eps*df.x2*(4*eps*df.x3-5*df.x2) + df.x1*(9*eps*df.x3-3*df.x2-6*eps)-3*eps*(df.x1**2)*df.kappa-(8*(eps**2)*(df.x3**3)/df.x1)
+        phi10 = -f00/(eps*(df.x1**2))
+        phi11 = 0
+        return df.f1#phi10 #phi10 + g*phi11
 
     def integrator(self,y,x,dx=0.001):
         #
