@@ -1,18 +1,19 @@
-Code to reproduce plots of **REF**
-Plotting and data manipulation is done in Python, integration is done through Julia
+Accompanying code to reproduce plots of **REF**
 
-Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages. 
+Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages in Julia. Visualisations are made in Python using saved csv's with Matplotlib and data handling using Pandas. 
 
-**Step 1.** Create results directory structure to save the file
+The following steps can be run from the command line with python and Julia installed. 
+
+**Step 1.** Create results directory structure 
 ```
 python src/make_results_dir.py
 ```
-**Step 2.** Instantiate Julia environment from Project.toml file
+**Step 2.** Instantiate Julia environment
 ```
 julia --project=.
 ] instantiate
 ```
-**Step 3.** Run the results you would like to see 
+**Step 3.** To run individual simulations 
 e.g. for minimum entropy production
 ```
 julia src/direct/ipopt_equil.jl T g "penalty" Lambda "kappa"
@@ -32,13 +33,19 @@ ARGS (position):
 - $\Lambda$: size of penalty for "log" and "hard"; "harmonic" penalty will use $\sqrt{2}$ by default.
 - "kappa": for "hard" penalty, "kappa" if to constrain, "none" if not. The value of $\kappa$ is not constrained by default. By choosing to constrain $\kappa$, the default interval is $[0.2,1.2]$. This can be changed by editing the file.
 
+Alternatively, pre-made batch scripts that produce all results for a Figure can be found in the src/scripts folder. These can be run through slurm. 
+
 **Step 4.**: Plotting is done through Python's matplotlib library
-To see the cumulants (as Fig.1) 
 ```
 python src/viz/plotting.py
 ```
-Costs for control vs state (as Figs.3) 
+Costs for control vs state (as Figs.4) 
 ```
 python src/viz/control_v_state.py
 ```
-To update what is being plotted, change the filenames, methods, models variables in the corresponding files. 
+Costs for equilibration vs minimum work (as Figs.8&9) 
+```
+python src/viz/cost_v_time.py
+```
+Custom plots can be made by editing the functions within these files. 
+For other plots, please check the docstrings in files in the src/viz folder.
