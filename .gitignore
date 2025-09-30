@@ -9,7 +9,6 @@ slowfast*.bash
 src/TEMP*
 core*
 *bridge*
-Manifest.toml
 direct_*
 indirect_*
 *.pdf
