@@ -352,7 +352,7 @@ class PlotParams():
         f00 = 2*eps*df.x2*(4*eps*df.x3-5*df.x2) + df.x1*(9*eps*df.x3-3*df.x2-6*eps)-3*eps*(df.x1**2)*df.kappa-(8*(eps**2)*(df.x3**3)/df.x1)
         phi10 = -f00/(eps*(df.x1**2))
         phi11 = 0
-        return (df.f1 + phi10) #-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+        return (df.f4 + phi10)-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
         #)#-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
         #df.f1 + phi10 #phi10 + g*phi11
 

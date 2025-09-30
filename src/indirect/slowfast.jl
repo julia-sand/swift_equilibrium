@@ -77,7 +77,7 @@ function slowfast(ARGS)
 
     bvp2 = TwoPointBVProblem(varevolution!, (varbc_start!, varbc_end!), u0, tspan, p;
                         bcresid_prototype = (zeros(4),zeros(4)))
-    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.1)
+    sol2 = solve(bvp2, LobattoIIIc5(), dt = 0.01)
 
     file_out = string("results/harmonic/equil/slowfast/",file_name)
 

@@ -13,3 +13,5 @@ Manifest.toml
 direct_*
 indirect_*
 *.pdf
+src/scripts/*.bash
+!src/scripts/fig*.bash
