@@ -19,15 +19,15 @@ def make_legend_fig56(handles,labels,fig):
     handles = np.concatenate((handles[::2],handles[1::2]),axis=0)
     labels = np.concatenate((labels[::2],labels[1::2]),axis=0)
 
-    fig.legend(handles,labels
-                ,loc="upper center"
-                ,frameon=False
-                ,ncols=2
-                #,handlelength=0.8
-                #,columnspacing=0.7
-                #,handletextpad=-0.02
-                ,bbox_to_anchor=(0.5, -0.05))
-    fig.subplots_adjust(bottom=0.01)
+    make_legend(handles,labels,fig)
+
+
+def make_legend_fig1(handles,labels,fig):
+    
+    handles = np.concatenate(([handles[-1]],handles[:3]),axis=0)
+    labels = np.concatenate(([labels[-1]],labels[:3]),axis=0)
+
+    make_legend(handles,labels,fig)
 
 
 def adjust_subplot_fig1(gs):
@@ -104,10 +104,10 @@ def plot_result(models,methods,file_names,equil,constrained_kappa,
     return fig_out
 
 def fig1():
-    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv"]
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-0001.csv"]
     models = ["harmonic"] #"harmonic",
     methods = ["slowfast","direct","indirect"]
-    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1)
+    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1,make_legend_fig1)
     
     fig_out.savefig(f"plots/fig1.png", bbox_inches="tight")
     fig_out.savefig(f"plots/fig1.pdf", format="pdf", bbox_inches="tight")
@@ -180,11 +180,11 @@ def fig8():
 if __name__=="__main__":
     
     fig1()
-    fig2()
-    fig3()
-    fig5()
-    fig6()
-    fig7()
+    #fig2()
+    #fig3()
+    #fig5()
+    #fig6()
+    #fig7()
     fig8()
 
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from plotscript import *
 
 """
-Produces Fig. 8 in paper
+Produces Figs. 8 and 9 in paper
 """
 
 def set_g(file_name,model_type,plotter):
@@ -59,7 +59,7 @@ def format_plot(ax,tvec,plot_title,plotter):
     
     ax.set_xlabel(r"$t_f$")
     plotter.format_ax(ax,None,np.max(tvec),ti=np.min(tvec))
-    ax.set_title(plot_title)
+    ax.set_title(plot_title,fontsize=22)
 
 def add_ylabel(ax,plotter):
     ax.set_ylabel("Cost")
@@ -85,20 +85,20 @@ def make_split_gs_subplot(fig,gs):
 
     return ax1,ax2
 
-def adjust_inset_fig8(ax_inset):
+def adjust_inset_fig9(ax_inset):
     ax_inset.set_ylim((-0.02, 0.57))
   
-def adjust_inset_fig9(ax_inset):
+def adjust_inset_fig10(ax_inset):
     ax_inset.set_ylim((-0.002, 0.065))
 
-def adjust_subplots_fig8(ax1,ax2,ax_equil):
+def adjust_subplots_fig9(ax1,ax2,ax_equil):
     ax2.set_yticks([-8.5,-8.3,-8.1])
 
     ax1.set_ylim((-0.1,0.7))
     ax2.set_ylim((-8.6,-8))
     ax_equil.set_ylim((-0.38,0.26))
 
-def adjust_subplots_fig9(ax_noneq,ax2,ax_equil):
+def adjust_subplots_fig10(ax_noneq,ax2,ax_equil):
 
     ax_noneq.set_ylim((-0.35,0.62))
     ax_equil.set_ylim((-0.05,0.55)) 
@@ -216,7 +216,7 @@ def make_plot(file_names,
 
     plt.close()
 
-def fig8():
+def fig9():
 
     #input file
     file_names = [#"T2-0_Lambda1-4_eps1_g0-01.csv",
@@ -240,10 +240,10 @@ def fig8():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "pass"
-    make_plot(file_names,model_type,method,constrained_kappa,"fig8",adjust_subplots_fig8,adjust_inset_fig8)
+    make_plot(file_names,model_type,method,constrained_kappa,"fig9",adjust_subplots_fig9,adjust_inset_fig9)
 
 
-def fig8cd():
+def fig10():
 
     #input file
     file_names = ["T3-0_Lambda1-4_eps1_g0-01.csv",
@@ -262,8 +262,8 @@ def fig8cd():
     model_type = "harmonic"#["harmonic","control","log","hard"] 
     method = "indirect"
     constrained_kappa = "contract"
-    make_plot(file_names,model_type,method,constrained_kappa,"fig9",adjust_subplots_fig9,adjust_inset_fig9)
+    make_plot(file_names,model_type,method,constrained_kappa,"fig10",adjust_subplots_fig10,adjust_inset_fig10)
 
 if __name__=="__main__":
-   fig8()
-   fig8cd()
+   fig9()
+   fig10()

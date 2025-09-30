@@ -198,15 +198,19 @@ class PlotParams():
 
                 #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif params_dict["method"] =="indirect": 
-            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
+            
+            if c_ind==1:
+                pass #ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color=self.c3)
+            else:
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
                     zorder=300,color=self.c2)
            
         elif params_dict["method"] =="slowfast": 
 
             if c_ind==2:
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=1000,color=self.c3)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color=self.c3)
             else:
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100,color="m")
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color="m")
 
     def format_subplot(self,ax,xseries,label_ind,c_ind,filter_delta,**params_dict):
         
@@ -349,10 +353,10 @@ class PlotParams():
 
     def get_slowfast_y4(self,df,g):
         eps = 1
-        f00 = 2*eps*df.x2*(4*eps*df.x3-5*df.x2) + df.x1*(9*eps*df.x3-3*df.x2-6*eps)-3*eps*(df.x1**2)*df.kappa-(8*(eps**2)*(df.x3**3)/df.x1)
+        f00 = 2*eps*df.x2*(4*eps*df.x3-5*df.x2) + df.x1*(9*eps*df.x3-3*df.x2-6*eps)-3*eps*(df.x1**2)*df.kappa-(8*(eps**2)*(df.x2**3)/df.x1)
         phi10 = -f00/(eps*(df.x1**2))
         phi11 = 0
-        return (df.f4 + phi10)-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
+        return (df.f1 + phi10)#-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
         #)#-np.gradient(df["kappa"].to_numpy(),df.t.to_numpy())
         #df.f1 + phi10 #phi10 + g*phi11
 
