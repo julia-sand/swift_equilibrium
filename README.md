@@ -31,9 +31,12 @@ ARGS (position):
 - $g$: size of penalty for "log"
 - "penalty": choose from "log", "hard", "harmonic" (see Sec. 4)
 - $\Lambda$: size of penalty for "log" and "hard"; "harmonic" penalty will use $\sqrt{2}$ by default.
-- "kappa": for "hard" penalty, "kappa" if to constrain, "none" if not. The value of $\kappa$ is not constrained by default. By choosing to constrain $\kappa$, the default interval is $[0.2,1.2]$. This can be changed by editing the file.
+- "kappa": for "hard" penalty, use the argument "kappa" to constrain the values of $\mathscr{k}_t$ or "neg3" to constrain the values in an interval which also includes negative values. Use "none" for no constraints. The value of $\kappa$ is not constrained by default. The exact constraints can be checked and edited in the file.
 
-Alternatively, pre-made batch scripts that produce all results for a Figure can be found in the src/scripts folder. These can be run through slurm. 
+Alternatively, pre-made batch scripts that produce all results for a Figure can be found in the src/scripts folder. These can be run on a slurm cluster eg 
+```
+sbatch src/scripts/fig1.bash
+```
 
 **Step 4.**: Plotting is done through Python's matplotlib library
 ```
