@@ -1,21 +1,12 @@
+**Optimal control of engineered swift equilibration of
+nanomechanical oscillators**
+
 We propose a reformulation of the problem of optimally controlled transitions in
 stochastic thermodynamics. We impose that any terminal cost specified by a thermodynamic
 functional should depend only on state variables and not on control protocols, according to the
 canonical Bolza form. In this way, we can unambiguously discriminate between transitions at
 minimum dissipation between genuine equilibrium states, and transitions at minimum work driving
-a system from a genuine equilibrium to a non-equilibrium state. For underdamped dynamics subject
-to a mechanical force, genuine equilibrium means a Maxwell-Bolzmann probability distribution
-defining a vanishing current velocity. Transitions at minimum dissipation between equilibria are a
-model of optimal swift engineered equilibration. Remarkably, we show that transitions at minimum
-work do not directly imply explicit boundary conditions on terminal values of parameters of the
-mechanical force and on control protocols. Thus, the problem often discussed in the literature,
-that optimal protocols need terminal jumps to satisfy boundary conditions, completely disappears.
-The quantitative properties of optimal controls are entirely determined by the form of the penalty
-modeling an experimental setup. More generally, we use centre manifold theory to analytically
-account for the tendency of optimal controls to exhibit a turnpike property: optimal protocols in
-the bulk of the control horizon tend to converge to a universal centre manifold determined only by
-the running cost. Exponential deviations from the centre manifold occur at the ends of the control
-horizon in order to satisfy the boundary conditions. 
+a system from a genuine equilibrium to a non-equilibrium state.
 
 The code in this repository can be used to reproduce the plots found in the paper.
 
