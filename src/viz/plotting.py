@@ -15,6 +15,12 @@ def make_legend(h,l,fig):
     fig.subplots_adjust(bottom=0.01)
 
 def make_legend_fig56(handles,labels,fig):
+    """manually reorder legend entries for better presentation
+    args:
+        handles: legend handles
+        labels: legend labels
+        fig: figure to plot legend
+    """
     
     handles = np.concatenate((handles[::2],handles[1::2]),axis=0)
     labels = np.concatenate((labels[::2],labels[1::2]),axis=0)
@@ -31,11 +37,11 @@ def make_legend_fig1(handles,labels,fig):
 
 
 def adjust_subplot_fig1(gs):
-    plt.subplot(gs[0,:2]).set_ylim((0.85,1.04))
-    plt.subplot(gs[0,2:4]).set_ylim((0.96,2.14))
+    plt.subplot(gs[0,:2]).set_ylim((0.86,1.06))
+    plt.subplot(gs[0,2:4]).set_ylim((0.96,2.16))
     plt.subplot(gs[0,4:]).set_ylim((-0.27,0.43))
-    plt.subplot(gs[1,3:]).set_ylim((-17,17))
-    plt.subplot(gs[1,:3]).set_ylim((-0.11,1.21))
+    plt.subplot(gs[1,3:]).set_ylim((-41,41))
+    plt.subplot(gs[1,:3]).set_ylim((-0.47,1.31))
 
 def adjust_subplot_fig2(gs):
     plt.subplot(gs[0,:2]).set_ylim((0.87,1.06))
@@ -104,10 +110,10 @@ def plot_result(models,methods,file_names,equil,constrained_kappa,
     return fig_out
 
 def fig1():
-    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-0001.csv"]
+    file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv","T3-0_Lambda1-4_eps1_g0-0001.csv"]
     models = ["harmonic"] #"harmonic",
-    methods = ["slowfast","direct","indirect"]
-    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1,make_legend_fig1)
+    methods = ["slowfast"]#["slowfast","direct","indirect"]
+    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1)#,make_legend_fig1)
     
     fig_out.savefig(f"plots/fig1.png", bbox_inches="tight")
     fig_out.savefig(f"plots/fig1.pdf", format="pdf", bbox_inches="tight")
@@ -185,6 +191,6 @@ if __name__=="__main__":
     #fig5()
     #fig6()
     #fig7()
-    fig8()
+    #fig8()
 
 

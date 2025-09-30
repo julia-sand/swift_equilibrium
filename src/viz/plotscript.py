@@ -169,6 +169,14 @@ class PlotParams():
 
         return legendlabel
 
+    def g_color(self,g):
+        if g==0.01:
+            return "m"
+        elif g==0.001:
+            return self.c3
+        else: 
+            return "brown"
+
     def plot_func_cumulants(self,ax,xseries,c_ind,label_ind,filter_delta,**params_dict):
                                                
         
@@ -189,29 +197,18 @@ class PlotParams():
             
             else:
                     
-                if c_ind==3:
-                    ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c3)
-                    #+r"($\Lambda=10$)"
-                else:
-                
-                    ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c1)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c1)
 
                 #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif params_dict["method"] =="indirect": 
             
-            if c_ind==1:
-                pass #ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color=self.c3)
-            else:
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
                     zorder=300,color=self.c2)
            
         elif params_dict["method"] =="slowfast": 
-
-            if c_ind==2:
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color=self.c3)
-            else:
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dotted",zorder=100000,color="m")
-
+                
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100000,color=self.g_color(self.get_g(params_dict["file_name"])))
+            
     def format_subplot(self,ax,xseries,label_ind,c_ind,filter_delta,**params_dict):
         
         try:
