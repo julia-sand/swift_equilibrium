@@ -1,5 +1,5 @@
-**Optimal control of engineered swift equilibration of
-nanomechanical oscillators**
+<h1>**Optimal control of engineered swift equilibration of
+nanomechanical oscillators**</h1>
 
 We propose a reformulation of the problem of optimally controlled transitions in
 stochastic thermodynamics. We impose that any terminal cost specified by a thermodynamic
