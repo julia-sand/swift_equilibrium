@@ -89,15 +89,8 @@ def plot_w2(ax,w2,color1,case,tf):
     plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
                         (w2_conf-(20000**-0.5))/np.linspace(3,tf,num=20),
                         (w2_conf+(20000**-0.5))/np.linspace(3,tf,num=20)
-                        ,color=color1,alpha=0.5)
-    #plt.subplot(ax).plot(np.linspace(3,tf,num=20),
-    #                    w2_state/np.linspace(3,tf,num=20),
-    #                    linestyle="dotted",
-    #                    label=r"$\frac{1}{t_f}\mathcal{W}_2$"+"("+"State"+")")
-    #plt.subplot(ax).fill_between(np.linspace(3,tf,num=20),
-    #                    (w2_state-(20000**-0.5))/np.linspace(3,tf,num=20),
-    #                    (w2_state+(20000**-0.5))/np.linspace(3,tf,num=20)
-    #                    ,color=color1,alpha=0.5)
+                        ,color="c",zorder=0)
+    
 
 def choose_w2(equilvar,constraint,lambda_val):
     function_name = "w2_dist_"+equilvar+"_"+constraint+"_"+lambda_val
@@ -188,9 +181,9 @@ def make_plot(model_type,method,file_out,plotter=plotter):
 
     h,l = plt.subplot(gs[0,:3]).get_legend_handles_labels()
 
-    blue_patch = mpatches.Patch(color=plotter.c1,alpha=0.5,zorder=1)
+    blue_patch = mpatches.Patch(color="c",zorder=0)
 
-    final_leg_handle = (h[-1],blue_patch)
+    final_leg_handle = (blue_patch,h[-1])
     h[-1] = final_leg_handle
     #l.append("st. error")
 
