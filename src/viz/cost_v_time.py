@@ -213,6 +213,7 @@ def make_plot(file_names,
     plt.figtext(0.5, 0.01, param_label, ha="center", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.savefig(f"plots/{file_out}.png",format="png",bbox_inches="tight")
     plt.savefig(f"plots/{file_out}.pdf",format="pdf",bbox_inches="tight")
+    plt.savefig(f"plots/{file_out}.eps",format="eps",bbox_inches="tight")
 
     plt.close()
 

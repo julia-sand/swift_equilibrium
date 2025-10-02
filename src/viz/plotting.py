@@ -29,9 +29,10 @@ def make_legend_fig56(handles,labels,fig):
 
 
 def make_legend_fig1(handles,labels,fig):
-    
-    handles = np.concatenate(([handles[-1]],handles[:3]),axis=0)
-    labels = np.concatenate(([labels[-1]],labels[:3]),axis=0)
+    handles1 = [x for i,x in enumerate(handles) if i!=1] 
+    labels1 = [x for i,x in enumerate(labels) if i!=1] 
+    handles = np.concatenate(([handles[1]],handles1),axis=0)
+    labels = np.concatenate(([labels[1]],labels1),axis=0)
 
     make_legend(handles,labels,fig)
 
@@ -109,15 +110,19 @@ def plot_result(models,methods,file_names,equil,constrained_kappa,
 
     return fig_out
 
+def save_figs(fig,file_out):
+
+    fig.savefig(f"plots/{file_out}.png", bbox_inches="tight")
+    fig.savefig(f"plots/{file_out}.pdf", format="pdf", bbox_inches="tight")
+    fig.savefig(f"plots/{file_out}.eps", format="eps", bbox_inches="tight")
+    return
+
 def fig1():
     file_names =  ["T3-0_Lambda1-4_eps1_g0-01.csv","T3-0_Lambda1-4_eps1_g0-001.csv","T3-0_Lambda1-4_eps1_g0-0001.csv"]
     models = ["harmonic"] #"harmonic",
-    methods = ["slowfast"]#["slowfast","direct","indirect"]
-    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1)#,make_legend_fig1)
-    
-    fig_out.savefig(f"plots/fig1.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig1.pdf", format="pdf", bbox_inches="tight")
-
+    methods = ["slowfast","direct"]#["slowfast","direct","indirect"]
+    fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig1,make_legend_fig1)
+    save_figs(fig_out,"fig1")
     plt.close()
 
 def fig2():
@@ -125,9 +130,7 @@ def fig2():
     models = ["log","hard"] #"harmonic",
     methods = ["direct","indirect"]
     fig_out = plot_result(models,methods,file_names, ["equil"],"none",adjust_subplot_fig2)
-    
-    fig_out.savefig(f"plots/fig2.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig2.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig2")
 
     plt.close()
 
@@ -136,8 +139,7 @@ def fig3():
     models = ["harmonic"] #"harmonic",
     methods = ["direct","indirect"]
     fig_out = plot_result(models,methods,file_names, ["equil"],"contract",adjust_subplot_fig3)
-    fig_out.savefig(f"plots/fig3.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig3.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig3")
 
     plt.close()
 
@@ -147,8 +149,7 @@ def fig5():
     methods = ["direct"]
     fig_out = plot_result(models,methods,file_names, ["equil","stiffness_control"],"constrained_kappa",adjust_subplot_fig5,make_legend_fig56)
     h,l = plt.gca().get_legend_handles_labels()
-    fig_out.savefig(f"plots/fig5.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig5.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig5")
     plt.close()
 
 
@@ -158,8 +159,7 @@ def fig6():
     models = ["hard"] #"harmonic",
     methods = ["direct"]
     fig_out = plot_result(models,methods,file_names, ["equil","stiffness_control"],"negative_constrained_kappa_small",adjust_subplot_fig6,make_legend_fig56)
-    fig_out.savefig(f"plots/fig6.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig6.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig6")
     plt.close()
 
 def fig7():
@@ -168,8 +168,7 @@ def fig7():
     models = ["harmonic"] #"harmonic",
     methods = ["indirect","direct"]
     fig_out = plot_result(models,methods,file_names, ["noneq"],"none",adjust_subplot_fig7)
-    fig_out.savefig(f"plots/fig7.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig7.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig7")
     plt.close()
 
 
@@ -179,18 +178,17 @@ def fig8():
     models = ["harmonic"] #"harmonic",
     methods = ["indirect","direct"]
     fig_out = plot_result(models,methods,file_names, ["noneq"],"contract",adjust_subplot_fig8)
-    fig_out.savefig(f"plots/fig8.png", bbox_inches="tight")
-    fig_out.savefig(f"plots/fig8.pdf", format="pdf", bbox_inches="tight")
+    save_figs(fig_out,"fig8")
     plt.close()
 
 if __name__=="__main__":
     
     fig1()
-    #fig2()
-    #fig3()
-    #fig5()
-    #fig6()
-    #fig7()
-    #fig8()
+    fig2()
+    fig3()
+    fig5()
+    fig6()
+    fig7()
+    fig8()
 
 

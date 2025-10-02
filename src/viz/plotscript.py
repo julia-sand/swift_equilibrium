@@ -171,11 +171,11 @@ class PlotParams():
 
     def g_color(self,g):
         if g==0.01:
-            return "m"
+            return self.c2#"brown"
         elif g==0.001:
             return self.c3
         else: 
-            return "brown"
+            return "m"#"brown"
 
     def plot_func_cumulants(self,ax,xseries,c_ind,label_ind,filter_delta,**params_dict):
                                                
@@ -207,7 +207,7 @@ class PlotParams():
            
         elif params_dict["method"] =="slowfast": 
                 
-            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100000,color=self.g_color(self.get_g(params_dict["file_name"])))
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100000,linestyle="dashed",color=self.g_color(self.get_g(params_dict["file_name"])))
             
     def format_subplot(self,ax,xseries,label_ind,c_ind,filter_delta,**params_dict):
         
