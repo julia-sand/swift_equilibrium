@@ -1,5 +1,5 @@
-<h1>Optimal control of engineered swift equilibration of
-nanomechanical oscillators<h1>
+[<h1>Optimal control of engineered swift equilibration of
+nanomechanical oscillators<h1>](https://arxiv.org/abs/2510.01823)
 
 We propose a reformulation of the problem of optimally controlled transitions in
 stochastic thermodynamics. We impose that any terminal cost specified by a thermodynamic
@@ -10,9 +10,10 @@ a system from a genuine equilibrium to a non-equilibrium state.
 
 The code in this repository can be used to reproduce the plots found in the paper.
 
-**Installation**
+<h2>Installation</h2>
 Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages in Julia, version 10 or above. The  Visualisations are made in Python using data from csvs with Matplotlib and include some data handling in Pandas. 
 
+<h3>How to use this code</h3>
 The following steps can be run from the command line once Python and Julia are installed. 
 
 **Step 1.** Create results directory structure 
