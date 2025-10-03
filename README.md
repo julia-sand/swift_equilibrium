@@ -1,5 +1,5 @@
 [<h1>Optimal control of engineered swift equilibration of
-nanomechanical oscillators</h1>](https://arxiv.org/abs/2510.01823)
+nanomechanical oscillators</h1>]
 
 We propose a reformulation of the problem of optimally controlled transitions in
 stochastic thermodynamics. We impose that any terminal cost specified by a thermodynamic
@@ -8,7 +8,7 @@ canonical Bolza form. In this way, we can unambiguously discriminate between tra
 minimum dissipation between genuine equilibrium states, and transitions at minimum work driving
 a system from a genuine equilibrium to a non-equilibrium state.
 
-The code in this repository can be used to reproduce the plots found in the paper.
+The code in this repository can be used to reproduce the plots found in the [paper](https://arxiv.org/abs/2510.01823).
 
 <h2>Installation</h2>
 Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages in Julia, version 10 or above. The  Visualisations are made in Python using data from csvs with Matplotlib and include some data handling in Pandas. 
