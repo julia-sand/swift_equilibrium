@@ -1,6 +1,4 @@
 #!/bin/bash
-#SBATCH --account=project_2011332
-#SBATCH --partition=small
 #SBATCH --time=00:15:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
