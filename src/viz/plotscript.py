@@ -24,9 +24,9 @@ def update_mpl():
     mpl.rcParams['lines.linewidth'] = 3
     mpl.rcParams['xtick.labelsize'] = 18
     mpl.rcParams['ytick.labelsize'] = 18
-    mpl.rcParams['font.size'] = 22
-    mpl.rcParams['axes.labelsize'] = 22
-    mpl.rcParams['legend.fontsize'] = 22
+    mpl.rcParams['font.size'] = 20
+    mpl.rcParams['axes.labelsize'] = 20
+    mpl.rcParams['legend.fontsize'] = 20
 
 class PlotParams():
     def __init__(self):
@@ -322,16 +322,16 @@ class PlotParams():
         yloc= 0.88
                                                     
         if eq_temp!="stiffness_control":
-            self.add_labels(plt.subplot(gs_cumulants[0,0:2]),xmax,"(a)",xloc,yloc,"Mom. Variance")
-            self.add_labels(plt.subplot(gs_cumulants[0,2:4]),xmax,"(b)",xloc,yloc,"Position Variance")
-            self.add_labels(plt.subplot(gs_cumulants[0,4:]),xmax,"(c)",xloc,yloc,"Cross Correlation")
-            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$")
-            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(e)",xloc*(2/3),yloc,r"Control, $\lambda_t$")
+            self.add_labels(plt.subplot(gs_cumulants[0,0:2]),xmax,"(a)",xloc,yloc,r"Mom. Variance, $\mathscr{x}_t^{(3)}$") #mom variance 
+            self.add_labels(plt.subplot(gs_cumulants[0,2:4]),xmax,"(b)",xloc,yloc,r"Pos. Variance, $\mathscr{x}_t^{(1)}$") #pos variance
+            self.add_labels(plt.subplot(gs_cumulants[0,4:]),xmax,"(c)",xloc,yloc,r"Cross Corr., $\mathscr{x}_t^{(2)}$") #x correlation
+            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$") #stiffness
+            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(e)",xloc*(2/3),yloc,r"Control, $\lambda_t$") #control , lambda
         else: 
-            self.add_labels(plt.subplot(gs_cumulants[0,:3]),xmax,"(a)",xloc*(2/3),yloc,"Mom. Variance")
-            self.add_labels(plt.subplot(gs_cumulants[0,3:]),xmax,"(b)",xloc*(2/3),yloc,"Position Variance")
-            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(c)",xloc*(2/3),yloc,"Cross Correlation")
-            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$")
+            self.add_labels(plt.subplot(gs_cumulants[0,:3]),xmax,"(a)",xloc*(2/3),yloc,r"Mom. Variance, $\mathscr{x}_t^{(3)}$") #mom variance
+            self.add_labels(plt.subplot(gs_cumulants[0,3:]),xmax,"(b)",xloc*(2/3),yloc,r"Pos. Variance, $\mathscr{x}_t^{(1)}$") #pos variance
+            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(c)",xloc*(2/3),yloc,r"Cross Corr., $\mathscr{x}_t^{(2)}$") #x correlation
+            self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$") #stiffness
 
         return fig
   
