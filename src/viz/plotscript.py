@@ -25,15 +25,16 @@ def update_mpl():
     mpl.rcParams['xtick.labelsize'] = 18
     mpl.rcParams['ytick.labelsize'] = 18
     mpl.rcParams['font.size'] = 20
-    mpl.rcParams['axes.labelsize'] = 20
+    mpl.rcParams['axes.labelsize'] = 19
     mpl.rcParams['legend.fontsize'] = 20
+    mpl.rcParams['axes.labelpad'] = -0.8
+
 
 class PlotParams():
     def __init__(self):
         
         update_mpl()
 
-        self.lw = 3
         
         self.c1 = "#1f77b4" #darkblue, DIRECT
         self.c2 = '#ff7f0e' #orange, INDIRECT
@@ -45,7 +46,7 @@ class PlotParams():
         Hamiltonian and running cost
         """
 
-        ax.plot(x, y, lw = self.lw, 
+        ax.plot(x, y, 
                 label = legendlabel,
                 linestyle=linestyle)
     
@@ -184,30 +185,29 @@ class PlotParams():
         if params_dict["method"] =="direct":
             if params_dict["equil"]=="stiffness_control":
                 #Stiffness as a control 
-                ax.plot(params_dict["tseries"],self.filter_(xseries,filter_delta), label = "stiffness as a control",
-                                        lw=self.lw,color=self.c2)
+                ax.plot(params_dict["tseries"],self.filter_(xseries,filter_delta), label = "stiffness as a control"
+                                                ,color=self.c2)
             #elif (params_dict["equil"]=="stiffness_control" and label_ind!=1):
             #    pass
             
             elif label_ind>1:
                 lambda_temp = self.get_Lambda(params_dict["file_name"])
                 col = self.c1 if lambda_temp==1 else self.c3
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label="stiffness as a state"+ r" ($\Lambda =$"+ f"{lambda_temp})",lw=self.lw,zorder=100,color=col)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label="stiffness as a state"+ r" ($\Lambda =$"+ f"{lambda_temp})",zorder=100,color=col)
                 #label = legendlabel + r" ($\Lambda =$"+ f"{lambda_temp})"
             
             else:
                     
-                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100,color=self.c1)
+                ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,zorder=100,color=self.c1)
 
-                #ax.plot(x,self.filter_(y), label = legendlabel,lw=self.lw,color=self.c1)
         elif params_dict["method"] =="indirect": 
             
-            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,linestyle="dashed",
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,linestyle="dashed",
                     zorder=300,color=self.c2)
            
         elif params_dict["method"] =="slowfast": 
                 
-            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,lw=self.lw,zorder=100000,linestyle="dashed",color=self.g_color(self.get_g(params_dict["file_name"])))
+            ax.plot(params_dict["tseries"], self.filter_(xseries,filter_delta), label = legendlabel,zorder=100000,linestyle="dashed",color=self.g_color(self.get_g(params_dict["file_name"])))
             
     def format_subplot(self,ax,xseries,label_ind,c_ind,filter_delta,**params_dict):
         
@@ -322,15 +322,15 @@ class PlotParams():
         yloc= 0.88
                                                     
         if eq_temp!="stiffness_control":
-            self.add_labels(plt.subplot(gs_cumulants[0,0:2]),xmax,"(a)",xloc,yloc,r"Mom. Variance, $\mathscr{x}_t^{(3)}$") #mom variance 
-            self.add_labels(plt.subplot(gs_cumulants[0,2:4]),xmax,"(b)",xloc,yloc,r"Pos. Variance, $\mathscr{x}_t^{(1)}$") #pos variance
-            self.add_labels(plt.subplot(gs_cumulants[0,4:]),xmax,"(c)",xloc,yloc,r"Cross Corr., $\mathscr{x}_t^{(2)}$") #x correlation
+            self.add_labels(plt.subplot(gs_cumulants[0,0:2]),xmax,"(a)",xloc,yloc,r"Mom. Variance, $\mathscr{x}^{(3)}_t$") #mom variance 
+            self.add_labels(plt.subplot(gs_cumulants[0,2:4]),xmax,"(b)",xloc,yloc,r"Position Variance, $\mathscr{x}^{(1)}_t$") #pos variance
+            self.add_labels(plt.subplot(gs_cumulants[0,4:]),xmax,"(c)",xloc,yloc,r"Cross Correlation, ${\mathscr{x}}^{(2)}_t$") #x correlation
             self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$") #stiffness
             self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(e)",xloc*(2/3),yloc,r"Control, $\lambda_t$") #control , lambda
         else: 
-            self.add_labels(plt.subplot(gs_cumulants[0,:3]),xmax,"(a)",xloc*(2/3),yloc,r"Mom. Variance, $\mathscr{x}_t^{(3)}$") #mom variance
-            self.add_labels(plt.subplot(gs_cumulants[0,3:]),xmax,"(b)",xloc*(2/3),yloc,r"Pos. Variance, $\mathscr{x}_t^{(1)}$") #pos variance
-            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(c)",xloc*(2/3),yloc,r"Cross Corr., $\mathscr{x}_t^{(2)}$") #x correlation
+            self.add_labels(plt.subplot(gs_cumulants[0,:3]),xmax,"(a)",xloc*(2/3),yloc,r"Mom. Variance, $\mathscr{x}^{(3)}_t$") #mom variance
+            self.add_labels(plt.subplot(gs_cumulants[0,3:]),xmax,"(b)",xloc*(2/3),yloc,r"Position Variance, $\mathscr{x}^{(1)}_t$") #pos variance
+            self.add_labels(plt.subplot(gs_cumulants[1,:3]),xmax,"(c)",xloc*(2/3),yloc,r"Cross Correlation, $\mathscr{x}^{(2)}_t$") #x correlation
             self.add_labels(plt.subplot(gs_cumulants[1,3:]),xmax,"(d)",xloc*(2/3),yloc,r"Stiffness, $\mathscr{k}_t$") #stiffness
 
         return fig

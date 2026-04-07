@@ -106,7 +106,7 @@ def adjust_subplots_fig10(ax_noneq,ax2,ax_equil):
 def plot_inset(ax_equil,results1,results2,plotter,adjust_inset):
 
     ax_inset = ax_equil.inset_axes(bounds=[0.35,0.24,0.5,0.3],transform=ax_equil.transAxes)
-    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",alpha=0.5,color="gray",zorder=0)
+    ax_inset.plot(results2[0], 0*results2[3],lw=plotter.lw,linestyle="dashed",color="gray",zorder=0)
     ax_inset.set_ylabel(r"$\Delta \mathcal{E}_{t_f}$",
                     color="maroon")
     plotter.format_ax_plain(ax_inset)
@@ -175,7 +175,7 @@ def make_plot(file_names,
         plot_ep(ax_noneq,results2[0],results2[3],plotter)
         plot_work(ax_noneq,results2[0],results2[1],plotter)
         plot_heat(ax_noneq,results2[0],results2[2],plotter)
-        ax_noneq.plot(results2[0],np.zeros(len(results2[0])),"--",linewidth=plotter.lw,color="gray",zorder=0,alpha=0.5)
+        ax_noneq.plot(results2[0],np.zeros(len(results2[0])),"--",linewidth=plotter.lw,color="gray",zorder=0)
         adjust_subplots_fun(ax_noneq,None,ax_equil)
         ax_noneq.text(x=0.02,y=0.95,s="(b)",
             fontweight="bold",transform=ax_noneq.transAxes,zorder=1000)

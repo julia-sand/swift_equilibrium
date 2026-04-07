@@ -2,12 +2,12 @@ import os
 
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 from plotscript import *
 from cost_v_time import append_Tf, compute_data
-
 
 def w2_dist_equil_constrained_kappa_lambda1():
     """estimate_w2.py
@@ -107,6 +107,9 @@ def choose_w2(equilvar,constraint,lambda_val):
 
 plotter = PlotParams()
 
+#reset title padding params
+mpl.rcParams['axes.labelpad'] = 0
+
 def panel_a(ax,constraint,file_names,model_type,method,panel_label,plotter=plotter):
     results1 = compute_data(plotter,file_names,model_type,method,equil="equil",constrained_kappa=constraint)
     results2 = compute_data(plotter,file_names,model_type,method,equil="stiffness_control",constrained_kappa=constraint)
@@ -197,7 +200,7 @@ def make_plot(model_type,method,file_out,plotter=plotter):
 
     fig.subplots_adjust(bottom=0.01)
     #plt.tight_layout()
-    plt.figtext(0.5, 0.01, param_label, ha="center", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
+    #plt.figtext(0.5, 0.01, param_label, ha="center", bbox={"facecolor":"orange", "alpha":0.5, "pad":5})
     plt.savefig(f"plots/{file_out}.png",format="png",bbox_inches="tight")
     plt.savefig(f"plots/{file_out}.pdf",format="pdf",bbox_inches="tight")
     plt.savefig(f"plots/{file_out}.eps",format="eps",bbox_inches="tight")
@@ -214,8 +217,5 @@ def fig4():
     method = "direct"#,"nondegenerate"]
     make_plot(model_type,method,"fig4")
     
-
-
-
 if __name__=="__main__":
     fig4()        
