@@ -1,6 +1,8 @@
 """
-This file should be run first in order to make the results directory 
-and save the results as CSVs. 
+Python version of makedirs . sh 
+This file should be run first if makefile does not work,
+in order to make the results directory. Results of the integration 
+will be saved in the directory structure. 
 
 """
 

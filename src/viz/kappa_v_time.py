@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from plotscript import *
 from cost_v_time import *
 
-
 def get_kappa(plotter,file_names,model_type,method,equil,constrained_kappa):
     T_vec = np.empty(0)
     kappa_vec = np.empty(0)

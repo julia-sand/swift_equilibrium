@@ -1,6 +1,5 @@
 using IfElse
 
-
 function get_file_name(T,epsilon,g,Lambda)
     #=
     Generates a filename containing parameter values

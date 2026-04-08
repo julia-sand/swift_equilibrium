@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+
 from plotscript import PlotParams #contains the plotting functions
 
 if __name__=="__main__":
