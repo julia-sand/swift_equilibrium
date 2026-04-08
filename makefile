@@ -1,7 +1,7 @@
 .PHONY: dirs julia-env swiftequilibration submit-all-figs-batch
 
 swiftequilibration-setup : dirs julia-env
-swiftequilibration-all : dirs julia-env submit-all-figs-batch
+swiftequilibration-submit-all : submit-all-figs-batch
 experimental-setup : dirs julia-env
 experimental-all : dirs julia-env submit-exp-figs-batch
 

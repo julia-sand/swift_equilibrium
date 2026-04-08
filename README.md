@@ -14,7 +14,7 @@ The code in this repository can be used to reproduce the plots found in the [pap
 Integration is mostly done through the DifferentialEquations.jl and InfiniteOpt.jl packages in <b>Julia v1.11.5</b> and saved as CSVs. The Visualisations are made in Python and require Matplotlib, Pandas and Numpy packages. 
 
 <h3>How to use this code</h3>
-The following steps can be run from the command line once Python and Julia are installed. 
+The following instructions assume that Julia and Python are installed. 
 
 **Step 1.** Create results directory structure 
 ```
@@ -65,3 +65,16 @@ python src/viz/cost_v_time.py
 Custom plots can be made by editing the functions within these files to include different method/file names. 
 For other plots, please check the documentation found in the files in the src/viz folder.
 
+<h3>Alternative: with Makefile</h3>
+This part is still under development. 
+
+To create the directory structure and environment for the swift equilibration methods: 
+
+```
+make swiftequilibration-setup DIR_NAME=swiftequilibrationresults
+```
+
+To submit the batch scripts to a slurm cluster: 
+```
+make swiftequilibration-submit-all
+```
