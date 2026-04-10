@@ -6,7 +6,7 @@ using DataFrames;
 minimising the ENTROPY PRODUCTION 
 =#
 
-include("../getfilename.jl")
+include("../../getfilename.jl")
 
 function solve_indirect(ARGS)
 

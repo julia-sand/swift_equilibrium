@@ -6,7 +6,7 @@ using DataFrames;
 two gaussian states
 =#
 
-include("../getfilename.jl")
+include("../../getfilename.jl")
 
 function solve_indirect(ARGS)
     print("hello")

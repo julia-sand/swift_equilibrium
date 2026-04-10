@@ -7,7 +7,7 @@ we start by examining the situation of equilibirum transitions between
 two gaussian states
 =#
 
-include("../../getfilename.jl")
+include("../../../getfilename.jl")
 
 function solve_indirect(ARGS)
     print("hello")

@@ -7,7 +7,7 @@ minimising the ENTROPY PRODUCTION and with NON DEGENERATE dunamics. (see penalty
 We treat the stiffness as a STATE. 
 =#
 
-include("../getfilename.jl")
+include("../../getfilename.jl")
 
 function solve_indirect(ARGS)
 

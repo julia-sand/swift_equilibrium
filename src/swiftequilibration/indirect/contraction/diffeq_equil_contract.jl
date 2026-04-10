@@ -7,7 +7,7 @@ two gaussian states
 
 =#
 
-include("../../getfilename.jl")
+include("../../../getfilename.jl")
 
 
 function solve_indirect_equil(ARGS)

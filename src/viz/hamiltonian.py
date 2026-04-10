@@ -4,7 +4,6 @@ import pandas as pd
 
 from plotscript import PlotParams
 
-
 def ham_plot(file_name,file_out,equil):
     plotter = PlotParams()
 

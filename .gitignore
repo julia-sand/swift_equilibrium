@@ -14,3 +14,4 @@ indirect_*
 *.pdf
 src/scripts/*.bash
 !src/scripts/fig*.bash
+experimental/*

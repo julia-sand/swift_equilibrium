@@ -6,7 +6,7 @@ using DataFrames;
 minimising the ENTROPY PRODUCTION and with NON DEGENERATE dunamics. (see penalty (61))
 =#
 
-include("../getfilename.jl")
+include("../../getfilename.jl")
 
 function solve_indirect(ARGS)
 
