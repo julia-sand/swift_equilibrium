@@ -12,7 +12,7 @@ Example 4.1:
 =#
 
 #get parsed parameters
-include("../../getfilename.jl")
+include("../getfilename.jl")
 include("initialisation_funs.jl")
 
 ############################

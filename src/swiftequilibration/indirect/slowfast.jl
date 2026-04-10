@@ -4,7 +4,7 @@ using DataFrames;
 
 #= This script implements the invariant manifold equations. =#
 
-include("../../getfilename.jl")
+include("../getfilename.jl")
 
 function slowfast(ARGS)
     #parsed_args = parse_commandline()
