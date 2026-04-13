@@ -86,7 +86,7 @@ function solve_indirect(ARGS)
     function format_sol(sol,model_type)
         df_temp = DataFrame(sol)
         ##SAVE CSV HERE
-        file_out = string("results/$model_type/noneq/indirect/contract/",file_name)
+        file_out = string("results/swiftequilibrium/$model_type/noneq/indirect/contract/",file_name)
         rename!(df_temp, [:t, :x1, :x2, :x3, :kappa, :y1, :y2, :y3, :y4]) #rename 
         CSV.write(file_out,df_temp)
     end

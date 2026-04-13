@@ -122,7 +122,7 @@ function solve_direct(ARGS)
     df = DataFrame(data_rows,
                         ["t", "x1", "x2", "x3", "kappa"])
 
-    folder = "results/$model_type/noneq/direct/contract/"
+    folder = "results/swiftequilibrium/$model_type/noneq/direct/contract/"
     if constraint_kappa=="kappa"
         folder2 = string(folder,"constrained_kappa/")
         CSV.write(string(folder2,file_name), df)

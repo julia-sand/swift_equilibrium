@@ -123,7 +123,7 @@ function solve_direct_equil(ARGS)
     df = DataFrame(data_rows,
                         ["t", "x1", "x2", "x3", "kappa"])
 
-    folder = "results/$model_type/equil/direct/contract/"
+    folder = "results/swiftequilibrium/$model_type/equil/direct/contract/"
     if constraint_kappa=="kappa"
         folder2 = string(folder,"constrained_kappa/")
         CSV.write(string(folder2,file_name), df)

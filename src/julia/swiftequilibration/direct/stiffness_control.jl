@@ -105,7 +105,7 @@ function solve_direct(ARGS)
     df = DataFrame(data_rows,
                         ["t", "x1", "x2", "x3", "kappa"])
 
-    folder = "results/$model_type/stiffness_control/direct/"
+    folder = "results/swiftequilibrium/$model_type/stiffness_control/direct/"
 
     if constraint_kappa=="kappa"
         folder2 = string(folder,"constrained_kappa/")

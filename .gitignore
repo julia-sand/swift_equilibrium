@@ -14,4 +14,4 @@ indirect_*
 *.pdf
 src/scripts/*.bash
 !src/scripts/fig*.bash
-src/experimental/*
+src/julia/experimental/*
